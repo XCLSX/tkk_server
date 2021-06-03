@@ -5,12 +5,6 @@
 using namespace std;
 
 
-////注册
-//#define  DEF_PACK_REGISTER_RQ    (DEF_PACK_BASE + 0)
-//#define  DEF_PACK_REGISTER_RS    (DEF_PACK_BASE + 1)
-////登录
-//#define  DEF_PACK_LOGIN_RQ    (DEF_PACK_BASE + 2)
-//#define  DEF_PACK_LOGIN_RS    (DEF_PACK_BASE + 3)
 
 static const ProtocolMap m_ProtocolMapEntries[] =
 {
@@ -27,7 +21,7 @@ int TcpKernel::Open()
     m_tcp->SetpThis(m_tcp);
     pthread_mutex_init(&m_tcp->alock,NULL);
     pthread_mutex_init(&m_tcp->rlock,NULL);
-    if(  !m_sql->ConnectMysql("localhost","root","colin123","myqq")  )
+    if(  !m_sql->ConnectMysql("localhost","root","root","tkk")  )
     {
         printf("Conncet Mysql Failed...\n");
         return FALSE;
@@ -83,6 +77,29 @@ void TcpKernel::RegisterRq(int clientfd,char* szbuf,int nlen)
 
     STRU_REGISTER_RQ * rq = (STRU_REGISTER_RQ *)szbuf;
     STRU_REGISTER_RS rs;
+    char szsql[_DEF_SQLIEN] = {0};
+    list<string> ls;
+    snprintf(szsql,sizeof(szsql),"select user_account,user_emall from t_user where user_account='%s' or user_emall='%s';"
+             ,rq->m_szUser,rq->m_szEmall);
+    m_sql->SelectMysql(szsql,2,ls);
+    //用户名或邮箱已被使用
+    if(ls.size()>0)
+    {
+        rs.m_lResult = userid_is_exist;
+    }
+    else
+    {   //插入账户密码邮箱-> t_user
+        bzero(szsql,sizeof(szsql));
+        snprintf(szsql,sizeof(szsql),"insert into t_user values (null,'%s','%s','%s');",rq->m_szUser,rq->m_szEmall,rq->m_szPassword);
+        m_sql->UpdataMysql(szsql);
+        //默认值初始化个人信息
+        bzero(szsql,sizeof(szsql));
+        snprintf(szsql,sizeof(szsql),"insert into t_userInfo values(null,1,'未命名',' 这个人很懒，没什么没什么想说的。',0);");
+        m_sql->UpdataMysql(szsql);
+
+
+        rs.m_lResult = register_sucess;
+    }
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
@@ -93,6 +110,39 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
 
     STRU_LOGIN_RQ * rq = (STRU_LOGIN_RQ *)szbuf;
     STRU_LOGIN_RS rs;
+
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"select user_pwd from t_user where user_account = '%s';"
+             ,rq->m_szUser);
+    m_sql->SelectMysql(szsql,1,ls);
+    if(ls.size()==0)
+    {
+        rs.m_nType =userid_no_exist;
+    }
+    else
+    {
+        if(strcmp(ls.front().c_str(),rq->m_szPassword)==0)
+        {
+            rs.m_nType = login_sucess;
+            //获取自增的u_id
+            bzero(szsql,sizeof(szsql));
+            snprintf(szsql,sizeof(szsql),"select user_id from t_user where user_account='%s';",rq->m_szUser);
+            m_sql->SelectMysql(szsql,1,ls);
+            //获取用户基本信息
+            bzero(szsql,sizeof(szsql));
+            snprintf(szsql,sizeof(szsql),"select * from t_userInfo;");
+            m_sql->SelectMysql(szsql,5,ls);
+            //初始化信息
+            rs.m_userid =atoi(ls.front().c_str());              ls.pop_front();
+            rs.m_userInfo.m_iconID = atoi(ls.front().c_str());  ls.pop_front();
+            strcpy(rs.m_userInfo.m_szName,ls.front().c_str());  ls.pop_front();
+            strcpy(rs.m_userInfo.m_feeling,ls.front().c_str());  ls.pop_front();
+            rs.m_userInfo.m_state = atoi(ls.front().c_str());
+        }
+        else
+            rs.m_nType = password_error;
+    }
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }

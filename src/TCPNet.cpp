@@ -116,7 +116,7 @@ void *TcpNet::Info_Recv(void *arg)
     int nPackSize = 0;
     char *pSzBuf = NULL;
     nRelReadNum = recv(clientfd,&nPackSize,sizeof(nPackSize),0);
-    if(nRelReadNum <= 0)
+    if(nRelReadNum < 0)
     {
         close(clientfd);
         return NULL;
