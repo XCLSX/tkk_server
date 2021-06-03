@@ -21,7 +21,7 @@ int TcpKernel::Open()
     m_tcp->SetpThis(m_tcp);
     pthread_mutex_init(&m_tcp->alock,NULL);
     pthread_mutex_init(&m_tcp->rlock,NULL);
-    if(!m_sql->ConnectMysql("localhost","root","liushuai0417","tkk"))
+    if(!m_sql->ConnectMysql("localhost","root","root","tkk"))
     {
         printf("Conncet Mysql Failed...\n");
         return FALSE;
@@ -127,18 +127,22 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
             rs.m_lResult = login_sucess;
             //获取自增的u_id
             bzero(szsql,sizeof(szsql));
+            ls.clear();
             snprintf(szsql,sizeof(szsql),"select user_id from t_user where user_account='%s';",rq->m_szUser);
             m_sql->SelectMysql(szsql,1,ls);
+            rs.m_userid =atoi(ls.front().c_str());
             //获取用户基本信息
             bzero(szsql,sizeof(szsql));
-            snprintf(szsql,sizeof(szsql),"select * from t_userInfo;");
+            snprintf(szsql,sizeof(szsql),"select * from t_userInfo where user_id = '%s';",ls.front().c_str());
+            ls.clear();
             m_sql->SelectMysql(szsql,5,ls);
             //初始化信息
-            rs.m_userid =atoi(ls.front().c_str());              ls.pop_front();
+            ls.pop_front();
             rs.m_userInfo.m_iconID = atoi(ls.front().c_str());  ls.pop_front();
             strcpy(rs.m_userInfo.m_szName,ls.front().c_str());  ls.pop_front();
             strcpy(rs.m_userInfo.m_feeling,ls.front().c_str());  ls.pop_front();
             rs.m_userInfo.m_state = atoi(ls.front().c_str());
+
         }
         else
             rs.m_lResult = password_error;
