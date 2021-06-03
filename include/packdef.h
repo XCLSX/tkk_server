@@ -58,8 +58,8 @@ typedef enum Net_PACK
     DEF_PACK_JOINROOM_RQ ,                      //加入房间请求
     DEF_PACK_JOINROOM_RS,
 
-    STRU_ROOM_MEMBER_RQ,                        //请求房间成员
-    STRU_ROOM_MEMBER_RS,
+    DEF_PACK_ROOM_MEMBER_RQ,                        //请求房间成员
+    DEF_PACK_ROOM_MEMBER_RS,
 
     DEF_PACK_ASKROOM_RQ,                        //刷新房间列表请求
     DEF_PACK_ASKROOM_RS,
@@ -251,7 +251,7 @@ typedef struct STRU_JOINROOM_RS
     {
         m_nType= DEF_PACK_JOINROOM_RS;
         m_lResult = 0;
-        memset(m_Room_member,sizeof(m_Room_member));
+        bzero(m_Room_member,sizeof(m_Room_member));
     }
     PackType m_nType;       //包类型
     int  m_lResult ;        //注册结果
@@ -263,7 +263,7 @@ typedef struct STRU_ROOM_MEMBER_RQ
 {
     STRU_ROOM_MEMBER_RQ()
     {
-        m_nType= STRU_ROOM_MEMBER_RQ;
+        m_nType= DEF_PACK_ROOM_MEMBER_RQ;
         m_userid = 0;
         m_RoomID = 0;
     }
@@ -278,7 +278,7 @@ typedef struct STRU_ROOM_MEMBER_RS
 {
     STRU_ROOM_MEMBER_RS()
     {
-        m_nType= STRU_ROOM_MEMBER_RS;
+        m_nType= DEF_PACK_ROOM_MEMBER_RS;
         memset(m_Room_member,0,sizeof(m_Room_member));
     }
     PackType m_nType;   //包类型
@@ -320,29 +320,13 @@ typedef struct STRU_ADD_FRIEND_RQ
     {
         m_nType = DEF_PACK_ADD_FRIEND_RQ;
         m_userID = 0;
-        memset(m_szUserName,0,MAX_SIZE);
         memset(m_szAddFriendName,0,MAX_SIZE);
     }
     PackType   m_nType;   //包类型
-    char m_szUserName[MAX_SIZE];            //自身用户名
+    int m_userID;            //自身用户名
     char m_szAddFriendName[MAX_SIZE];       //好友用户名
 
 }STRU_ADD_FRIEND_RQ;
-
-//添加好友回复
-typedef struct STRU_ADD_FRIEND_RS
-{
-    STRU_ADD_FRIEND_RS()
-    {
-        m_nType = DEF_PACK_ADD_FRIEND_RS;
-        m_result = 0;
-        memset(str_fi,0,sizeof(str_fi));
-    }
-    PackType   m_nType;   //包类型
-    int m_result;
-    STRU_FRIEND_INFO str_fi;
-
-}STRU_ADD_FRIEND_RS;
 
 //好友信息
 typedef struct STRU_FRIEND_INFO
@@ -363,6 +347,21 @@ typedef struct STRU_FRIEND_INFO
     char m_feeling[MAX_SIZE];
 
 }STRU_FRIEND_INFO;
+
+//添加好友回复
+typedef struct STRU_ADD_FRIEND_RS
+{
+    STRU_ADD_FRIEND_RS()
+    {
+        m_nType = DEF_PACK_ADD_FRIEND_RS;
+        m_result = 0;
+    }
+    PackType   m_nType;   //包类型
+    int m_result;
+    STRU_FRIEND_INFO str_fi;
+
+}STRU_ADD_FRIEND_RS;
+
 
 //聊天请求
 typedef struct STRU_CHAT_RQ
@@ -443,17 +442,17 @@ typedef struct UserInfo
 
 }UserInfo;
 
-typedef struct STRU_FORCE_OFFLINE
-{
-    STRU_FORCE_OFFLINE()
-    {
-        m_nType = DEF_PACK_FORCE_OFFLINE;
-        m_UserID = 0;
-    }
-    PackType   m_nType;   //包类型
-    int m_UserID;
+//typedef struct STRU_FORCE_OFFLINE
+//{
+//    STRU_FORCE_OFFLINE()
+//    {
+//        m_nType = DEF_PACK_FORCE_OFFLINE;
+//        m_UserID = 0;
+//    }
+//    PackType   m_nType;   //包类型
+//    int m_UserID;
 
-}STRU_FORCE_OFFLINE;
+//}STRU_FORCE_OFFLINE;
 
 
 #endif
