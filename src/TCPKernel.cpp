@@ -21,7 +21,7 @@ int TcpKernel::Open()
     m_tcp->SetpThis(m_tcp);
     pthread_mutex_init(&m_tcp->alock,NULL);
     pthread_mutex_init(&m_tcp->rlock,NULL);
-    if(  !m_sql->ConnectMysql("localhost","root","root","tkk")  )
+    if(!m_sql->ConnectMysql("localhost","root","liushuai0417","tkk"))
     {
         printf("Conncet Mysql Failed...\n");
         return FALSE;
@@ -118,13 +118,13 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
     m_sql->SelectMysql(szsql,1,ls);
     if(ls.size()==0)
     {
-        rs.m_nType =userid_no_exist;
+        rs.m_lResult =userid_no_exist;
     }
     else
     {
         if(strcmp(ls.front().c_str(),rq->m_szPassword)==0)
         {
-            rs.m_nType = login_sucess;
+            rs.m_lResult = login_sucess;
             //获取自增的u_id
             bzero(szsql,sizeof(szsql));
             snprintf(szsql,sizeof(szsql),"select user_id from t_user where user_account='%s';",rq->m_szUser);
@@ -141,7 +141,7 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
             rs.m_userInfo.m_state = atoi(ls.front().c_str());
         }
         else
-            rs.m_nType = password_error;
+            rs.m_lResult = password_error;
     }
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
