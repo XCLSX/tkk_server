@@ -11,3 +11,4 @@
 
 #create table t_room (room_id int unsigned auto_increment,room_name varchar(20) not null,,user4_id int unsigned,user5_id int unsigned,primary key(room_id));
 
+#alter table t_room add column room_creator_name varchar(20) not null;

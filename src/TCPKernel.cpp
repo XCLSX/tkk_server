@@ -153,6 +153,23 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
 
 void TcpKernel::AskRoomRq(int clientfd ,char* szbuf,int nlen)
 {
+    STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
+    STRU_ASKROOM_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"select room_id,room_name,room_creator_name from t_room;");
+    m_sql->SelectMysql(szsql,3,ls);
+    int i=0;
+    while(ls.size()>0)
+    {
+        rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
+        strcmp(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
+        strcmp(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
+        i++;
+        if(i==MAX_ROOMLIST)
+            break;
+    }
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 
 }
 
