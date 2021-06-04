@@ -28,6 +28,8 @@ public:
     void RegisterRq(int,char*,int);
     //登录
     void LoginRq(int,char*,int);
+    //请求房间列表
+    void AskRoomRq(int,char*,int);
 
  private:
     CMysql * m_sql;

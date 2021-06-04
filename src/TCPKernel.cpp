@@ -151,5 +151,10 @@ void TcpKernel::LoginRq(int clientfd ,char* szbuf,int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
 
+void TcpKernel::AskRoomRq(int clientfd ,char* szbuf,int nlen)
+{
+
+}
+
 
 

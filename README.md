@@ -11,3 +11,4 @@
 
 #alter table t_user add column user_account varchar(20) not null after user_id;
 
+#create table t_room (room_id int unsigned,room_name varchar(20) not null,user1_id int unsigned,user2_id int unsigned,user3_id int unsigned,user4_id int unsigned,user5_id int unsigned,primary key(room_id));

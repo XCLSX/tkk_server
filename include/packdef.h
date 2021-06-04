@@ -112,6 +112,7 @@ typedef enum Net_PACK
 
 #define MAX_PATH            (280 )
 #define MAX_SIZE            (60  )
+#define MAX_ROOMLIST        (25)
 #define DEF_HOBBY_COUNT     (8  )
 #define MAX_CONTENT_LEN     (4096 )
 #define _DEF_PORT (8000)
@@ -244,6 +245,42 @@ typedef struct STRU_CREATEROOM_RS
     int  m_RoomId;      //房间id
 
 }STRU_CREATEROOM_RS;
+
+//刷新房间列表请求
+typedef struct STRU_ASKROOM_RQ
+{
+    STRU_ASKROOM_RQ()
+    {
+        m_nType = DEF_PACK_ASKROOM_RQ;
+    }
+    PackType m_nType;
+
+}STRU_ASKROOM_RQ;
+
+    //房间信息
+    typedef struct RoomInfo
+    {
+        RoomInfo()
+        {
+            m_Roomid = 0;
+            bzero(sz_Roomname,MAX_SIZE);
+            bzero(sz_RoomCreator,MAX_SIZE);
+        }
+        int m_Roomid;
+        char sz_Roomname[MAX_SIZE];
+        char sz_RoomCreator[MAX_SIZE];
+    }RoomInfo;
+//刷新房间回复
+typedef struct STRU_ASKROOM_RS
+{
+    STRU_ASKROOM_RS()
+    {
+        m_nType = DEF_PACK_ASKROOM_RS;
+        memset(m_RoomList,0,sizeof(RoomInfo)*MAX_ROOMLIST);
+    }
+    PackType m_nType;
+    RoomInfo m_RoomList[MAX_ROOMLIST];
+}STRU_ASKROOM_RS;
 
 //加入房间请求
 typedef struct STRU_JOINROOM_RQ
