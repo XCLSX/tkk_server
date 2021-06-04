@@ -30,6 +30,8 @@ public:
     void LoginRq(int,char*,int);
     //请求房间列表
     void AskRoomRq(int,char*,int);
+    //创建房间
+    void CreateRoomRq(int,char*,int);
 
  private:
     CMysql * m_sql;

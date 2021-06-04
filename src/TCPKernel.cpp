@@ -10,9 +10,10 @@ static const ProtocolMap m_ProtocolMapEntries[] =
 {
     {DEF_PACK_REGISTER_RQ , &TcpKernel::RegisterRq},
     {DEF_PACK_LOGIN_RQ , &TcpKernel::LoginRq},
+    {DEF_PACK_CREATEROOM_RQ,&TcpKernel::CreateRoomRq},
+    {DEF_PACK_ASKROOM_RQ,&TcpKernel::AskRoomRq},
     {0,0}
 };
-#define RootPath   "/home/colin/Video/"
 
 int TcpKernel::Open()
 {
@@ -94,7 +95,7 @@ void TcpKernel::RegisterRq(int clientfd,char* szbuf,int nlen)
         m_sql->UpdataMysql(szsql);
         //默认值初始化个人信息
         bzero(szsql,sizeof(szsql));
-        snprintf(szsql,sizeof(szsql),"insert into t_userInfo values(null,1,'未命名',' 这个人很懒，没什么没什么想说的。',0);");
+        snprintf(szsql,sizeof(szsql),"insert into t_userInfo values(null,1,'未命名_%s',' 这个人很懒，没什么没什么想说的。',0);",rq->m_szUser);
         m_sql->UpdataMysql(szsql);
 
 
@@ -160,6 +161,10 @@ void TcpKernel::AskRoomRq(int clientfd ,char* szbuf,int nlen)
     snprintf(szsql,sizeof(szsql),"select room_id,room_name,room_creator_name from t_room;");
     m_sql->SelectMysql(szsql,3,ls);
     int i=0;
+    if(ls.size()>0)
+        rs.m_lResult = ask_room_success;
+    else
+        rs.m_lResult = ask_room_failed;
     while(ls.size()>0)
     {
         rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
@@ -171,6 +176,28 @@ void TcpKernel::AskRoomRq(int clientfd ,char* szbuf,int nlen)
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 
+}
+
+void TcpKernel::CreateRoomRq(int clientfd, char *szbuf, int nlen)
+{
+    STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
+    STRU_CREATEROOM_RS rs;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"insert into t_room values(null,'%s',%d,null,null,null,null,'%s');"
+             ,rq->m_RoomName,rq->m_userid,rq->m_RoomName);
+    m_sql->UpdataMysql(szsql);
+    list<string> ls;
+    bzero(szsql,sizeof(szsql));
+    snprintf(szsql,sizeof(szsql),"select room_id from t_room where user1_id = %d;",rq->m_userid);
+    m_sql->SelectMysql(szsql,1,ls);
+    if(ls.size()==0)
+        rs.m_lResult = create_failed;
+    else
+    {
+        rs.m_lResult = create_success;
+        rs.m_RoomId = atoi(ls.front().c_str());
+    }
+    m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
 
 

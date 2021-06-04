@@ -90,7 +90,7 @@ typedef enum Net_PACK
 #define user_online          3
 
 //创建房间结果
-#define room_is_exist        0
+#define create_failed        0
 #define create_success       1
 
 //加入房间结果
@@ -276,9 +276,11 @@ typedef struct STRU_ASKROOM_RS
     STRU_ASKROOM_RS()
     {
         m_nType = DEF_PACK_ASKROOM_RS;
+        m_lResult = 0;
         memset(m_RoomList,0,sizeof(RoomInfo)*MAX_ROOMLIST);
     }
     PackType m_nType;
+    int  m_lResult ;
     RoomInfo m_RoomList[MAX_ROOMLIST];
 }STRU_ASKROOM_RS;
 
@@ -308,7 +310,7 @@ typedef struct STRU_JOINROOM_RS
         bzero(m_Room_member,sizeof(m_Room_member));
     }
     PackType m_nType;       //包类型
-    int  m_lResult ;        //注册结果
+    int  m_lResult ;
     int m_Room_member[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
