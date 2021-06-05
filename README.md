@@ -14,3 +14,7 @@
 #alter table t_room add column room_creator_name varchar(20) not null;
 
 #alter table t_userInfo add unique(user_name);
+
+#create table t_friend(user_id int unsigned ,friend_id int unsigned,primary key(user_id,friend_id));
+
+#create table t_addfriend(user_id int unsigned , fri_rq_id int unsigned ,primary key(user_id,fri_rq_id));

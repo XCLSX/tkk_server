@@ -102,10 +102,10 @@ typedef enum Net_PACK
 #define ask_room_failed  0
 
 //添加好友结果
-#define no_this_user    0
-#define user_refused    1
-#define user_is_offline 2
-#define add_success     3
+#define no_this_user        0
+#define friend_is_exist     1
+#define add_wait            2
+#define add_success         3
 
 
 #define DEF_PACK_COUNT (100)

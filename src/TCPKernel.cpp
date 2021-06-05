@@ -200,5 +200,29 @@ void TcpKernel::CreateRoomRq(int clientfd, char *szbuf, int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
 
+void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
+{
+    STRU_ADD_FRIEND_RQ *rq = (STRU_ADD_FRIEND_RQ*)szbuf;
+    STRU_ADD_FRIEND_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+   //查询是否存在此用户
+    snprintf(szsql,sizeof(szsql),"select user_id from t_userInfo where user_name = '%s';",rq->m_szAddFriendName);
+    m_sql->SelectMysql(szsql,1,ls);
+    if(ls.size()==0)
+        rs.m_result = no_this_user;
+    //查询是否为好友
+//    bzero(szsql,sizeof())
+//    else if()
+//    {
+
+//    }
+//    {
+//        bzero(szsql,sizeof(szsql));
+//        snprintf(szsql,sizeof(szsql),"insert into t_addfriend values(%d,%d);",atoi(ls.front().c_str()),rq->m_userID);
+//    }
+    m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
+}
+
 
 
