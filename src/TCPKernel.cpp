@@ -168,8 +168,8 @@ void TcpKernel::AskRoomRq(int clientfd ,char* szbuf,int nlen)
     while(ls.size()>0)
     {
         rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
-        strcmp(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
-        strcmp(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
+        strcpy(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
+        strcpy(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
         i++;
         if(i==MAX_ROOMLIST)
             break;
