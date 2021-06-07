@@ -67,6 +67,9 @@ typedef enum Net_PACK
     DEF_PACK_ASKROOM_RQ,                        //刷新房间列表请求
     DEF_PACK_ASKROOM_RS,
 
+    DEF_PACK_CHECKOFFLINE_RQ,                   //查询离线数据请求
+    DEF_PACK_CHECKOFFLINE_RS,
+
     DEF_PACK_LEAVEROOM_RQ ,                     //离开房间请求
     DEF_PACK_LEAVEROOM_RS ,
 
@@ -549,7 +552,28 @@ typedef struct STRU_CHAT_RS
 
 }STRU_CHAT_RS;
 
+//查询离线数据请求
+typedef struct STRU_CHECK_OFFLINEMSG_RQ
+{
+    STRU_CHECK_OFFLINEMSG_RQ()
+    {
+        m_nType = DEF_PACK_CHECKOFFLINE_RQ;
+        m_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+}CHECK_OFFLINEMSG_RQ;
+
 //离线请求
+typedef struct STRU_CHECK_OFFLINEMSG_RS
+{
+    STRU_CHECK_OFFLINEMSG_RS()
+    {
+        m_nType = DEF_PACK_CHECKOFFLINE_RS;
+    }
+    PackType m_nType;
+}STRU_CHECK_OFFLINEMSG_RS;
+
 typedef struct STRU_OFFLINE_RQ
 {
     STRU_OFFLINE_RQ()

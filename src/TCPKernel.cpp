@@ -313,6 +313,22 @@ void TcpKernel::PostFriendRs(int clientfd, char *szbuf, int nlen)
         m_sql->UpdataMysql(szsql);
     }
 }
+
+void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
+{
+    //查询离线添加好友数据
+    STRU_CHECK_OFFLINEMSG_RQ *rq = (STRU_CHECK_OFFLINEMSG_RQ*)szbuf;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"select fri_rq_id from t_addfriend where user_id = %d;",rq->m_userid);
+    m_sql->SelectMysql(szsql,1,ls);
+    for(int i=0;i<ls.size();i++)
+    {
+        PostFriendRq(clientfd,atoi(ls.front().c_str()));
+        ls.pop_front();
+    }
+    //查询离线消息数据
+}
 //离线
 void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {

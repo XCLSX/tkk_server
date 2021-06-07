@@ -40,6 +40,8 @@ public:
     void PostFriendRq(int,int);
     //接受好友回复
     void PostFriendRs(int,char *,int);
+    //查询离线数据
+    void CheckOfflineMsg(int,char *,int);
     //离线
     void OffLine(int ,char *,int);
 
