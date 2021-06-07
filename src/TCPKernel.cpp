@@ -112,7 +112,7 @@ void TcpKernel::Register(int clientfd,char* szbuf,int nlen)
 //登录
 void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
 {
-    printf("clientfd:%d LoginRq\n", clientfd);
+    printf("Login\n");
 
     STRU_LOGIN_RQ * rq = (STRU_LOGIN_RQ *)szbuf;
     STRU_LOGIN_RS rs;
@@ -171,6 +171,8 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 {
+    printf("AskRoom\n");
+
     STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
     STRU_ASKROOM_RS rs;
     list<string> ls;
@@ -197,6 +199,8 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 //创建房间
 void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 {
+    printf("CreateRoom\n");
+
     STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
     STRU_CREATEROOM_RS rs;
     char szsql[_DEF_SQLIEN] = {0};
@@ -219,6 +223,7 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 //查找好友
 void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
 {
+    printf("SearchFriend\n");
     STRU_SEARCH_FRIEND_RQ *rq = (STRU_SEARCH_FRIEND_RQ*)szbuf;
     STRU_SEARCH_FRIEND_RS  rs;
     list<string> ls;
@@ -254,6 +259,8 @@ void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
 //添加好友
 void TcpKernel::Addfriend(int clientfd, char *szbuf, int nlen)
 {
+    printf("Addfriend\n");
+
     STRU_ADD_FRIEND_RQ *rq = (STRU_ADD_FRIEND_RQ*)szbuf;
     STRU_ADD_FRIEND_RS rs;
     list<string> ls;
@@ -280,6 +287,7 @@ void TcpKernel::Addfriend(int clientfd, char *szbuf, int nlen)
 //接受好友请求
 void TcpKernel::PostFriendRq(int clientfd, int user_id)
 {
+    printf("PostFriendRq\n");
     STRU_DEAL_FRIEND_RQ rq;
     char szsql[_DEF_SQLIEN] = {0};
     list<string> ls;
@@ -298,6 +306,8 @@ void TcpKernel::PostFriendRq(int clientfd, int user_id)
 //接受好友回复
 void TcpKernel::PostFriendRs(int clientfd, char *szbuf, int nlen)
 {
+    printf("PostFriendRs\n");
+
     STRU_DEAL_FRIEND_RS* rs =(STRU_DEAL_FRIEND_RS*)szbuf;
     char szsql[_DEF_SQLIEN] = {0};
     snprintf(szsql,sizeof(szsql),"delete from t_addfriend where user_id = %d and fri_rq_id = %d;"
@@ -317,6 +327,8 @@ void TcpKernel::PostFriendRs(int clientfd, char *szbuf, int nlen)
 
 void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
 {
+    printf("CheckOfflineMsg\n");
+
     //查询离线添加好友数据
     STRU_CHECK_OFFLINEMSG_RQ *rq = (STRU_CHECK_OFFLINEMSG_RQ*)szbuf;
     list<string> ls;
@@ -333,6 +345,8 @@ void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
 //离线
 void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {
+    printf("OffLine\n");
+
     STRU_OFFLINE_RQ *rq = (STRU_OFFLINE_RQ *)szbuf;
     char szsql[_DEF_SQLIEN] = {0};
     snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 0,sock_fd = -1  where user_id = %d; ",rq->m_userID);
