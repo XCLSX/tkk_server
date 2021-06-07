@@ -14,7 +14,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_ASKROOM_RQ,&TcpKernel::AskRoom},
     {DEF_PACK_OFFLINRE_RQ,&TcpKernel::OffLine},
     {DEF_PACK_ADD_FRIEND_RQ,&TcpKernel::Addfriend},
-    {DEF_PACK_SEARCH_ROOM_RQ,&TcpKernel::SearchFriend},
+    {DEF_PACK_SEARCH_FRIEND_RQ,&TcpKernel::SearchFriend},
     {DEF_PACK_DEAL_FRIEND_RS,&TcpKernel::PostFriendRs},
     {DEF_PACK_CHECKOFFLINE_RQ,&TcpKernel::CheckOfflineMsg},
     {0,0}
