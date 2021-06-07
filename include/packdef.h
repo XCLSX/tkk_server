@@ -76,6 +76,9 @@ typedef enum Net_PACK
     DEF_PACK_ADD_FRIEND_RQ,                     //添加好友请求
     DEF_PACK_ADD_FRIEND_RS,
 
+    DEF_PACK_DEAL_FRIEND_RQ,                    //处理好友请求
+    DEF_PACK_DEAL_FRIEND_RS,
+
     DEF_PACK_FRIEND_INFO,
 
     DEF_PACK_CHAT_RQ,                           //聊天请求
@@ -411,6 +414,7 @@ typedef struct STRU_LEAVEROOM_RS
             STRU_FRIEND_INFO()
             {
                 m_nType = DEF_PACK_FRIEND_INFO;
+                m_friend = 0;
                 m_iconID = 0;
                 m_state = 0;
 
@@ -418,6 +422,7 @@ typedef struct STRU_LEAVEROOM_RS
                 memset(m_feeling,0,MAX_SIZE);
             }
             PackType   m_nType;   //包类型
+            int m_friend;
             int m_iconID;
             int m_state;
             char m_szName[MAX_SIZE];
@@ -459,15 +464,15 @@ typedef struct STRU_ADD_FRIEND_RQ
     {
         m_nType = DEF_PACK_ADD_FRIEND_RQ;
         m_userID = 0;
+        m_friendID = 0;
         memset(m_szAddFriendName,0,MAX_SIZE);
     }
     PackType   m_nType;   //包类型
     int m_userID;            //自身用户名
+    int m_friendID;
     char m_szAddFriendName[MAX_SIZE];       //好友用户名
 
 }STRU_ADD_FRIEND_RQ;
-
-
 
 //添加好友回复
 typedef struct STRU_ADD_FRIEND_RS
@@ -483,7 +488,34 @@ typedef struct STRU_ADD_FRIEND_RS
 
 }STRU_ADD_FRIEND_RS;
 
+//接受好友请求
+typedef struct STRU_DEAL_FRIEND_RQ
+{
+    STRU_DEAL_FRIEND_RQ()
+    {
+        m_nType = DEF_PACK_DEAL_FRIEND_RQ;
+    }
+    PackType m_nType;
+    STRU_FRIEND_INFO m_friend_info;
 
+}STRU_DEAL_FRIEND_RQ;
+
+//接受好友回复
+typedef struct STRU_DEAL_FRIEND_RS
+{
+    STRU_DEAL_FRIEND_RS()
+    {
+        m_nType = DEF_PACK_DEAL_FRIEND_RS;
+        m_result = 0;
+        m_userid = 0;
+        m_friendid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+    int m_friendid;
+    int m_result;
+
+}STRU_DEAL_FRIEND_RS;
 //聊天请求
 typedef struct STRU_CHAT_RQ
 {

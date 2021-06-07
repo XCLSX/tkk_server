@@ -18,3 +18,6 @@
 #create table t_friend(user_id int unsigned ,friend_id int unsigned,primary key(user_id,friend_id));
 
 #create table t_addfriend(user_id int unsigned , fri_rq_id int unsigned ,primary key(user_id,fri_rq_id));
+
+#添加sockfd列
+# alter table t_userInfo add column sock_fd int ;

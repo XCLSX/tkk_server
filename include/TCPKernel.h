@@ -25,19 +25,23 @@ public:
     void DealData(int,char*,int);
 
     //注册
-    void RegisterRq(int,char*,int);
+    void Register(int,char*,int);
     //登录
-    void LoginRq(int,char*,int);
-    //请求房间列表
-    void AskRoomRq(int,char*,int);
+    void Login(int,char*,int);
+    //刷新房间列表
+    void AskRoom(int,char*,int);
     //创建房间
-    void CreateRoomRq(int,char*,int);
+    void CreateRoom(int,char*,int);
     //查找好友
-    void SearchFriendRq(int,char*,int);
+    void SearchFriend(int,char*,int);
     //添加好友
-    void AddfriendRq(int,char*,int);
+    void Addfriend(int,char*,int);
+    //接受好友申请
+    void PostFriendRq(int,int);
+    //接受好友回复
+    void PostFriendRs(int,char *,int);
     //离线
-    void OffLineRq(int ,char *,int);
+    void OffLine(int ,char *,int);
 
  private:
     CMysql * m_sql;
