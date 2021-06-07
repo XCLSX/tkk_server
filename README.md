@@ -21,3 +21,5 @@
 
 #添加sockfd列
 # alter table t_userInfo add column sock_fd int ;
+ alter table t_userInfo drop column sock_fd;
+
