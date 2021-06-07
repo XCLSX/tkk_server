@@ -32,8 +32,12 @@ public:
     void AskRoomRq(int,char*,int);
     //创建房间
     void CreateRoomRq(int,char*,int);
+    //查找好友
+    void SearchFriendRq(int,char*,int);
     //添加好友
     void AddfriendRq(int,char*,int);
+    //离线
+    void OffLineRq(int ,char *,int);
 
  private:
     CMysql * m_sql;
