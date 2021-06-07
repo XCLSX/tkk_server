@@ -100,7 +100,7 @@ void TcpKernel::Register(int clientfd,char* szbuf,int nlen)
         m_sql->UpdataMysql(szsql);
         //默认值初始化个人信息
         bzero(szsql,sizeof(szsql));
-        snprintf(szsql,sizeof(szsql),"insert into t_userInfo values(null,1,'未命名_%s',' 这个人很懒，没什么没什么想说的。',0,0);",rq->m_szUser);
+        snprintf(szsql,sizeof(szsql),"insert into t_userInfo values(null,1,'未命名_%s',' 这个人很懒，没什么没什么想说的。',0);",rq->m_szUser);
         m_sql->UpdataMysql(szsql);
 
 
@@ -153,7 +153,7 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
             bzero(szsql,sizeof(szsql));
             snprintf(szsql,sizeof(szsql),"select * from t_userInfo where user_id = %d;",user_id);
             ls.clear();
-            m_sql->SelectMysql(szsql,4,ls);
+            m_sql->SelectMysql(szsql,5,ls);
             //初始化信息
             ls.pop_front();
             rs.m_userInfo.m_iconID = atoi(ls.front().c_str());  ls.pop_front();
@@ -273,12 +273,13 @@ void TcpKernel::Addfriend(int clientfd, char *szbuf, int nlen)
         //用户离线
         bzero(szsql,sizeof(szsql));
         snprintf(szsql,sizeof(szsql),"insert into t_addfriend values(%d,%d);",rq->m_friendID,rq->m_userID);
-        rs.m_nType = add_wait;
+        rs.m_result = add_wait;
     }
     else
     {
         //用户在线 发送好友请求
         PostFriendRq(m_socketmap[rq->m_friendID],rq->m_userID);
+        return ;
 
     //    m_tcp->SendData(friend_fd, (char *),);
     }
