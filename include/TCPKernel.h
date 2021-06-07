@@ -48,6 +48,7 @@ public:
  private:
     CMysql * m_sql;
     TcpNet * m_tcp;
+    map<int,int> m_socketmap;
 };
 
 

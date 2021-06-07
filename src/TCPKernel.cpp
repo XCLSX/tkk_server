@@ -140,11 +140,11 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
             snprintf(szsql,sizeof(szsql),"select user_id from t_user where user_account='%s';",rq->m_szUser);
             m_sql->SelectMysql(szsql,1,ls);
             user_id = atoi(ls.front().c_str());
-
+            m_socketmap[user_id] = clientfd;
             //用户登录状态改为1 更新sockfd到数据库
             bzero(szsql,sizeof(szsql));
-            snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 1,sock_fd = %d , where user_id = %d;"
-                                         ,clientfd,user_id);
+            snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 1  where user_id = %d;"
+                                         ,user_id);
             m_sql->UpdataMysql(szsql);
 
 
@@ -221,10 +221,9 @@ void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
 {
     STRU_SEARCH_FRIEND_RQ *rq = (STRU_SEARCH_FRIEND_RQ*)szbuf;
     STRU_SEARCH_FRIEND_RS  rs;
-    int friend_id;
     list<string> ls;
     char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"select user_id,pic_id,user_name,felling,status from t_userInfo where user_name = '';",rq->sz_friendName);
+    snprintf(szsql,sizeof(szsql),"select user_id,pic_id,user_name,felling,status from t_userInfo where user_name = '%s';",rq->sz_friendName);
     m_sql->SelectMysql(szsql,5,ls);
     if(ls.size()==0)
     {
@@ -259,9 +258,9 @@ void TcpKernel::Addfriend(int clientfd, char *szbuf, int nlen)
     STRU_ADD_FRIEND_RS rs;
     list<string> ls;
     char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"select status,sock_fd from t_userInfo where user_name = '%s';"
+    snprintf(szsql,sizeof(szsql),"select status, from t_userInfo where user_name = '%s';"
              ,rq->m_szAddFriendName);
-    m_sql->SelectMysql(szsql,2,ls);
+    m_sql->SelectMysql(szsql,1,ls);
     if(ls.front().c_str()==0)
     {
         //用户离线
@@ -271,10 +270,8 @@ void TcpKernel::Addfriend(int clientfd, char *szbuf, int nlen)
     }
     else
     {
-        ls.pop_front();
-        int friend_fd = atoi(ls.front().c_str());
         //用户在线 发送好友请求
-        PostFriendRq(friend_fd,rq->m_userID);
+        PostFriendRq(m_socketmap[rq->m_friendID],rq->m_userID);
 
     //    m_tcp->SendData(friend_fd, (char *),);
     }
