@@ -342,6 +342,11 @@ void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
     }
     //查询离线消息数据
 }
+
+void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
+{
+
+}
 //离线
 void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {

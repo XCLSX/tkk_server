@@ -67,7 +67,7 @@ typedef enum Net_PACK
     DEF_PACK_ASKROOM_RQ,                        //刷新房间列表请求
     DEF_PACK_ASKROOM_RS,
 
-    DEF_PACK_CHECKOFFLINE_RQ,                   //查询离线数据请求
+    DEF_PACK_CHECKOFFLINE_RQ,                   //查询离线数据请求A
     DEF_PACK_CHECKOFFLINE_RS,
 
     DEF_PACK_LEAVEROOM_RQ ,                     //离开房间请求
@@ -81,6 +81,9 @@ typedef enum Net_PACK
 
     DEF_PACK_DEAL_FRIEND_RQ,                    //处理好友请求
     DEF_PACK_DEAL_FRIEND_RS,
+
+    DEF_ALTER_USERINFO_RQ,                      //修改用户信息请求
+    DEF_ALTER_USERINFO_RS,
 
     DEF_PACK_FRIEND_INFO,
 
@@ -126,6 +129,9 @@ typedef enum Net_PACK
 #define add_wait            1
 #define add_success         3
 
+//修改用户信息结果
+#define name_repeat      0      //修改失败名称重复
+#define alter_success    1
 
 #define DEF_PACK_COUNT (100)
 
@@ -519,6 +525,36 @@ typedef struct STRU_DEAL_FRIEND_RS
     int m_result;
 
 }STRU_DEAL_FRIEND_RS;
+
+//修改个人信息请求
+typedef struct STRU_ALTER_USERINFO_RQ
+{
+    STRU_ALTER_USERINFO_RQ()
+    {
+        m_nType = DEF_PACK_DEAL_FRIEND_RQ;
+        m_iconid = 0;
+        memset(sz_userName,0,MAX_SIZE);
+        memset(sz_felling,0,MAX_SIZE);
+    }
+    PackType m_nType;
+    int m_iconid;
+    char sz_userName[MAX_SIZE];
+    char sz_felling[MAX_SIZE];
+
+}STRU_ALTER_USERINFO_RQ;
+
+//修改个人信息请求
+typedef struct STRU_ALTER_USERINFO_RS
+{
+    STRU_ALTER_USERINFO_RS()
+    {
+        m_nType = DEF_PACK_DEAL_FRIEND_RS;
+        m_result = 0;
+    }
+    PackType m_nType;
+    int m_result;
+}STRU_ALTER_USERINFO_RS;
+
 //聊天请求
 typedef struct STRU_CHAT_RQ
 {

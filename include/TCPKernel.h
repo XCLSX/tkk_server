@@ -42,6 +42,8 @@ public:
     void PostFriendRs(int,char *,int);
     //查询离线数据
     void CheckOfflineMsg(int,char *,int);
+    //修改用户信息
+    void AlterUserInfo(int,char*,int);
     //离线
     void OffLine(int ,char *,int);
 
