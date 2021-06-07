@@ -532,18 +532,20 @@ typedef struct STRU_ALTER_USERINFO_RQ
     STRU_ALTER_USERINFO_RQ()
     {
         m_nType = DEF_PACK_DEAL_FRIEND_RQ;
+        user_id = 0;
         m_iconid = 0;
         memset(sz_userName,0,MAX_SIZE);
         memset(sz_felling,0,MAX_SIZE);
     }
     PackType m_nType;
+    int user_id;
     int m_iconid;
     char sz_userName[MAX_SIZE];
     char sz_felling[MAX_SIZE];
 
 }STRU_ALTER_USERINFO_RQ;
 
-//修改个人信息请求
+//修改个人信息回复
 typedef struct STRU_ALTER_USERINFO_RS
 {
     STRU_ALTER_USERINFO_RS()

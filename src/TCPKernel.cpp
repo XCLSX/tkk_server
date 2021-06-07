@@ -345,6 +345,24 @@ void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
 
 void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
 {
+    STRU_ALTER_USERINFO_RQ *rq = (STRU_ALTER_USERINFO_RQ*)szbuf;
+    STRU_ALTER_USERINFO_RS rs;
+    char szsql[_DEF_SQLIEN] = {0};
+    list<string> ls;
+    snprintf(szsql,sizeof(szsql),"select user_name from t_userInfo where user_name = '%s';",rq->sz_userName);
+    m_sql->SelectMysql(szsql,1,ls);
+    if(ls.size()==0)
+    {
+        rs.m_result = alter_success;
+        bzero(szsql,sizeof(szsql));
+        snprintf(szsql,sizeof(szsql),"update t_userInfo set pic_id = %d,user_name = '%s',felling = '%s' where user_id = %d;"
+                 ,rq->m_iconid,rq->sz_userName,rq->sz_felling,rq->user_id);
+        m_sql->UpdataMysql(szsql);
+    }
+    else
+        rs.m_result = name_repeat;
+
+    m_tcp->SendData(clientfd,(char *)&rq,sizeof(rq));
 
 }
 //离线
