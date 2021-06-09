@@ -15,7 +15,22 @@ typedef struct
     PFUN m_pfun;
 } ProtocolMap;
 
-
+typedef struct m_UserInfo
+{
+    m_UserInfo()
+    {
+        sockfd = 0;
+        icon_id = 0;
+        memset(m_szName,0,MAX_SIZE);
+        memset(m_szFelling,0,MAX_SIZE);
+        status = 0;
+    }
+    int sockfd;
+    int icon_id;
+    char m_szName[MAX_SIZE];
+    char m_szFelling[MAX_SIZE];
+    int status;
+}m_UserInfo;
 
 class TcpKernel:public IKernel
 {
@@ -34,12 +49,15 @@ public:
     void CreateRoom(int,char*,int);
     //查找好友
     void SearchFriend(int,char*,int);
-    //添加好友
-    void Addfriend(int,char*,int);
-    //接受好友申请
-    void PostFriendRq(int,int);
-    //接受好友回复
-    void PostFriendRs(int,char *,int);
+    //添加好友请求
+    void AddfriendRq(int,char*,int);
+    //添加好友回复
+    void AddfriendRs(int,char*,int);
+
+//    //接受好友申请
+//    void PostFriendRq(int,int);
+//    //接受好友回复
+//    void PostFriendRs(int,char *,int);
     //查询离线数据
     void CheckOfflineMsg(int,char *,int);
     //修改用户信息
@@ -50,7 +68,7 @@ public:
  private:
     CMysql * m_sql;
     TcpNet * m_tcp;
-    map<int,int> m_socketmap;
+    map<int,m_UserInfo*> m_map;
 };
 
 
