@@ -17,7 +17,6 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_ADD_FRIEND_RS,&TcpKernel::AddfriendRs},
     {DEF_PACK_SEARCH_FRIEND_RQ,&TcpKernel::SearchFriend},
     {DEF_ALTER_USERINFO_RQ,&TcpKernel::AlterUserInfo},
-    {DEF_PACK_CHECKOFFLINE_RQ,&TcpKernel::CheckOfflineMsg},
     {0,0}
 };
 
@@ -102,7 +101,11 @@ void TcpKernel::Register(int clientfd,char* szbuf,int nlen)
     {   //插入账户密码邮箱-> t_user
         bzero(szsql,sizeof(szsql));
         snprintf(szsql,sizeof(szsql),"insert into t_user values (null,'%s','%s','%s');",rq->m_szUser,rq->m_szEmall,rq->m_szPassword);
-        m_sql->UpdataMysql(szsql);
+        if(!m_sql->UpdataMysql(szsql))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
         //默认值初始化个人信息
         bzero(szsql,sizeof(szsql));
         sprintf(szsql,"select user_id from t_user where user_account = '%s';",rq->m_szUser);
@@ -154,7 +157,7 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
         rs.m_lResult = login_sucess;
         //查询用户基本信息 并将登录状态置为1
         bzero(szsql,sizeof(szsql));     ls.clear();
-        sprintf(szsql,"select pic_id,user_name,felling where user_id = %d;",user_id);
+        sprintf(szsql,"select pic_id,user_name,felling from t_userInfo where user_id = %d;",user_id);
         if(!m_sql->SelectMysql(szsql,3,ls))
         {
             printf("sql error:%s\n",szsql);
@@ -187,6 +190,13 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
            rs.m_lResult = password_error;
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
+    //获取离线信息
+   CheckOfflineMsg(clientfd,user_id);
+}
+
+void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
+{
+
 }
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
@@ -327,14 +337,15 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
     STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS*)szbuf;
     if(rs->m_result == add_success)
     {
+
         char szsql[_DEF_SQLIEN] = {0};
-        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_userId,rs->m_friend_Id);
+        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_userId,rs->m_friInfo.m_friend);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);
             return ;
         }   bzero(szsql,sizeof(szsql));
-        sprintf(szsql,"insert into t_friend values(%d,%d);");
+        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_friInfo.m_friend,rs->m_userId);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);
@@ -347,20 +358,41 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
     }
 }
 
-void TcpKernel::CheckOfflineMsg(int clientfd, char *szbuf, int nlen)
+void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 {
     printf("CheckOfflineMsg\n");
 
     //查询离线添加好友数据
-    STRU_CHECK_OFFLINEMSG_RQ *rq = (STRU_CHECK_OFFLINEMSG_RQ*)szbuf;
+
     list<string> ls;
+    list<string> name_ls;
     char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"select fri_rq_id from t_addfriend where user_id = %d;",rq->m_userid);
+    snprintf(szsql,sizeof(szsql),"select fri_rq_id from t_addfriend where user_id = %d;",user_id);
     m_sql->SelectMysql(szsql,1,ls);
     for(int i=0;i<ls.size();i++)
     {
-        //PostFriendRq(clientfd,atoi(ls.front().c_str()));
-        ls.pop_front();
+        STRU_ADD_FRIEND_RQ add_rq;
+        add_rq.m_userID = atoi(ls.front().c_str());     ls.pop_front();
+        add_rq.m_friendID = user_id;
+
+        bzero(szsql,sizeof(szsql));
+        sprintf(szsql,"select user_name from t_userInfo where user_id = %d;",add_rq.m_userID);
+        if(!m_sql->SelectMysql(szsql,1,name_ls))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
+
+        strcpy(add_rq.m_szAddFriendName,name_ls.front().c_str()); name_ls.pop_front();
+        AddfriendRq(clientfd,(char *)&add_rq,sizeof(add_rq));
+        bzero(szsql,sizeof(szsql));
+        sprintf(szsql,"delete from t_addfriend where fri_rq_id = %d;",add_rq.m_userID);
+        if(!m_sql->UpdataMysql(szsql))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
+
     }
     //查询离线消息数据
 }
@@ -392,10 +424,10 @@ void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {
     printf("OffLine\n");
 
-    STRU_OFFLINE_RQ *rq = (STRU_OFFLINE_RQ *)szbuf;
-    char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 0,sock_fd = -1  where user_id = %d; ",rq->m_userID);
-    m_sql->UpdataMysql(szsql);
+//    STRU_OFFLINE_RQ *rq = (STRU_OFFLINE_RQ *)szbuf;
+//    char szsql[_DEF_SQLIEN] = {0};
+//    snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 0,sock_fd = -1  where user_id = %d; ",rq->m_userID);
+//    m_sql->UpdataMysql(szsql);
 }
 
 

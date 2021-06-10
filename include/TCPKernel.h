@@ -43,6 +43,8 @@ public:
     void Register(int,char*,int);
     //登录
     void Login(int,char*,int);
+    //获取好友列表
+    void GetFriList(int,char *,int);
     //刷新房间列表
     void AskRoom(int,char*,int);
     //创建房间
@@ -53,13 +55,8 @@ public:
     void AddfriendRq(int,char*,int);
     //添加好友回复
     void AddfriendRs(int,char*,int);
-
-//    //接受好友申请
-//    void PostFriendRq(int,int);
-//    //接受好友回复
-//    void PostFriendRs(int,char *,int);
     //查询离线数据
-    void CheckOfflineMsg(int,char *,int);
+    void CheckOfflineMsg(int,int);
     //修改用户信息
     void AlterUserInfo(int,char*,int);
     //离线

@@ -52,6 +52,9 @@ typedef enum Net_PACK
     DEF_PACK_LOGIN_RQ,                          //登录请求
     DEF_PACK_LOGIN_RS,
 
+    DEF_PACK_ASKFRILIST_RQ,                     //获取好友列表请求
+    DEF_PACK_ASKFRILIST_RS,
+
     DEF_PACK_CREATEROOM_RQ,                     //创建房间请求
     DEF_PACK_CREATEROOM_RS,
 
@@ -100,6 +103,10 @@ typedef enum Net_PACK
 #define password_error       1
 #define login_sucess         2
 #define user_online          3
+
+//查看好友列表结果
+#define aks_failed           0
+#define ask_success          1
 
 //创建房间结果
 #define create_failed        0
@@ -232,6 +239,191 @@ typedef struct STRU_LOGIN_RS
 
 }STRU_LOGIN_RS;
 
+        //好友信息
+        typedef struct STRU_FRIEND_INFO
+        {
+            STRU_FRIEND_INFO()
+            {
+                m_nType = DEF_PACK_FRIEND_INFO;
+                m_friend = 0;
+                m_iconID = 0;
+                m_state = 0;
+
+                memset(m_szName,0,MAX_SIZE);
+                memset(m_feeling,0,MAX_SIZE);
+            }
+            PackType   m_nType;   //包类型
+            int m_friend;
+            int m_iconID;
+            int m_state;
+            char m_szName[MAX_SIZE];
+            char m_feeling[MAX_SIZE];
+
+        }STRU_FRIEND_INFO;
+
+//获取好友列表请求
+typedef struct STRU_GETFRILIST_RQ
+{
+    STRU_GETFRILIST_RQ()
+    {
+        m_nType = DEF_PACK_ASKFRILIST_RQ;
+        m_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+}STRU_GETFRILIST_RQ;
+
+//获取好友列表回复
+typedef struct STRU_GETFRILIST_RS
+{
+    STRU_GETFRILIST_RS()
+    {
+        m_nType = DEF_PACK_ASKFRILIST_RS;
+        m_lResult = 0;
+    }
+    PackType m_nType;
+    int m_lResult;
+    STRU_FRIEND_INFO m_friArr[MAX_SIZE];    //最后一个好友id为-1
+
+}STRU_GETFRILIST_RS;
+
+
+
+//查找好友请求
+typedef struct STRU_SEARCH_FRIEND_RQ
+{
+    STRU_SEARCH_FRIEND_RQ()
+    {
+        m_nType = DEF_PACK_SEARCH_FRIEND_RQ;
+        m_userid = 0;
+        memset(sz_friendName,0,sizeof(sz_friendName));
+    }
+    PackType m_nType;
+    int m_userid; //自身id
+    char sz_friendName[MAX_SIZE];
+}STRU_SEARCH_FRIEND_RQ;
+
+//查找好友回复
+typedef struct STRU_SEARCH_FRIEND_RS
+{
+    STRU_SEARCH_FRIEND_RS()
+    {
+        m_nType = DEF_PACK_SEARCH_FRIEND_RS;
+        m_result = 0;
+    }
+    PackType m_nType;
+    int m_result;
+    STRU_FRIEND_INFO m_friend_info;
+}STRU_SEARCH_FRIEND_RS;
+
+//添加好友请求
+typedef struct STRU_ADD_FRIEND_RQ
+{
+    STRU_ADD_FRIEND_RQ()
+    {
+        m_nType = DEF_PACK_ADD_FRIEND_RQ;
+        m_userID = 0;
+        m_friendID = 0;
+        memset(m_szAddFriendName,0,MAX_SIZE);
+    }
+    PackType   m_nType;   //包类型
+    int m_userID;            //自身用户名
+    int m_friendID;
+    char m_szAddFriendName[MAX_SIZE];       //好友用户名
+
+}STRU_ADD_FRIEND_RQ;
+
+//添加好友回复
+typedef struct STRU_ADD_FRIEND_RS
+{
+    STRU_ADD_FRIEND_RS()
+    {
+        m_nType = DEF_PACK_ADD_FRIEND_RS;
+        m_result = 0;
+        m_userId = 0;
+    }
+    PackType   m_nType;   //包类型
+    int m_result;
+    int m_userId;
+    STRU_FRIEND_INFO m_friInfo;
+}STRU_ADD_FRIEND_RS;
+
+
+//修改个人信息请求
+typedef struct STRU_ALTER_USERINFO_RQ
+{
+    STRU_ALTER_USERINFO_RQ()
+    {
+        m_nType = DEF_ALTER_USERINFO_RQ;
+        user_id = 0;
+        m_iconid = 0;
+        memset(sz_userName,0,MAX_SIZE);
+        memset(sz_felling,0,MAX_SIZE);
+    }
+    PackType m_nType;
+    int user_id;
+    int m_iconid;
+    char sz_userName[MAX_SIZE];
+    char sz_felling[MAX_SIZE];
+
+}STRU_ALTER_USERINFO_RQ;
+
+//修改个人信息回复
+typedef struct STRU_ALTER_USERINFO_RS
+{
+    STRU_ALTER_USERINFO_RS()
+    {
+        m_nType = DEF_ALTER_USERINFO_RS;
+        m_result = 0;
+    }
+    PackType m_nType;
+    int m_result;
+}STRU_ALTER_USERINFO_RS;
+
+//聊天请求
+typedef struct STRU_CHAT_RQ
+{
+    STRU_CHAT_RQ()
+    {
+        m_nType = DEF_PACK_CHAT_RQ;
+        m_userID = 0;
+        m_friendID = 0;
+        memset(m_ChatContent,0,MAX_CONTENT_LEN);
+    }
+    PackType   m_nType;   //包类型
+    char m_userID;
+    char m_friendID;
+    char m_ChatContent[MAX_CONTENT_LEN];
+
+}STRU_CHAT_RQ;
+
+//聊天回复
+typedef struct STRU_CHAT_RS
+{
+    STRU_CHAT_RS()
+    {
+        m_nType = DEF_PACK_CHAT_RS;
+        m_friendID = 0;
+        m_userID = 0;
+    }
+    PackType   m_nType;   //包类型
+    int m_userID;
+    int m_friendID;
+    int m_result;
+
+}STRU_CHAT_RS;
+
+//查询离线数据请求
+typedef struct STRU_CHECK_OFFLINEMSG_RQ
+{
+    STRU_CHECK_OFFLINEMSG_RQ()
+    {
+        m_nType = DEF_PACK_CHECKOFFLINE_RQ;
+        m_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+}CHECK_OFFLINEMSG_RQ;
 
 
 //创建房间请求
@@ -316,7 +508,7 @@ typedef struct STRU_SEARCH_ROOM_RQ
         m_nType = DEF_PACK_SEARCH_ROOM_RQ;
     }
     PackType m_nType;
-    
+
 }STRU_SEARCH_ROOM_RQ;
 
 
@@ -413,163 +605,7 @@ typedef struct STRU_LEAVEROOM_RS
 }STRU_LEAVEROOM_RS;
 
 
-        //好友信息
-        typedef struct STRU_FRIEND_INFO
-        {
-            STRU_FRIEND_INFO()
-            {
-                m_nType = DEF_PACK_FRIEND_INFO;
-                m_friend = 0;
-                m_iconID = 0;
-                m_state = 0;
 
-                memset(m_szName,0,MAX_SIZE);
-                memset(m_feeling,0,MAX_SIZE);
-            }
-            PackType   m_nType;   //包类型
-            int m_friend;
-            int m_iconID;
-            int m_state;
-            char m_szName[MAX_SIZE];
-            char m_feeling[MAX_SIZE];
-
-        }STRU_FRIEND_INFO;
-
-//查找好友请求
-typedef struct STRU_SEARCH_FRIEND_RQ
-{
-    STRU_SEARCH_FRIEND_RQ()
-    {
-        m_nType = DEF_PACK_SEARCH_FRIEND_RQ;
-        m_userid = 0;
-        memset(sz_friendName,0,sizeof(sz_friendName));
-    }
-    PackType m_nType;
-    int m_userid; //自身id
-    char sz_friendName[MAX_SIZE];
-}STRU_SEARCH_FRIEND_RQ;
-
-//查找好友回复
-typedef struct STRU_SEARCH_FRIEND_RS
-{
-    STRU_SEARCH_FRIEND_RS()
-    {
-        m_nType = DEF_PACK_SEARCH_FRIEND_RS;
-        m_result = 0;
-    }
-    PackType m_nType;
-    int m_result;
-    STRU_FRIEND_INFO m_friend_info;
-}STRU_SEARCH_FRIEND_RS;
-
-//添加好友请求
-typedef struct STRU_ADD_FRIEND_RQ
-{
-    STRU_ADD_FRIEND_RQ()
-    {
-        m_nType = DEF_PACK_ADD_FRIEND_RQ;
-        m_userID = 0;
-        m_friendID = 0;
-        memset(m_szAddFriendName,0,MAX_SIZE);
-    }
-    PackType   m_nType;   //包类型
-    int m_userID;            //自身用户名
-    int m_friendID;
-    char m_szAddFriendName[MAX_SIZE];       //好友用户名
-
-}STRU_ADD_FRIEND_RQ;
-
-//添加好友回复
-typedef struct STRU_ADD_FRIEND_RS
-{
-    STRU_ADD_FRIEND_RS()
-    {
-        m_nType = DEF_PACK_ADD_FRIEND_RS;
-        m_result = 0;
-        m_userId = 0;
-        m_friend_Id = 0;
-    }
-    PackType   m_nType;   //包类型
-    int m_result;
-    int m_userId;
-    int m_friend_Id;
-}STRU_ADD_FRIEND_RS;
-
-//修改个人信息请求
-typedef struct STRU_ALTER_USERINFO_RQ
-{
-    STRU_ALTER_USERINFO_RQ()
-    {
-        m_nType = DEF_ALTER_USERINFO_RQ;
-        user_id = 0;
-        m_iconid = 0;
-        memset(sz_userName,0,MAX_SIZE);
-        memset(sz_felling,0,MAX_SIZE);
-    }
-    PackType m_nType;
-    int user_id;
-    int m_iconid;
-    char sz_userName[MAX_SIZE];
-    char sz_felling[MAX_SIZE];
-
-}STRU_ALTER_USERINFO_RQ;
-
-//修改个人信息回复
-typedef struct STRU_ALTER_USERINFO_RS
-{
-    STRU_ALTER_USERINFO_RS()
-    {
-        m_nType = DEF_ALTER_USERINFO_RS;
-        m_result = 0;
-    }
-    PackType m_nType;
-    int m_result;
-}STRU_ALTER_USERINFO_RS;
-
-//聊天请求
-typedef struct STRU_CHAT_RQ
-{
-    STRU_CHAT_RQ()
-    {
-        m_nType = DEF_PACK_CHAT_RQ;
-        m_userID = 0;
-        m_friendID = 0;
-        memset(m_ChatContent,0,MAX_CONTENT_LEN);
-    }
-    PackType   m_nType;   //包类型
-    char m_userID;
-    char m_friendID;
-    char m_ChatContent[MAX_CONTENT_LEN];
-
-}STRU_CHAT_RQ;
-
-//聊天回复
-typedef struct STRU_CHAT_RS
-{
-    STRU_CHAT_RS()
-    {
-        m_nType = DEF_PACK_CHAT_RS;
-        m_friendID = 0;
-        m_userID = 0;
-    }
-    PackType   m_nType;   //包类型
-    int m_userID;
-    int m_friendID;
-    int m_result;
-
-}STRU_CHAT_RS;
-
-//查询离线数据请求
-typedef struct STRU_CHECK_OFFLINEMSG_RQ
-{
-    STRU_CHECK_OFFLINEMSG_RQ()
-    {
-        m_nType = DEF_PACK_CHECKOFFLINE_RQ;
-        m_userid = 0;
-    }
-    PackType m_nType;
-    int m_userid;
-}CHECK_OFFLINEMSG_RQ;
 
 //离线请求
 typedef struct STRU_CHECK_OFFLINEMSG_RS
