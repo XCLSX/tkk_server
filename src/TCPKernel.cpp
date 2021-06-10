@@ -17,6 +17,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_ADD_FRIEND_RS,&TcpKernel::AddfriendRs},
     {DEF_PACK_SEARCH_FRIEND_RQ,&TcpKernel::SearchFriend},
     {DEF_ALTER_USERINFO_RQ,&TcpKernel::AlterUserInfo},
+    {DEF_PACK_GETFRIENDLIST_RQ,&TcpKernel::GetFriList},
     {0,0}
 };
 
@@ -180,18 +181,17 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
         strcpy(userInfo->m_szFelling,ls.front().c_str());
         m_map[user_id] = userInfo;
         //完善包
-        rs.m_userid = user_id;
-        rs.m_userInfo.m_state = 1;
-        rs.m_userInfo.m_iconID = userInfo->icon_id;
+        rs.m_userInfo.m_userid = user_id;
+        rs.m_userInfo.status = 1;
+        rs.m_userInfo.m_iconid = userInfo->icon_id;
         strcpy(rs.m_userInfo.m_szName,userInfo->m_szName);
-        strcpy(rs.m_userInfo.m_feeling,userInfo->m_szFelling);
+        strcpy(rs.m_userInfo.m_szFelling,userInfo->m_szFelling);
     }
     else
            rs.m_lResult = password_error;
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
     //获取离线信息
-   CheckOfflineMsg(clientfd,user_id);
 }
 
 void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
@@ -206,8 +206,21 @@ void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 //        printf("sql error:%s\n",szsql);
 //        return ;
 //    }
-//    bzero(szsql,sizeof(szsql));
-//    while()
+//    int i = 0;
+//    list<string> userInfols;
+
+//    while(ls.size()!=0)
+//    {
+//        bzero(szsql,sizeof(szsql));
+//        sprintf(szsql,"select * from t_userInfo where user_id = %d;",atoi(ls.front().c_str()));
+//        ls.pop_front();
+//        if(!m_sql->SelectMysql(szsql,5,userInfols))
+//        {
+//            printf("sql error:%s\n",szsql);
+//            return ;
+//        }
+//        rs.m_friArr[i].
+//    }
 }
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
@@ -295,16 +308,16 @@ void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
         return ;
 
     }
-    rs.m_friend_info.m_friend = atoi(ls.front().c_str());   ls.pop_front();
-    rs.m_friend_info.m_iconID = atoi(ls.front().c_str());   ls.pop_front();
-    strcpy(rs.m_friend_info.m_szName,ls.front().c_str());   ls.pop_front();
-    strcpy(rs.m_friend_info.m_feeling,ls.front().c_str());  ls.pop_front();
-    rs.m_friend_info.m_state = atoi(ls.front().c_str());    ls.clear();
+    rs.m_friInfo.m_userid = atoi(ls.front().c_str());   ls.pop_front();
+    rs.m_friInfo.m_iconid = atoi(ls.front().c_str());   ls.pop_front();
+    strcpy(rs.m_friInfo.m_szName,ls.front().c_str());   ls.pop_front();
+    strcpy(rs.m_friInfo.m_szFelling,ls.front().c_str());  ls.pop_front();
+    rs.m_friInfo.status = atoi(ls.front().c_str());    ls.clear();
 
     //判断是否已为好友
     bzero(szsql,sizeof(szsql));
     snprintf(szsql,sizeof(szsql),"select user_id from t_friend where user_id = %d and friend_id = %d;"
-             ,rq->m_userid,rs.m_friend_info.m_friend);
+             ,rq->m_userid,rs.m_friInfo.m_userid);
     if(!m_sql->SelectMysql(szsql,1,ls))
     {
         printf("sql error:%s\n",szsql);
@@ -326,15 +339,15 @@ void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
 
     STRU_ADD_FRIEND_RQ *rq = (STRU_ADD_FRIEND_RQ*)szbuf;
     //用户在线
-    if(m_map.find(rq->m_friendID)!=m_map.end())
+    if(m_map.find(rq->m_friInfo.m_userid)!=m_map.end())
     {
-        m_tcp->SendData(m_map[rq->m_friendID]->sockfd,szbuf,nlen);
+        m_tcp->SendData(m_map[rq->m_friInfo.m_userid]->sockfd,szbuf,nlen);
     }
     else
     {
         list<string> ls;
         char szsql[_DEF_SQLIEN] = {0};
-        sprintf(szsql,"insert into t_addfriend values(%d,%d);",rq->m_friendID,rq->m_userID);
+        sprintf(szsql,"insert into t_addfriend values(%d,%d);",rq->m_friInfo.m_userid,rq->m_userInfo.m_userid);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);
@@ -350,62 +363,62 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
     {
 
         char szsql[_DEF_SQLIEN] = {0};
-        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_userId,rs->m_friInfo.m_friend);
+        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_userInfo.m_userid,rs->m_friInfo.m_userid);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);
             return ;
         }   bzero(szsql,sizeof(szsql));
-        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_friInfo.m_friend,rs->m_userId);
+        sprintf(szsql,"insert into t_friend values(%d,%d);",rs->m_friInfo.m_userid,rs->m_userInfo.m_userid);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);
             return ;
         }
-        if(m_map.find(rs->m_userId)!=m_map.end())
+        if(m_map.find(rs->m_userInfo.m_userid)!=m_map.end())
         {
-            m_tcp->SendData(m_map[rs->m_userId]->sockfd,szbuf,nlen);
+            m_tcp->SendData(m_map[rs->m_userInfo.m_userid]->sockfd,szbuf,nlen);
         }
     }
 }
 
 void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 {
-    printf("CheckOfflineMsg\n");
+//    printf("CheckOfflineMsg\n");
 
-    //查询离线添加好友数据
+//    //查询离线添加好友数据
 
-    list<string> ls;
-    list<string> name_ls;
-    char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"select fri_rq_id from t_addfriend where user_id = %d;",user_id);
-    m_sql->SelectMysql(szsql,1,ls);
-    for(int i=0;i<ls.size();i++)
-    {
-        STRU_ADD_FRIEND_RQ add_rq;
-        add_rq.m_userID = atoi(ls.front().c_str());     ls.pop_front();
-        add_rq.m_friendID = user_id;
+//    list<string> ls;
+//    list<string> name_ls;
+//    char szsql[_DEF_SQLIEN] = {0};
+//    snprintf(szsql,sizeof(szsql),"select fri_rq_id from t_addfriend where user_id = %d;",user_id);
+//    m_sql->SelectMysql(szsql,1,ls);
+//    for(int i=0;i<ls.size();i++)
+//    {
+//        STRU_ADD_FRIEND_RQ add_rq;
+//        add_rq.m_userInfo.m_userid = atoi(ls.front().c_str());     ls.pop_front();
+//        add_rq.m_friInfo.m_userid = user_id;
 
-        bzero(szsql,sizeof(szsql));
-        sprintf(szsql,"select user_name from t_userInfo where user_id = %d;",add_rq.m_userID);
-        if(!m_sql->SelectMysql(szsql,1,name_ls))
-        {
-            printf("sql error:%s\n",szsql);
-            return ;
-        }
+//        bzero(szsql,sizeof(szsql));
+//        sprintf(szsql,"select user_name from t_userInfo where user_id = %d;",add_rq.m_userInfo.m_userid);
+//        if(!m_sql->SelectMysql(szsql,1,name_ls))
+//        {
+//            printf("sql error:%s\n",szsql);
+//            return ;
+//        }
 
-        strcpy(add_rq.m_szAddFriendName,name_ls.front().c_str()); name_ls.pop_front();
-        AddfriendRq(clientfd,(char *)&add_rq,sizeof(add_rq));
-        bzero(szsql,sizeof(szsql));
-        sprintf(szsql,"delete from t_addfriend where fri_rq_id = %d;",add_rq.m_userID);
-        if(!m_sql->UpdataMysql(szsql))
-        {
-            printf("sql error:%s\n",szsql);
-            return ;
-        }
+//        strcpy(add_rq.m_szAddFriendName,name_ls.front().c_str()); name_ls.pop_front();
+//        AddfriendRq(clientfd,(char *)&add_rq,sizeof(add_rq));
+//        bzero(szsql,sizeof(szsql));
+//        sprintf(szsql,"delete from t_addfriend where fri_rq_id = %d;",add_rq.m_userID);
+//        if(!m_sql->UpdataMysql(szsql))
+//        {
+//            printf("sql error:%s\n",szsql);
+//            return ;
+//        }
 
-    }
-    //查询离线消息数据
+//    }
+//    //查询离线消息数据
 }
 
 void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
@@ -414,20 +427,20 @@ void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
     STRU_ALTER_USERINFO_RS rs;
     char szsql[_DEF_SQLIEN] = {0};
     list<string> ls;
-    snprintf(szsql,sizeof(szsql),"select user_name from t_userInfo where user_name = '%s';",rq->sz_userName);
+    snprintf(szsql,sizeof(szsql),"select user_name from t_userInfo where user_name = '%s';",rq->m_userInfo.m_szName);
     m_sql->SelectMysql(szsql,1,ls);
     if(ls.size()==0)
     {
         rs.m_result = alter_success;
         bzero(szsql,sizeof(szsql));
         snprintf(szsql,sizeof(szsql),"update t_userInfo set pic_id = %d,user_name = '%s',felling = '%s' where user_id = %d;"
-                 ,rq->m_iconid,rq->sz_userName,rq->sz_felling,rq->user_id);
+                 ,rq->m_userInfo.m_iconid,rq->m_userInfo.m_szName,rq->m_userInfo.m_szFelling,rq->m_userInfo.m_userid);
         m_sql->UpdataMysql(szsql);
     }
     else
         rs.m_result = name_repeat;
 
-    m_tcp->SendData(clientfd,(char *)&rq,sizeof(rq));
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rq));
 
 }
 //离线
