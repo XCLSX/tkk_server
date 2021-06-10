@@ -196,7 +196,18 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
 
 void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 {
-
+//    STRU_GETFRILIST_RQ *rq = (STRU_GETFRILIST_RQ *)szbuf;
+//    STRU_GETFRILIST_RS rs;
+//    list<string> ls;
+//    char szsql[_DEF_SQLIEN] = {0};
+//    sprintf(szsql,"select fri_id from t_friend where user_id = %d;",rq->m_userid);
+//    if(!m_sql->SelectMysql(szsql,1,ls))
+//    {
+//        printf("sql error:%s\n",szsql);
+//        return ;
+//    }
+//    bzero(szsql,sizeof(szsql));
+//    while()
 }
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
