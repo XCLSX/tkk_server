@@ -216,7 +216,6 @@ void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
         rs.m_friArr[i].status = atoi(ls.front().c_str());            ls.pop_front();
         i++;
     }
-    rs.m_friArr[i].m_userid = -1;
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 }
 //刷新房间
