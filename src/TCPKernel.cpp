@@ -193,34 +193,31 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
     //获取离线信息
 }
-
+//获取好友列表
 void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 {
-//    STRU_GETFRILIST_RQ *rq = (STRU_GETFRILIST_RQ *)szbuf;
-//    STRU_GETFRILIST_RS rs;
-//    list<string> ls;
-//    char szsql[_DEF_SQLIEN] = {0};
-//    sprintf(szsql,"select fri_id from t_friend where user_id = %d;",rq->m_userid);
-//    if(!m_sql->SelectMysql(szsql,1,ls))
-//    {
-//        printf("sql error:%s\n",szsql);
-//        return ;
-//    }
-//    int i = 0;
-//    list<string> userInfols;
-
-//    while(ls.size()!=0)
-//    {
-//        bzero(szsql,sizeof(szsql));
-//        sprintf(szsql,"select * from t_userInfo where user_id = %d;",atoi(ls.front().c_str()));
-//        ls.pop_front();
-//        if(!m_sql->SelectMysql(szsql,5,userInfols))
-//        {
-//            printf("sql error:%s\n",szsql);
-//            return ;
-//        }
-//        rs.m_friArr[i].
-//    }
+    STRU_GETFRILIST_RQ *rq = (STRU_GETFRILIST_RQ *)szbuf;
+    STRU_GETFRILIST_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    sprintf(szsql,"select friend_id,pic_id,user_name,felling,status from v_friend where user_id = %d;",rq->m_userid);
+    if(!m_sql->SelectMysql(szsql,5,ls))
+    {
+        printf("sql error:%s\n",szsql);
+        return ;
+    }
+    int i=0;
+    while(ls.size()!=0)
+    {
+        rs.m_friArr[i].m_userid = atoi(ls.front().c_str());          ls.pop_front();
+        rs.m_friArr[i].m_iconid = atoi(ls.front().c_str());          ls.pop_front();
+        strcpy(rs.m_friArr[i].m_szName,ls.front().c_str());          ls.pop_front();
+        strcpy(rs.m_friArr[i].m_szFelling,ls.front().c_str());       ls.pop_front();
+        rs.m_friArr[i].status = atoi(ls.front().c_str());            ls.pop_front();
+        i++;
+    }
+    rs.m_friArr[i].m_userid = -1;
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 }
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
