@@ -381,76 +381,62 @@ typedef struct STRU_ALTER_USERINFO_RS
 //}STRU_CHAT_RS;
 
 
-//查询离线数据请求
-typedef struct STRU_CHECK_OFFLINEMSG_RQ
+//房间信息
+typedef struct RoomInfo
 {
-    STRU_CHECK_OFFLINEMSG_RQ()
+    RoomInfo()
     {
-        m_nType = DEF_PACK_CHECKOFFLINE_RQ;
-        m_userid = 0;
+        m_Roomid = 0;
+        memset(sz_Roomname,0,MAX_SIZE);
+        memset(sz_RoomCreator,0,MAX_SIZE);
     }
-    PackType m_nType;
-
-    int m_userid;
-}CHECK_OFFLINEMSG_RQ;
-
-
-            //房间信息
-            typedef struct RoomInfo
-            {
-                RoomInfo()
-                {
-                    m_Roomid = 0;
-                    memset(sz_Roomname,0,MAX_SIZE);
-                    memset(sz_RoomCreator,0,MAX_SIZE);
-                }
-                int m_Roomid;
-                char sz_Roomname[MAX_SIZE];
-                char sz_RoomCreator[MAX_SIZE];
-            }RoomInfo;
+    int m_Roomid;
+    char sz_Roomname[MAX_SIZE];
+    char sz_RoomCreator[MAX_SIZE];
+}RoomInfo;
 
 
 //创建房间请求
 typedef struct STRU_CREATEROOM_RQ
 {
-    STRU_CREATEROOM_RQ()
-    {
-        m_nType = DEF_PACK_CREATEROOM_RQ;
-        memset(m_szUser,0,MAX_SIZE);
-        memset(m_RoomName,0,MAX_SIZE);
-        m_userid = 0;
-    }
+STRU_CREATEROOM_RQ()
+{
+m_nType = DEF_PACK_CREATEROOM_RQ;
+memset(m_szUser,0,MAX_SIZE);
+memset(m_RoomName,0,MAX_SIZE);
+m_userid = 0;
+}
 
-    PackType m_nType;   //包类型
-        int     m_userid ;                    //房主id
-        char m_szUser[MAX_SIZE];
-        char m_RoomName[MAX_SIZE];            //房间名
+PackType m_nType;   //包类型
+int     m_userid ;                    //房主id
+char m_szUser[MAX_SIZE];
+char m_RoomName[MAX_SIZE];            //房间名
 }STRU_CREATEROOM_RQ;
 
 
 //创建房间回复
 typedef struct STRU_CREATEROOM_RS
 {
-    STRU_CREATEROOM_RS()
-    {
-        m_nType= DEF_PACK_CREATEROOM_RS;
-        m_lResult = 0;
-        m_RoomId = 0;
-    }
-    PackType m_nType;   //包类型
-    int  m_lResult ;    //注册结果
-    int  m_RoomId;      //房间id
+STRU_CREATEROOM_RS()
+{
+m_nType= DEF_PACK_CREATEROOM_RS;
+m_lResult = 0;
+m_RoomId = 0;
+}
+PackType m_nType;   //包类型
+int  m_lResult ;    //注册结果
+int  m_RoomId;      //房间id
 }STRU_CREATEROOM_RS;
 
 
 //刷新房间列表请求
 typedef struct STRU_ASKROOM_RQ
 {
-    STRU_ASKROOM_RQ()
-    {
-        m_nType = DEF_PACK_ASKROOM_RQ;
-    }
-    PackType m_nType;
+STRU_ASKROOM_RQ()
+{
+m_nType = DEF_PACK_ASKROOM_RQ;
+}
+PackType m_nType;
 
 }STRU_ASKROOM_RQ;
 
@@ -458,26 +444,26 @@ typedef struct STRU_ASKROOM_RQ
 //刷新房间回复
 typedef struct STRU_ASKROOM_RS
 {
-    STRU_ASKROOM_RS()
-    {
-        m_nType = DEF_PACK_ASKROOM_RS;
-        m_lResult = 0;
-        memset(m_RoomList,0,sizeof(RoomInfo)*MAX_ROOMLIST);
-    }
-    PackType m_nType;
-    int  m_lResult ;
-    RoomInfo m_RoomList[MAX_ROOMLIST];
+STRU_ASKROOM_RS()
+{
+m_nType = DEF_PACK_ASKROOM_RS;
+m_lResult = 0;
+memset(m_RoomList,0,sizeof(RoomInfo)*MAX_ROOMLIST);
+}
+PackType m_nType;
+int  m_lResult ;
+RoomInfo m_RoomList[MAX_ROOMLIST];
 }STRU_ASKROOM_RS;
 
 
 //查找房间请求
 typedef struct STRU_SEARCH_ROOM_RQ
 {
-    STRU_SEARCH_ROOM_RQ()
-    {
-        m_nType = DEF_PACK_SEARCH_ROOM_RQ;
-    }
-    PackType m_nType;
+STRU_SEARCH_ROOM_RQ()
+{
+m_nType = DEF_PACK_SEARCH_ROOM_RQ;
+}
+PackType m_nType;
 
 }STRU_SEARCH_ROOM_RQ;
 
@@ -492,99 +478,104 @@ typedef struct STRU_SEARCH_ROOM_RS
 //加入房间请求
 typedef struct STRU_JOINROOM_RQ
 {
-    STRU_JOINROOM_RQ()
-    {
-        m_nType = DEF_PACK_JOINROOM_RQ;
-        m_userId = 0;
-        m_RoomID = 0;
-    }
+STRU_JOINROOM_RQ()
+{
+m_nType = DEF_PACK_JOINROOM_RQ;
+m_userId = 0;
+m_RoomID = 0;
+}
 
-    PackType m_nType;   //包类型
-    int m_userId;
-    int m_RoomID;
+PackType m_nType;   //包类型
+int m_userId;
+int m_RoomID;
 
 }STRU_JOINROOM_RQ;
+
 
 //加入房间回复
 typedef struct STRU_JOINROOM_RS
 {
-    STRU_JOINROOM_RS()
-    {
-        m_nType= DEF_PACK_JOINROOM_RS;
-        m_lResult = 0;
-        memset(m_Room_member,0,sizeof(m_Room_member));
-    }
-    PackType m_nType;       //包类型
-    int  m_lResult ;
-    int m_Room_member[4];   //房间用户id
+STRU_JOINROOM_RS()
+{
+m_nType= DEF_PACK_JOINROOM_RS;
+m_lResult = 0;
+memset(m_Room_member,0,sizeof(m_Room_member));
+}
+PackType m_nType;       //包类型
+int  m_lResult ;
+int m_Room_member[4];   //房间用户id
 }STRU_JOINROOM_RS;
+
 
 //房间成员请求
 typedef struct STRU_ROOM_MEMBER_RQ
 {
-    STRU_ROOM_MEMBER_RQ()
-    {
-        m_nType= DEF_PACK_ROOM_MEMBER_RQ;
-        m_userid = 0;
-        m_RoomID = 0;
-    }
-    PackType m_nType;   //包类型
-    int m_userid;       //自己用户id
-    int m_RoomID;
+STRU_ROOM_MEMBER_RQ()
+{
+m_nType= DEF_PACK_ROOM_MEMBER_RQ;
+m_userid = 0;
+m_RoomID = 0;
+}
+PackType m_nType;   //包类型
+int m_userid;       //自己用户id
+int m_RoomID;
 
 }STRU_ROOM_MEMBER_RQ;
 
 //房间成员回复
 typedef struct STRU_ROOM_MEMBER_RS
 {
-    STRU_ROOM_MEMBER_RS()
-    {
-        m_nType= DEF_PACK_ROOM_MEMBER_RS;
-        memset(m_Room_member,0,sizeof(m_Room_member));
-    }
-    PackType m_nType;   //包类型
-        int m_Room_member[4];   //房间用户id
+STRU_ROOM_MEMBER_RS()
+{
+m_nType= DEF_PACK_ROOM_MEMBER_RS;
+memset(m_Room_member,0,sizeof(m_Room_member));
+}
+PackType m_nType;   //包类型
+int m_Room_member[4];   //房间用户id
 }STRU_ROOM_MEMBER_RS;
 
 //离开房间请求
 typedef struct STRU_LEAVEROOM_RQ
 {
-    STRU_LEAVEROOM_RQ()
-    {
-        m_nType = DEF_PACK_LEAVEROOM_RQ;
-        m_userId = 0;
-        m_RoomId = 0;
-    }
-    PackType   m_nType;   //包类型
-    int    m_userId;   //用户ID
-    int     m_RoomId;
+STRU_LEAVEROOM_RQ()
+{
+m_nType = DEF_PACK_LEAVEROOM_RQ;
+m_userId = 0;
+m_RoomId = 0;
+}
+PackType   m_nType;   //包类型
+int    m_userId;   //用户ID
+int     m_RoomId;
 }STRU_LEAVEROOM_RQ;
 
 //离开房间回复
 typedef struct STRU_LEAVEROOM_RS
 {
-    STRU_LEAVEROOM_RS()
-    {
-        m_nType = DEF_PACK_LEAVEROOM_RS;
-          m_lResult = 0 ;
+STRU_LEAVEROOM_RS()
+{
+m_nType = DEF_PACK_LEAVEROOM_RS;
+m_lResult = 0 ;
 
-    }
-    PackType   m_nType;   //包类型
-    int  m_lResult ;
+}
+PackType   m_nType;   //包类型
+int  m_lResult ;
 
 }STRU_LEAVEROOM_RS;
 
 
-//离线请求
-typedef struct STRU_CHECK_OFFLINEMSG_RS
+//查询离线数据请求
+typedef struct STRU_CHECK_OFFLINEMSG_RQ
 {
-    STRU_CHECK_OFFLINEMSG_RS()
+    STRU_CHECK_OFFLINEMSG_RQ()
     {
-        m_nType = DEF_PACK_CHECKOFFLINE_RS;
+        m_nType = DEF_PACK_CHECKOFFLINE_RQ;
     }
     PackType m_nType;
-}STRU_CHECK_OFFLINEMSG_RS;
+    STRU_USER_INFO m_userInfo;
+}STRU_CHECK_OFFLINEMSG_RQ;
 
+
+//离线请求
 typedef struct STRU_OFFLINE_RQ
 {
     STRU_OFFLINE_RQ()
@@ -597,38 +588,6 @@ typedef struct STRU_OFFLINE_RQ
 
 }STRU_OFFLINE_RQ;
 
-//离线回复
-typedef struct STRU_OFFLINE_RS
-{
-    STRU_OFFLINE_RS()
-    {
-        m_nType = DEF_PACK_OFFLINRE_RS;
-    }
-    PackType   m_nType;   //包类型
-    int m_userID;
-
-}STRU_OFFLINE_RS;
-
-typedef struct UserInfo
-{
-    UserInfo()
-    {
-         m_fd = 0;
-         m_id = 0;
-         m_iconID= 0;
-         m_state= 0;
-
-         memset(m_userName, 0 , MAX_SIZE);
-         memset(m_feeling, 0 , MAX_SIZE);
-    }
-    int  m_fd;
-    int  m_id;
-    int  m_iconID;
-    int  m_state;
-    char m_userName[MAX_SIZE];
-    char m_feeling[MAX_SIZE];
-
-}UserInfo;
 
 /*typedef struct STRU_FORCE_OFFLINE
 {

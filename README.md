@@ -23,3 +23,6 @@
 # alter table t_userInfo add column sock_fd int ;
  alter table t_userInfo drop column sock_fd;
 
+#创建视图
+create view v_friend as select t_friend.*,t_userInfo.pic_id,t_userInfo.user_name,t_userInfo.felling,t_userInfo.status from t_userInfo inner join t_friend on t_friend.friend_id = t_userInfo.user_id;
+

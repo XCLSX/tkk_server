@@ -330,8 +330,6 @@ void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 
 }
-
-
 //添加好友请求
 void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
 {
@@ -381,7 +379,7 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
         }
     }
 }
-
+//查询离线信息
 void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 {
 //    printf("CheckOfflineMsg\n");
@@ -420,7 +418,7 @@ void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 //    }
 //    //查询离线消息数据
 }
-
+//修改用户信息
 void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
 {
     STRU_ALTER_USERINFO_RQ *rq = (STRU_ALTER_USERINFO_RQ*)szbuf;
