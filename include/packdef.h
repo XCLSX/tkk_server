@@ -390,10 +390,12 @@ typedef struct RoomInfo
         m_Roomid = 0;
         memset(sz_Roomname,0,MAX_SIZE);
         memset(sz_RoomCreator,0,MAX_SIZE);
+        m_num = 0;
     }
     int m_Roomid;
     char sz_Roomname[MAX_SIZE];
     char sz_RoomCreator[MAX_SIZE];
+    int m_num;
 }RoomInfo;
 
 
@@ -494,9 +496,9 @@ typedef struct STRU_JOINROOM_RQ
         m_userId = 0;
         m_RoomID = 0;
     }
-PackType m_nType;   //包类型
-int m_userId;
-int m_RoomID;
+    PackType m_nType;   //包类型
+    int m_userId;
+    int m_RoomID;
 
 }STRU_JOINROOM_RQ;
 
