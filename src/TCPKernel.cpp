@@ -18,6 +18,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_SEARCH_FRIEND_RQ,&TcpKernel::SearchFriend},
     {DEF_ALTER_USERINFO_RQ,&TcpKernel::AlterUserInfo},
     {DEF_PACK_GETFRIENDLIST_RQ,&TcpKernel::GetFriList},
+    {DEF_PACK_SEARCH_ROOM_RQ,&TcpKernel::SearchRoom},
     {0,0}
 };
 
@@ -176,13 +177,13 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
             return ;
         }
         //缓存在线用户信息到本地
-        m_UserInfo *userInfo = new m_UserInfo;
+        STRU_USER_INFO_S *userInfo = new STRU_USER_INFO_S;
         userInfo->sockfd = clientfd;
         userInfo->status = 1;
         userInfo->icon_id = atoi(ls.front().c_str());             ls.pop_front();
         strcpy(userInfo->m_szName,ls.front().c_str());            ls.pop_front();
         strcpy(userInfo->m_szFelling,ls.front().c_str());
-        m_map[user_id] = userInfo;
+        map_IdtoUserInfo[user_id] = userInfo;
         //完善包
         rs.m_userInfo.m_userid = user_id;
         rs.m_userInfo.status = 1;
@@ -249,9 +250,9 @@ void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
 
     STRU_ADD_FRIEND_RQ *rq = (STRU_ADD_FRIEND_RQ*)szbuf;
     //用户在线
-    if(m_map.find(rq->m_friInfo.m_userid)!=m_map.end())
+    if(map_IdtoUserInfo.find(rq->m_friInfo.m_userid)!=map_IdtoUserInfo.end())
     {
-        m_tcp->SendData(m_map[rq->m_friInfo.m_userid]->sockfd,szbuf,nlen);
+        m_tcp->SendData(map_IdtoUserInfo[rq->m_friInfo.m_userid]->sockfd,szbuf,nlen);
     }
     else
     {
@@ -286,9 +287,9 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
             printf("sql error:%s\n",szsql);
             return ;
         }
-        if(m_map.find(rs->m_userInfo.m_userid)!=m_map.end())
+        if(map_IdtoUserInfo.find(rs->m_userInfo.m_userid)!=map_IdtoUserInfo.end())
         {
-            m_tcp->SendData(m_map[rs->m_userInfo.m_userid]->sockfd,szbuf,nlen);
+            m_tcp->SendData(map_IdtoUserInfo[rs->m_userInfo.m_userid]->sockfd,szbuf,nlen);
         }
     }
 }
@@ -324,7 +325,7 @@ void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 {
     printf("CreateRoom\n");
-
+    STRU_USERINROOM_ID * str_user_idarr = new STRU_USERINROOM_ID;
     STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
     STRU_CREATEROOM_RS rs;
     char szsql[_DEF_SQLIEN] = {0};
@@ -349,6 +350,8 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     {
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
+        map_IdtoUserInRoomid[rs.m_RoomId] = str_user_idarr;
+        str_user_idarr->idarr[str_user_idarr->num++] = rq->m_userid;
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
@@ -389,6 +392,8 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 //查找房间
 void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
 {
+    printf("SearchRoom\n");
+
     STRU_SEARCH_ROOM_RQ *rq = (STRU_SEARCH_ROOM_RQ *)szbuf;
     STRU_SEARCH_ROOM_RS rs;
     list<string> ls;

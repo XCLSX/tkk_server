@@ -15,9 +15,9 @@ typedef struct
     PFUN m_pfun;
 } ProtocolMap;
 
-typedef struct m_UserInfo
+typedef struct STRU_USER_INFO_S
 {
-    m_UserInfo()
+    STRU_USER_INFO_S()
     {
         sockfd = 0;
         icon_id = 0;
@@ -30,8 +30,19 @@ typedef struct m_UserInfo
     char m_szName[MAX_SIZE];
     char m_szFelling[MAX_SIZE];
     int status;
-}m_UserInfo;
+}STRU_USER_INFO_S;
 
+typedef struct STRU_USERINROOM_ID
+{
+    STRU_USERINROOM_ID()
+    {
+        memset(idarr,0,sizeof(idarr));
+        num = 0;
+    }
+    int  idarr[5];
+    int num;
+
+}STRU_USERINROOM_ID;
 class TcpKernel:public IKernel
 {
 public:
@@ -78,7 +89,8 @@ public:
  private:
     CMysql * m_sql;
     TcpNet * m_tcp;
-    map<int,m_UserInfo*> m_map;
+    map<int,STRU_USER_INFO_S*> map_IdtoUserInfo;
+    map<int,STRU_USERINROOM_ID*> map_IdtoUserInRoomid;
 };
 
 
