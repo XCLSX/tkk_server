@@ -56,7 +56,6 @@ void TcpKernel::Close()
     m_tcp->UnInitNetWork();
 }
 
-
 void TcpKernel::DealData(int clientfd,char *szbuf,int nlen)
 {
     PackType *pType = (PackType*)szbuf;
@@ -75,6 +74,9 @@ void TcpKernel::DealData(int clientfd,char *szbuf,int nlen)
     }
     return;
 }
+
+
+
 
 
 //注册
@@ -129,6 +131,7 @@ void TcpKernel::Register(int clientfd,char* szbuf,int nlen)
 
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
+
 //登录
 void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
 {
@@ -193,95 +196,7 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
     //获取离线信息
 }
-//获取好友列表
-void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
-{
-    STRU_GETFRILIST_RQ *rq = (STRU_GETFRILIST_RQ *)szbuf;
-    STRU_GETFRILIST_RS rs;
-    list<string> ls;
-    char szsql[_DEF_SQLIEN] = {0};
-    sprintf(szsql,"select friend_id,pic_id,user_name,felling,status from v_friend where user_id = %d;",rq->m_userid);
-    if(!m_sql->SelectMysql(szsql,5,ls))
-    {
-        printf("sql error:%s\n",szsql);
-        return ;
-    }
-    int i=0;
-    while(ls.size()!=0)
-    {
-        rs.m_friArr[i].m_userid = atoi(ls.front().c_str());          ls.pop_front();
-        rs.m_friArr[i].m_iconid = atoi(ls.front().c_str());          ls.pop_front();
-        strcpy(rs.m_friArr[i].m_szName,ls.front().c_str());          ls.pop_front();
-        strcpy(rs.m_friArr[i].m_szFelling,ls.front().c_str());       ls.pop_front();
-        rs.m_friArr[i].status = atoi(ls.front().c_str());            ls.pop_front();
-        i++;
-    }
-    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
-}
-//刷新房间
-void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
-{
-    printf("AskRoom\n");
 
-    STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
-    STRU_ASKROOM_RS rs;
-    list<string> ls;
-    char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"select room_id,room_name,room_creator_name from t_room;");
-    if(!m_sql->SelectMysql(szsql,3,ls))
-    {
-        printf("sql error:%s\n",szsql);
-        return ;
-    }
-    int i=0;
-    if(ls.size()>0)
-        rs.m_lResult = ask_room_success;
-    else
-        rs.m_lResult = ask_room_failed;
-    while(ls.size()>0)
-    {
-        rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
-        strcpy(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
-        strcpy(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
-        i++;
-        if(i==MAX_ROOMLIST)
-            break;
-    }
-    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
-
-}
-//创建房间
-void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
-{
-    printf("CreateRoom\n");
-
-    STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
-    STRU_CREATEROOM_RS rs;
-    char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"insert into t_room values(null,'%s',%d,null,null,null,null,'%s');"
-             ,rq->m_RoomName,rq->m_userid,rq->m_RoomName);
-    if(!m_sql->UpdataMysql(szsql))
-    {
-        printf("sql error:%s\n",szsql);
-        return ;
-    }
-    list<string> ls;
-    bzero(szsql,sizeof(szsql));
-    snprintf(szsql,sizeof(szsql),"select room_id from t_room where user1_id = %d;",rq->m_userid);
-    if(!m_sql->SelectMysql(szsql,1,ls))
-    {
-        printf("sql error:%s\n",szsql);
-        return ;
-    }
-    if(ls.size()==0)
-        rs.m_lResult = create_failed;
-    else
-    {
-        rs.m_lResult = create_success;
-        rs.m_RoomId = atoi(ls.front().c_str());
-    }
-    m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
-}
 //查找好友
 void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
 {
@@ -326,6 +241,7 @@ void TcpKernel::SearchFriend(int clientfd, char *szbuf, int nlen)
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 
 }
+
 //添加好友请求
 void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
 {
@@ -349,6 +265,7 @@ void TcpKernel::AddfriendRq(int clientfd, char *szbuf, int nlen)
         }
     }
 }
+
 //添加好友回复
 void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
 {
@@ -375,6 +292,154 @@ void TcpKernel::AddfriendRs(int clientfd, char *szbuf, int nlen)
         }
     }
 }
+
+//获取好友列表
+void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
+{
+    STRU_GETFRILIST_RQ *rq = (STRU_GETFRILIST_RQ *)szbuf;
+    STRU_GETFRILIST_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    sprintf(szsql,"select friend_id,pic_id,user_name,felling,status from v_friend where user_id = %d;",rq->m_userid);
+    if(!m_sql->SelectMysql(szsql,5,ls))
+    {
+        printf("sql error:%s\n",szsql);
+        return ;
+    }
+    int i=0;
+    while(ls.size()!=0)
+    {
+        rs.m_friArr[i].m_userid = atoi(ls.front().c_str());          ls.pop_front();
+        rs.m_friArr[i].m_iconid = atoi(ls.front().c_str());          ls.pop_front();
+        strcpy(rs.m_friArr[i].m_szName,ls.front().c_str());          ls.pop_front();
+        strcpy(rs.m_friArr[i].m_szFelling,ls.front().c_str());       ls.pop_front();
+        rs.m_friArr[i].status = atoi(ls.front().c_str());            ls.pop_front();
+        i++;
+    }
+    rs.m_lResult = ask_room_success;
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+}
+
+//创建房间
+void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
+{
+    printf("CreateRoom\n");
+
+    STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
+    STRU_CREATEROOM_RS rs;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"insert into t_room values(null,'%s',%d,null,null,null,null,'%s');"
+             ,rq->m_RoomName,rq->m_userid,rq->m_RoomName);
+    if(!m_sql->UpdataMysql(szsql))
+    {
+        printf("sql error:%s\n",szsql);
+        return ;
+    }
+    list<string> ls;
+    bzero(szsql,sizeof(szsql));
+    snprintf(szsql,sizeof(szsql),"select room_id from t_room where user1_id = %d;",rq->m_userid);
+    if(!m_sql->SelectMysql(szsql,1,ls))
+    {
+        printf("sql error:%s\n",szsql);
+        return ;
+    }
+    if(ls.size()==0)
+        rs.m_lResult = create_failed;
+    else
+    {
+        rs.m_lResult = create_success;
+        rs.m_RoomId = atoi(ls.front().c_str());
+    }
+    m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
+}
+
+//刷新房间
+void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
+{
+    printf("AskRoom\n");
+
+    STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
+    STRU_ASKROOM_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"select room_id,room_name,room_creator_name from t_room;");
+    if(!m_sql->SelectMysql(szsql,3,ls))
+    {
+        printf("sql error:%s\n",szsql);
+        return ;
+    }
+    int i=0;
+    if(ls.size()>0)
+        rs.m_lResult = ask_room_success;
+    else
+        rs.m_lResult = ask_room_failed;
+    while(ls.size()>0)
+    {
+        rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
+        strcpy(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
+        strcpy(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
+        i++;
+        if(i==MAX_ROOMLIST)
+            break;
+    }
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+
+}
+
+//查找房间
+void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
+{
+    STRU_SEARCH_ROOM_RQ *rq = (STRU_SEARCH_ROOM_RQ *)szbuf;
+    STRU_SEARCH_ROOM_RS rs;
+    list<string> ls;
+    char szsql[_DEF_SQLIEN] = {0};
+    if(rq->m_Roomid!=0)
+    {
+        //按id查询房间
+        sprintf(szsql,"select room_id ,room_name,room_creator_name from t_room where room_id = %d;"
+                ,rq->m_Roomid);
+        if(!m_sql->SelectMysql(szsql,3,ls))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
+        if(ls.size()==0)
+        {
+            rs.m_lResult = search_room_failed;
+        }
+        else
+        {
+            rs.m_lResult = search_room_success;
+            rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
+            strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
+            strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
+        }
+    }
+    else
+    {
+        //按名称查询房间
+        sprintf(szsql,"select room_id ,room_name,room_creator_name from t_room where room_name = '%s';"
+                ,rq->m_szRoomName);
+        if(!m_sql->SelectMysql(szsql,3,ls))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
+        if(ls.size()==0)
+        {
+            rs.m_lResult = search_room_failed;
+        }
+        else
+        {
+            rs.m_lResult = search_room_success;
+            rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
+            strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
+            strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
+        }
+    }
+    m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
+}
+
 //查询离线信息
 void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 {
@@ -414,6 +479,7 @@ void TcpKernel::CheckOfflineMsg(int clientfd, int user_id)
 //    }
 //    //查询离线消息数据
 }
+
 //修改用户信息
 void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
 {
@@ -437,6 +503,7 @@ void TcpKernel::AlterUserInfo(int clientfd, char *szbuf, int nlen)
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rq));
 
 }
+
 //离线
 void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {
