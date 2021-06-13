@@ -18,7 +18,7 @@
 #include<iostream>
 #include<map>
 #include<list>
-
+using namespace std;
 
 //边界值
 #define _DEF_SIZE 45
@@ -114,9 +114,11 @@ typedef enum Net_PACK
 //查找房间结果
 #define search_room_failed   0
 #define search_room_success  1
+
 //加入房间结果
 #define room_no_exist        0
-#define join_success         1
+#define room_is_full         1
+#define join_success         2
 
 //请求房间列表结果
 #define ask_room_failed     0
@@ -493,11 +495,10 @@ typedef struct STRU_JOINROOM_RQ
     STRU_JOINROOM_RQ()
     {
         m_nType = DEF_PACK_JOINROOM_RQ;
-        m_userId = 0;
         m_RoomID = 0;
     }
     PackType m_nType;   //包类型
-    int m_userId;
+    STRU_USER_INFO m_userInfo;
     int m_RoomID;
 
 }STRU_JOINROOM_RQ;
@@ -517,6 +518,16 @@ typedef struct STRU_JOINROOM_RS
     int m_Room_member[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
+////更新房间回复
+//typedef struct STRU_UPDATE_ROOM5_INFO_RS
+//{
+//    STRU_UPDATE_ROOM5_INFO_RS()
+//    {
+//        m_nType =
+//    }
+//    PackType m_nType;
+//    STRU_USER_INFO m_userInfoarr[4];
+//}STRU_UPDATE_ROOM5_INFO_RS;
 
 //房间成员请求
 typedef struct STRU_ROOM_MEMBER_RQ

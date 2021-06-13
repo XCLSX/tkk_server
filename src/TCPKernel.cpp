@@ -47,6 +47,9 @@ int TcpKernel::Open()
     {
         printf("Init Net Success...\n");
     }
+    ////***********************////
+    m_cm = new CRoomManger;
+
 
     return TRUE;
 }
@@ -325,12 +328,11 @@ void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 {
     printf("CreateRoom\n");
-    STRU_USERINROOM_ID * str_user_idarr = new STRU_USERINROOM_ID;
     STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
     STRU_CREATEROOM_RS rs;
     char szsql[_DEF_SQLIEN] = {0};
-    snprintf(szsql,sizeof(szsql),"insert into t_room values(null,'%s',%d,null,null,null,null,'%s');"
-             ,rq->m_RoomName,rq->m_userid,rq->m_RoomName);
+    snprintf(szsql,sizeof(szsql),"insert into t_room values(null,'%s','%s');"
+             ,rq->m_RoomName,map_IdtoUserInfo[rq->m_userid]->m_szName);
     if(!m_sql->UpdataMysql(szsql))
     {
         printf("sql error:%s\n",szsql);
@@ -338,7 +340,8 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     }
     list<string> ls;
     bzero(szsql,sizeof(szsql));
-    snprintf(szsql,sizeof(szsql),"select room_id from t_room where user1_id = %d;",rq->m_userid);
+    snprintf(szsql,sizeof(szsql),"select room_id from t_room where  room_creator_name = '%s';"
+             ,map_IdtoUserInfo[rq->m_userid]->m_szName);
     if(!m_sql->SelectMysql(szsql,1,ls))
     {
         printf("sql error:%s\n",szsql);
@@ -350,8 +353,8 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     {
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
-        map_IdtoUserInRoomid[rs.m_RoomId] = str_user_idarr;
-        str_user_idarr->idarr[str_user_idarr->num++] = rq->m_userid;
+        m_cm->CreateRoom(rs.m_RoomId,rq->m_userid);
+
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
@@ -387,6 +390,23 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 
+}
+
+void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
+{
+    STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
+    STRU_JOINROOM_RS rs;
+    m_cm->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid);
+    int j=0;
+    STRU_USERINROOM_ID *sui = m_cm->map_uInr[rq->m_RoomID];
+    for(int i=0;i<5;i++)
+    {
+        if(sui->idarr[i]!=rq->m_userInfo.m_userid)
+        {
+            rs.m_Room_member[j++] = sui->idarr[i];
+        }
+    }
+    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 }
 
 //查找房间

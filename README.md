@@ -26,3 +26,10 @@
 #创建视图
 create view v_friend as select t_friend.*,t_userInfo.pic_id,t_userInfo.user_name,t_userInfo.felling,t_userInfo.status from t_userInfo inner join t_friend on t_friend.friend_id = t_userInfo.user_id;
 
+#修改t_room 表结构
+alter table t_room drop column user1_id;
+alter table t_room drop column user2_id;
+alter table t_room drop column user3_id;
+alter table t_room drop column user4_id;
+alter table t_room drop column user5_id;
+

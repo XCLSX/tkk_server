@@ -7,6 +7,7 @@ LIBS += -lpthread
 INCLUDEPATH +=./include/
 INCLUDEPATH +=./src/
 SOURCES += \
+        croommanger.cpp \
         src/Mysql.cpp \
         src/TCPKernel.cpp \
         src/TCPNet.cpp \
@@ -15,6 +16,7 @@ SOURCES += \
         src/main.cpp
 
 HEADERS += \
+    croommanger.h \
     include/Mysql.h \
     include/TCPKernel.h \
     include/TCPNet.h \

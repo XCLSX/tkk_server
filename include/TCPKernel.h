@@ -5,7 +5,7 @@
 
 #include "TCPNet.h"
 #include "Mysql.h"
-
+#include <croommanger.h>
 class TcpKernel;
 typedef void (TcpKernel::*PFUN)(int,char*,int nlen);
 
@@ -32,17 +32,7 @@ typedef struct STRU_USER_INFO_S
     int status;
 }STRU_USER_INFO_S;
 
-typedef struct STRU_USERINROOM_ID
-{
-    STRU_USERINROOM_ID()
-    {
-        memset(idarr,0,sizeof(idarr));
-        num = 0;
-    }
-    int  idarr[5];
-    int num;
 
-}STRU_USERINROOM_ID;
 class TcpKernel:public IKernel
 {
 public:
@@ -77,6 +67,9 @@ public:
     //刷新房间列表
     void AskRoom(int,char*,int);
 
+    //加入房间
+    void JoinRoom(int,char *,int);
+
     //查询离线数据
     void CheckOfflineMsg(int,int);
 
@@ -90,7 +83,7 @@ public:
     CMysql * m_sql;
     TcpNet * m_tcp;
     map<int,STRU_USER_INFO_S*> map_IdtoUserInfo;
-    map<int,STRU_USERINROOM_ID*> map_IdtoUserInRoomid;
+    CRoomManger *m_cm;
 };
 
 
