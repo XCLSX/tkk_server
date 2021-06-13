@@ -511,11 +511,10 @@ typedef struct STRU_JOINROOM_RS
     {
         m_nType= DEF_PACK_JOINROOM_RS;
         m_lResult = 0;
-        memset(m_Room_member,0,sizeof(m_Room_member));
     }
     PackType m_nType;       //包类型
     int  m_lResult ;
-    int m_Room_member[4];   //房间用户id
+    STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
 ////更新房间回复
