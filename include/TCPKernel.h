@@ -70,6 +70,9 @@ public:
     //加入房间
     void JoinRoom(int,char *,int);
 
+    //离开房间
+    void LeaveRoom(int,char *,int);
+
     //查询离线数据
     void CheckOfflineMsg(int,char *,int);
 

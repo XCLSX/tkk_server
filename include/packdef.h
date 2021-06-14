@@ -517,16 +517,6 @@ typedef struct STRU_JOINROOM_RS
     STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
-////更新房间回复
-//typedef struct STRU_UPDATE_ROOM5_INFO_RS
-//{
-//    STRU_UPDATE_ROOM5_INFO_RS()
-//    {
-//        m_nType =
-//    }
-//    PackType m_nType;
-//    STRU_USER_INFO m_userInfoarr[4];
-//}STRU_UPDATE_ROOM5_INFO_RS;
 
 //房间成员请求
 typedef struct STRU_ROOM_MEMBER_RQ
@@ -549,10 +539,11 @@ typedef struct STRU_ROOM_MEMBER_RS
     STRU_ROOM_MEMBER_RS()
     {
          m_nType= DEF_PACK_ROOM_MEMBER_RS;
-         memset(m_Room_member,0,sizeof(m_Room_member));
+         user_id = 0;
     }
     PackType m_nType;   //包类型
-    int m_Room_member[4];   //房间用户id
+    int user_id;
+    STRU_USER_INFO m_userInfo[4];
 }STRU_ROOM_MEMBER_RS;
 
 //离开房间请求

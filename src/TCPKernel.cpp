@@ -397,6 +397,7 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 
 }
 
+//加入房间
 void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 {
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
@@ -422,6 +423,18 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
         }
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+}
+
+//离开房间
+void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
+{
+    STRU_LEAVEROOM_RQ* rq = (STRU_LEAVEROOM_RQ*)szbuf;
+    if(!m_cm->leaveRoom(rq->m_RoomId,rq->m_userId))
+    {
+        char szsql[_DEF_SQLIEN] = {0};
+        sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_userId);
+    }
+
 }
 
 //查找房间
@@ -558,10 +571,10 @@ void TcpKernel::OffLine(int clientfd, char *szbuf, int nlen)
 {
     printf("OffLine\n");
 
-//    STRU_OFFLINE_RQ *rq = (STRU_OFFLINE_RQ *)szbuf;
-//    char szsql[_DEF_SQLIEN] = {0};
-//    snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 0,sock_fd = -1  where user_id = %d; ",rq->m_userID);
-//    m_sql->UpdataMysql(szsql);
+    STRU_OFFLINE_RQ *rq = (STRU_OFFLINE_RQ *)szbuf;
+    char szsql[_DEF_SQLIEN] = {0};
+    snprintf(szsql,sizeof(szsql),"update t_userInfo set status = 0  where user_id = %d; ",rq->m_userID);
+    m_sql->UpdataMysql(szsql);
 }
 
 

@@ -25,6 +25,30 @@ int CRoomManger::joinRoom(int room_id,int user_id)
     }
 }
 
+bool CRoomManger::leaveRoom(int room_id,int user_id)
+{
+    pthread_mutex_lock(&lock);
+    STRU_USERINROOM_ID*sui = map_uInr[room_id];
+    for(int i=0;i<5;i++)
+    {
+        if(sui->idarr[i] == user_id)
+        {
+            sui->idarr[i] = 0;
+            break;
+        }
+    }
+    for(int i=0;i<5;i++)
+    {
+        if(sui->idarr[i]!=0)
+        {
+            pthread_mutex_unlock(&lock);
+            return true;
+        }
+    }
+    return false;
+
+}
+
 bool CRoomManger::CreateRoom(int room_id,int user_id)
 {
     STRU_USERINROOM_ID *sui = new STRU_USERINROOM_ID;
