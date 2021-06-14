@@ -368,6 +368,7 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 
     STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
     STRU_ASKROOM_RS rs;
+
     list<string> ls;
     char szsql[_DEF_SQLIEN] = {0};
     snprintf(szsql,sizeof(szsql),"select room_id,room_name,room_creator_name from t_room;");
@@ -383,9 +384,11 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
         rs.m_lResult = ask_room_failed;
     while(ls.size()>0)
     {
-        rs.m_RoomList[i].m_Roomid = atoi(ls.front().c_str()); ls.pop_front();
+        int room_id = atoi(ls.front().c_str());               ls.pop_front();
+        rs.m_RoomList[i].m_Roomid = room_id;
         strcpy(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
         strcpy(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
+        rs.m_RoomList[i].m_num = m_cm->map_uInr[room_id]->num;
         i++;
         if(i==MAX_ROOMLIST)
             break;
@@ -408,7 +411,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     STRU_USERINROOM_ID *sui = m_cm->map_uInr[rq->m_RoomID];
     for(int i=0;i<5;i++)
     {
-        if(sui->idarr[i]!=rq->m_userInfo.m_userid)
+        if(sui->idarr[i]!=rq->m_userInfo.m_userid&&sui->idarr[i]!=0)
         {
             int id = sui->idarr[i];
             rs.m_userInfoarr[j].m_userid = sui->idarr[i];
