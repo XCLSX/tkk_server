@@ -423,6 +423,8 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
         }
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+
+    UpdateRoomMemberInfo(rq->m_RoomID);
 }
 
 //离开房间
@@ -433,8 +435,44 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
     {
         char szsql[_DEF_SQLIEN] = {0};
         sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_userId);
+        if(!m_sql->UpdataMysql(szsql))
+        {
+            printf("sql error:%s\n",szsql);
+            return ;
+        }
+        return ;
     }
+    UpdateRoomMemberInfo(rq->m_RoomId);
 
+}
+
+//更新房间成员信息
+void TcpKernel::UpdateRoomMemberInfo(int room_id)
+{
+    STRU_USERINROOM_ID *sui = m_cm->map_uInr[room_id];
+    STRU_ROOM_MEMBER_RS rs;
+    int times = 0;
+    for(int i=0;i<5;i++)
+    {
+        if(sui->idarr[i]!=0)
+        {
+            times = 0;
+            for(int j=0;j<5;j++)
+            {
+                if(sui->idarr[j]!=0&&sui->idarr[j]!=sui->idarr[i])
+                {
+                    int user_id = sui->idarr[j];
+                    rs.m_userInfo[times].m_userid = user_id;
+                    rs.m_userInfo[times].m_iconid = map_IdtoUserInfo[user_id]->icon_id;
+                    strcpy(rs.m_userInfo[times].m_szName,map_IdtoUserInfo[user_id]->m_szName);
+                    strcpy(rs.m_userInfo[times].m_szFelling,map_IdtoUserInfo[user_id]->m_szFelling);
+                    rs.m_userInfo[times].status = 1;
+                    times++;
+                }
+            }
+            m_tcp->SendData(map_IdtoUserInfo[sui->idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
+        }
+    }
 }
 
 //查找房间

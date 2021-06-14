@@ -1,7 +1,6 @@
 #ifndef CROOMMANGER_H
 #define CROOMMANGER_H
 #include <include/packdef.h>
-
 typedef struct STRU_USERINROOM_ID
 {
     STRU_USERINROOM_ID()
@@ -28,6 +27,7 @@ public:
 public:
     pthread_mutex_t lock;
     map<int,STRU_USERINROOM_ID*> map_uInr;
+    //map<int,
 };
 
 #endif // CROOMMANGER_H

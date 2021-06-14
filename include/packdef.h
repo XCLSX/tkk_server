@@ -539,10 +539,8 @@ typedef struct STRU_ROOM_MEMBER_RS
     STRU_ROOM_MEMBER_RS()
     {
          m_nType= DEF_PACK_ROOM_MEMBER_RS;
-         user_id = 0;
     }
     PackType m_nType;   //包类型
-    int user_id;
     STRU_USER_INFO m_userInfo[4];
 }STRU_ROOM_MEMBER_RS;
 

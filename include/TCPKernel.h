@@ -73,6 +73,8 @@ public:
     //离开房间
     void LeaveRoom(int,char *,int);
 
+    //更新房间成员数据
+    void UpdateRoomMemberInfo(int);
     //查询离线数据
     void CheckOfflineMsg(int,char *,int);
 
