@@ -53,6 +53,7 @@ int TcpKernel::Open()
     }
     ////***********************////
     m_cm = new CRoomManger;
+    m_game = new GameKernel;
     char szsql[_DEF_SQLIEN] = {0};
     sprintf(szsql,"truncate table t_room;");
     if(!m_sql->UpdataMysql(szsql))
@@ -455,6 +456,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     }
     STRU_STARTGAME_RS rs;
     rs.m_lResult = game_start_success;
+    //m_game->m_map[rq->Room_id] = ;
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;

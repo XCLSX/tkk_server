@@ -6,6 +6,8 @@
 #include "TCPNet.h"
 #include "Mysql.h"
 #include <croommanger.h>
+#include<cardmanger.h>
+#include <gamekernel.h>
 class TcpKernel;
 typedef void (TcpKernel::*PFUN)(int,char*,int nlen);
 
@@ -91,6 +93,7 @@ public:
     CMysql * m_sql;
     TcpNet * m_tcp;
     map<int,STRU_USER_INFO_S*> map_IdtoUserInfo;
+    GameKernel * m_game;
     CRoomManger *m_cm;
 };
 

@@ -7,7 +7,9 @@ LIBS += -lpthread
 INCLUDEPATH +=./include/
 INCLUDEPATH +=./src/
 SOURCES += \
+        cardmanger.cpp \
         croommanger.cpp \
+        gamekernel.cpp \
         src/Mysql.cpp \
         src/TCPKernel.cpp \
         src/TCPNet.cpp \
@@ -16,7 +18,9 @@ SOURCES += \
         src/main.cpp
 
 HEADERS += \
+    cardmanger.h \
     croommanger.h \
+    gamekernel.h \
     include/Mysql.h \
     include/TCPKernel.h \
     include/TCPNet.h \

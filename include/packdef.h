@@ -43,6 +43,73 @@ using namespace std;
 
 #define BOOL bool
 #define DEF_PACK_BASE  (10000)
+enum CARD_TYPE{
+    JICHU=1,
+    FEIYANSHIJINNANG,
+    YANSHIJINNANG,
+    WUQI,
+    FANGJU,
+    JINGONGMA,
+    FANGYUMA
+};
+enum CARDID{
+    //基础
+    SHA = 1,
+    SHAN,
+    TAO,
+    //非延时锦囊
+    GUOHECHAIQIAO,
+    SHUNSHOUQIANYANG,
+    JUEDOU,
+    JIEDAOSHAREN,
+    WUZHONGSHENGYOU,
+    WUXIEKEJI,
+    WANJIANQIFA,
+    NANMANRUQIN,
+    TAOYUANJIEYI,
+    WUGUFENGDENG,
+    //延时锦囊
+    SHANDIAN,
+    LEBUSISHU,
+    //武器
+    HANBINGJIAN,
+    CIXIONGSHUANGGUJIAN,
+    QINGLONGYANYUEDAO,
+    QINGGANGJIAN,
+    ZHANGBASHEMAO,
+    QILINGONG,
+    ZHUGELIANNU,
+    GUANSHIFU,
+    FANGTIANHUAJI,
+    //防具
+    BAGUAZHEN,
+    RENWANGDUN,
+    //进攻马
+    CHITU,
+    DAYUAN,
+    //防御马
+    DILU,
+    JUEYING,
+    ZHUAHUANGFEIDIAN,
+    ZIXIN
+};
+enum COLOR{Spade1 = 1,Hearts2,Club3,Diamond4};
+typedef struct STRU_CARD
+{
+    STRU_CARD()
+    {
+        id = 0;
+        num = 0;
+        col = 0;
+        type = 0;
+    }
+    int id;
+    int num;
+    int col;
+    int type;
+}STRU_CARD;
+
+
 
 
 typedef enum Net_PACK
