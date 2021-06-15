@@ -22,6 +22,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_JOINROOM_RQ,&TcpKernel::JoinRoom},
     {DEF_PACK_CHECKOFFLINE_RQ,&TcpKernel::CheckOfflineMsg},
     {DEF_PACK_LEAVEROOM_RQ,&TcpKernel::LeaveRoom},
+    {DEF_PACK_STARTGAME_RQ,&TcpKernel::StartGame},
     {0,0}
 };
 
