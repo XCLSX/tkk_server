@@ -35,7 +35,7 @@ bool CRoomManger::leaveRoom(int room_id,int user_id)
         {
             sui->idarr[i] = 0;
             sui->num--;
-
+            sui->readyarr[i] = false;
             break;
         }
     }

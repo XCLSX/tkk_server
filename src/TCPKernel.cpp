@@ -434,6 +434,33 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     UpdateRoomMemberInfo(rq->m_RoomID);
 }
 
+//开始游戏
+void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
+{
+    STRU_STARTGAME_RQ *rq = (STRU_STARTGAME_RQ *)szbuf;
+    STRU_USERINROOM_ID *sui = m_cm->map_uInr[rq->Room_id];
+    for(int i=0;i<5;i++)
+    {
+        if(sui->idarr[i]==rq->user_id)
+        {
+            sui->readyarr[i] = true;
+            break;
+        }
+    }
+    for(int i=0;i<5;i++)
+    {
+        if(!sui->readyarr[i])
+            return ;
+    }
+    STRU_STARTGAME_RS rs;
+    rs.m_lResult = game_start_success;
+    for(int i=0;i<5;i++)
+    {
+        int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
+        m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
+    }
+}
+
 //离开房间
 void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 {

@@ -70,6 +70,9 @@ public:
     //加入房间
     void JoinRoom(int,char *,int);
 
+    //开始游戏
+    void StartGame(int,char*,int);
+
     //离开房间
     void LeaveRoom(int,char *,int);
 
