@@ -21,6 +21,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_SEARCH_ROOM_RQ,&TcpKernel::SearchRoom},
     {DEF_PACK_JOINROOM_RQ,&TcpKernel::JoinRoom},
     {DEF_PACK_CHECKOFFLINE_RQ,&TcpKernel::CheckOfflineMsg},
+    {DEF_PACK_LEAVEROOM_RQ,&TcpKernel::LeaveRoom},
     {0,0}
 };
 
@@ -51,13 +52,19 @@ int TcpKernel::Open()
     }
     ////***********************////
     m_cm = new CRoomManger;
-
+    char szsql[_DEF_SQLIEN] = {0};
+    sprintf(szsql,"truncate table t_room;");
+    if(!m_sql->UpdataMysql(szsql))
+    {
+        printf("sql error:%s\n",szsql);
+    }
 
     return TRUE;
 }
 
 void TcpKernel::Close()
 {
+
     m_sql->DisConnect();
     m_tcp->UnInitNetWork();
 }
@@ -434,7 +441,7 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
     if(!m_cm->leaveRoom(rq->m_RoomId,rq->m_userId))
     {
         char szsql[_DEF_SQLIEN] = {0};
-        sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_userId);
+        sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_RoomId);
         if(!m_sql->UpdataMysql(szsql))
         {
             printf("sql error:%s\n",szsql);

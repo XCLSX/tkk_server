@@ -34,18 +34,23 @@ bool CRoomManger::leaveRoom(int room_id,int user_id)
         if(sui->idarr[i] == user_id)
         {
             sui->idarr[i] = 0;
+            sui->num--;
+
             break;
         }
     }
-    for(int i=0;i<5;i++)
+    if(sui->num==0)
     {
-        if(sui->idarr[i]!=0)
-        {
-            pthread_mutex_unlock(&lock);
-            return true;
-        }
+        auto ite = map_uInr.find(room_id);
+        map_uInr.erase(ite);
+        pthread_mutex_unlock(&lock);
+        return false;
     }
-    return false;
+    else
+    {
+        pthread_mutex_unlock(&lock);
+        return true;
+    }
 
 }
 
