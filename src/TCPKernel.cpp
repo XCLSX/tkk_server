@@ -445,7 +445,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     {
         if(sui->idarr[i]==rq->user_id)
         {
-            sui->readyarr[i] = true;
+            sui->readyarr[i] = !sui->readyarr[i];
             break;
         }
     }
@@ -461,6 +461,25 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     {
         int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
         m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
+    }
+
+    //发放身份
+    int arr[5];
+    m_game->Selidentity(arr,5);
+    STRU_POST_IDENTITY spi;
+    int ZGindex = 0;
+    for(int i=0;i<5;i++)
+        if(arr[i] == zhugong)
+        {
+            ZGindex = i;
+            break;
+        }
+    for(int i=0;i<5;i++)
+    {
+        int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
+        spi.m_identity = arr[i];
+        spi.m_ZGidentity = arr[ZGindex];
+        m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
 }
 
