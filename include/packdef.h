@@ -101,7 +101,8 @@ typedef enum Net_PACK
 
     DEF_PACK_POST_IDENTITY,                      //发送身份
 
-    DEF_PACK_POST_HERO                          //发送英雄
+    DEF_PACK_SELHERO_RQ,                         //选择英雄请求
+    DEF_PACK_SELHERO_RS,
 }Net_PACK;
 
 //注册请求结果
@@ -718,6 +719,7 @@ typedef struct STRU_CARD
 
 enum IDENTITY{zhugong = 1,zhongchen,fanzei,neijian};
 
+enum HERO{liubei = 1,sunquan,caocao,ganning,guanyu,huatuo};
 //发送身份
 typedef struct STRU_POST_IDENTITY
 {
@@ -730,5 +732,26 @@ typedef struct STRU_POST_IDENTITY
     int m_identity;
     int m_ZGidentity;
 }STRU_POST_IDENTITY;
+
+//选择英雄请求
+typedef struct STRU_SELHERO_RQ
+{
+    STRU_SELHERO_RQ()
+    {
+        m_nType = DEF_PACK_SELHERO_RQ;
+    }
+    PackType  m_nType;
+    int m_HeroArr[6];
+}STRU_SELHERO_RQ;
+
+//选择英雄回复
+typedef struct STRU_SELHERO_RS
+{
+    STRU_SELHERO_RS(){
+        m_nType = DEF_PACK_SELHERO_RS;
+    }
+    PackType m_nType;
+    int hero_id;
+}STRU_SELHERO_RS;
 
 #endif

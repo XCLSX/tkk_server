@@ -478,7 +478,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     {
         int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
         spi.m_identity = arr[i];
-        spi.m_ZGidentity = arr[ZGindex];
+        spi.m_ZGidentity = sui->idarr[i];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
 }
