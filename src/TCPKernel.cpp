@@ -464,7 +464,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     }
 
     //发放身份
-    int arr[5];
+    int arr[5] = {0};
     m_game->Selidentity(arr,5);
     STRU_POST_IDENTITY spi;
     int ZGindex = 0;
@@ -560,6 +560,7 @@ void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
             rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
             strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
             strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
+            rs.m_roomInfo.m_num = m_cm->map_uInr[rq->m_Roomid]->num;
         }
     }
     else
@@ -582,6 +583,8 @@ void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
             rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
             strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
             strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
+            rs.m_roomInfo.m_num = m_cm->map_uInr[rq->m_Roomid]->num;
+
         }
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );

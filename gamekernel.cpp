@@ -24,7 +24,7 @@ void GameKernel::Selidentity(int *arr, int len)
         arr[4] = neijian;
         for(int i=0;i<5;i++)
         {
-            int randIndex = rand()%5-i;
+            int randIndex = rand()%(5-i);
             if(randIndex!= 4-i)
             {
                 arr[randIndex] = arr[randIndex]^arr[4-i];
