@@ -7,7 +7,6 @@
 #include "Mysql.h"
 #include <croommanger.h>
 #include<cardmanger.h>
-#include <gamekernel.h>
 class TcpKernel;
 typedef void (TcpKernel::*PFUN)(int,char*,int nlen);
 
@@ -75,6 +74,10 @@ public:
     //开始游戏
     void StartGame(int,char*,int);
 
+    //选择武将请求
+    void SelHeroRq(int id,int roomid,bool isZG);
+    //选择武将回复
+    void SelHeroRs(int,char*,int);
     //离开房间
     void LeaveRoom(int,char *,int);
 
@@ -93,8 +96,7 @@ public:
     CMysql * m_sql;
     TcpNet * m_tcp;
     map<int,STRU_USER_INFO_S*> map_IdtoUserInfo;
-    GameKernel * m_game;
-    CRoomManger *m_cm;
+    CRoomManger *m_RoomManger;
 };
 
 

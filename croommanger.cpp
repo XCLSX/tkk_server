@@ -3,6 +3,7 @@
 CRoomManger::CRoomManger()
 {
    pthread_mutex_init(&lock,NULL);
+
 }
 
 int CRoomManger::joinRoom(int room_id,int user_id)
@@ -54,11 +55,17 @@ bool CRoomManger::leaveRoom(int room_id,int user_id)
 
 }
 
+
+
+
+
 bool CRoomManger::CreateRoom(int room_id,int user_id)
 {
     STRU_USERINROOM_ID *sui = new STRU_USERINROOM_ID;
     sui->idarr[sui->num++] =user_id;
     map_uInr[room_id] = sui;
+    CardManger *cm = new CardManger;
+    map_CardManger[room_id] = cm;
     return true;
 }
 

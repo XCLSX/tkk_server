@@ -8,6 +8,9 @@ CardManger::CardManger()
    current_index = 0;
    last_card_num = 0;
    off_card_num = 108;
+   totalHero = 17;
+   heroarr = new int[totalHero];
+
 }
 
 bool CardManger::InitCard()
@@ -176,6 +179,89 @@ void CardManger::freshCard()
     }
     off_card_num = 0;
 }
+
+void CardManger::FreshHeroArr(int *arr, int zhugongid, bool isZhuGong)
+{
+
+    if(isZhuGong)
+    {
+        int num = totalHero - 3;
+        for(int i=0;i<num;i++)
+            heroarr[i] = i;
+        for(int i=0;i<num;i++)
+        {
+            int randomIndex = rand()%(num-i);
+            if(randomIndex!=num-i)
+            {
+                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+                heroarr[num-i] = heroarr[randomIndex]^heroarr[num-i];
+                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+            }
+        }
+        arr[0] = liubei;
+        arr[1] = caocao;
+        arr[2] = sunquan;
+        arr[3] = heroarr[0];
+        arr[4] = heroarr[1];
+        arr[5] = heroarr[2];
+    }
+    else
+    {
+        int index;
+        for(int i=0;i<totalHero;i++)
+        {
+            if(i == zhugongid)
+                heroarr[i] = totalHero-1;
+            else
+                heroarr[i] = i;
+        }
+//        if(index!=totalHero-1)
+//        {
+//            heroarr[index] = heroarr[index] ^ heroarr[totalHero-1];
+//            heroarr[totalHero-1] = heroarr[index] ^ heroarr[totalHero-1];
+//            heroarr[index] = heroarr[index] ^ heroarr[totalHero-1];
+//        }
+        int num = totalHero - 1;
+        for(int i=0;i<num;i++)
+        {
+            int randomIndex = rand()%(num-i);
+            if(randomIndex!=num-i)
+            {
+                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+                heroarr[num-i] = heroarr[randomIndex]^heroarr[num-i];
+                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+            }
+        }
+        for(int i=0;i<16;i++)
+        {
+            arr[i] = heroarr[i];
+        }
+    }
+}
+
+void CardManger::Freshidentity(int *arr, int len)
+{
+    if(len == 5)
+    {
+        arr[0] = zhugong;
+        arr[1] = zhongchen;
+        arr[2] = fanzei;
+        arr[3] = fanzei;
+        arr[4] = neijian;
+        for(int i=0;i<5;i++)
+        {
+            int randIndex = rand()%(5-i);
+            if(randIndex!= 4-i)
+            {
+                arr[randIndex] = arr[randIndex]^arr[4-i];
+                arr[4-i] = arr[randIndex]^arr[4-i];
+                arr[randIndex] = arr[randIndex]^arr[4-i];
+            }
+        }
+    }
+}
+
+
 
 //void CardManger::CardSwap(int index, int tail)
 //{

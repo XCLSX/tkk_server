@@ -23,6 +23,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_CHECKOFFLINE_RQ,&TcpKernel::CheckOfflineMsg},
     {DEF_PACK_LEAVEROOM_RQ,&TcpKernel::LeaveRoom},
     {DEF_PACK_STARTGAME_RQ,&TcpKernel::StartGame},
+    {DEF_PACK_SELHERO_RS,&TcpKernel::SelHeroRs},
     {0,0}
 };
 
@@ -52,8 +53,7 @@ int TcpKernel::Open()
         printf("Init Net Success...\n");
     }
     ////***********************////
-    m_cm = new CRoomManger;
-    m_game = new GameKernel;
+    m_RoomManger = new CRoomManger;
     char szsql[_DEF_SQLIEN] = {0};
     sprintf(szsql,"truncate table t_room;");
     if(!m_sql->UpdataMysql(szsql))
@@ -364,7 +364,7 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     {
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
-        m_cm->CreateRoom(rs.m_RoomId,rq->m_userid);
+        m_RoomManger->CreateRoom(rs.m_RoomId,rq->m_userid);
 
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
@@ -397,7 +397,7 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
         rs.m_RoomList[i].m_Roomid = room_id;
         strcpy(rs.m_RoomList[i].sz_Roomname,ls.front().c_str());  ls.pop_front();
         strcpy(rs.m_RoomList[i].sz_RoomCreator,ls.front().c_str());   ls.pop_front();
-        rs.m_RoomList[i].m_num = m_cm->map_uInr[room_id]->num;
+        rs.m_RoomList[i].m_num = m_RoomManger->map_uInr[room_id]->num;
         i++;
         if(i==MAX_ROOMLIST)
             break;
@@ -411,14 +411,14 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 {
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
     STRU_JOINROOM_RS rs;
-    int relt = m_cm->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid);
+    int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid);
     if(relt == 0)
         rs.m_lResult = room_no_exist;
     else if(relt == 1)
         rs.m_lResult = room_is_full;
     rs.m_lResult = join_success;
     int j=0;
-    STRU_USERINROOM_ID *sui = m_cm->map_uInr[rq->m_RoomID];
+    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rq->m_RoomID];
     for(int i=0;i<5;i++)
     {
         if(sui->idarr[i]!=rq->m_userInfo.m_userid&&sui->idarr[i]!=0)
@@ -440,7 +440,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
 {
     STRU_STARTGAME_RQ *rq = (STRU_STARTGAME_RQ *)szbuf;
-    STRU_USERINROOM_ID *sui = m_cm->map_uInr[rq->Room_id];
+    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rq->Room_id];
     for(int i=0;i<5;i++)
     {
         if(sui->idarr[i]==rq->user_id)
@@ -465,7 +465,8 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
 
     //发放身份
     int arr[5] = {0};
-    m_game->Selidentity(arr,5);
+    m_RoomManger->map_CardManger[rq->Room_id]->Freshidentity(arr,5);
+    //m_game->Selidentity(arr,5);
     STRU_POST_IDENTITY spi;
     int ZGindex = 0;
     for(int i=0;i<5;i++)
@@ -481,13 +482,52 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
         spi.m_ZGidentity = sui->idarr[i];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
+   //主公选英雄
+    SelHeroRq(sui->idarr[ZGindex],rq->Room_id,true);
+}
+
+void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
+{
+    STRU_SELHERO_RQ rq;
+    m_RoomManger->map_CardManger[roomid]->FreshHeroArr(rq.m_HeroArr,0,isZG);
+    int sockfd = map_IdtoUserInfo[id]->sockfd;
+
+    m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+}
+
+void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
+{
+    STRU_SELHERO_RS *rs = (STRU_SELHERO_RS *)szbuf;
+    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rs->room_id];
+    if(rs->isZG)
+    {
+        STRU_SELHERO_RQ rq;
+
+        int arr[16] = {0};
+        m_RoomManger->map_CardManger[rs->room_id]->FreshHeroArr(arr,rs->hero_id,false);
+
+        for(int i=0;i<5;i++)
+        {
+            int k=0;
+            if(sui->idarr[i] == rs->user_id)
+                continue;
+            for(int j=i*4;j<i*4+4;j++)
+            {
+                rq.m_HeroArr[k] = arr[j];
+                k++;
+            }
+            int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
+
+            m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+        }
+    }
 }
 
 //离开房间
 void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 {
     STRU_LEAVEROOM_RQ* rq = (STRU_LEAVEROOM_RQ*)szbuf;
-    if(!m_cm->leaveRoom(rq->m_RoomId,rq->m_userId))
+    if(!m_RoomManger->leaveRoom(rq->m_RoomId,rq->m_userId))
     {
         char szsql[_DEF_SQLIEN] = {0};
         sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_RoomId);
@@ -505,7 +545,7 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 //更新房间成员信息
 void TcpKernel::UpdateRoomMemberInfo(int room_id)
 {
-    STRU_USERINROOM_ID *sui = m_cm->map_uInr[room_id];
+    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[room_id];
     STRU_ROOM_MEMBER_RS rs;
     int times = 0;
     for(int i=0;i<5;i++)
@@ -560,7 +600,7 @@ void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
             rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
             strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
             strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
-            rs.m_roomInfo.m_num = m_cm->map_uInr[rq->m_Roomid]->num;
+            rs.m_roomInfo.m_num = m_RoomManger->map_uInr[rq->m_Roomid]->num;
         }
     }
     else
@@ -583,7 +623,7 @@ void TcpKernel::SearchRoom(int clientfd, char *szbuf, int nlen)
             rs.m_roomInfo.m_Roomid = atoi(ls.front().c_str());      ls.pop_front();
             strcpy(rs.m_roomInfo.sz_Roomname,ls.front().c_str());   ls.pop_front();
             strcpy(rs.m_roomInfo.sz_RoomCreator,ls.front().c_str());
-            rs.m_roomInfo.m_num = m_cm->map_uInr[rq->m_Roomid]->num;
+            rs.m_roomInfo.m_num = m_RoomManger->map_uInr[rq->m_Roomid]->num;
 
         }
     }
