@@ -6,9 +6,12 @@ LIBS += -lmysqlclient
 LIBS += -lpthread
 INCLUDEPATH +=./include/
 INCLUDEPATH +=./src/
+INCLUDEPATH +=./hero/
 SOURCES += \
         cardmanger.cpp \
         croommanger.cpp \
+        hero/liubei.cpp \
+        player.cpp \
         src/Mysql.cpp \
         src/TCPKernel.cpp \
         src/TCPNet.cpp \
@@ -19,12 +22,15 @@ SOURCES += \
 HEADERS += \
     cardmanger.h \
     croommanger.h \
+    hero/hero.h \
+    hero/liubei.h \
     include/Mysql.h \
     include/TCPKernel.h \
     include/TCPNet.h \
     include/Thread_pool.h \
     include/err_str.h \
-    include/packdef.h
+    include/packdef.h \
+    player.h
 
 DISTFILES += \
     src/Mysql.cpp.bak \

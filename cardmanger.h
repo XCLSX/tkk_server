@@ -26,6 +26,7 @@ private:
     int totalHero;
 
 
+
 };
 
 #endif // CARDMANGER_H

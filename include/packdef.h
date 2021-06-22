@@ -17,6 +17,7 @@
 
 
 #include<iostream>
+#include <vector>
 #include<map>
 #include<list>
 using namespace std;
@@ -741,6 +742,7 @@ typedef struct STRU_SELHERO_RQ
     STRU_SELHERO_RQ()
     {
         m_nType = DEF_PACK_SELHERO_RQ;
+        memset(m_HeroArr,-1,sizeof(m_HeroArr));
     }
     PackType  m_nType;
     int m_HeroArr[6];

@@ -207,20 +207,13 @@ void CardManger::FreshHeroArr(int *arr, int zhugongid, bool isZhuGong)
     }
     else
     {
-        int index;
-        for(int i=0;i<totalHero;i++)
+        for(int i=0;i<totalHero-1;i++)
         {
             if(i == zhugongid)
                 heroarr[i] = totalHero-1;
             else
                 heroarr[i] = i;
         }
-//        if(index!=totalHero-1)
-//        {
-//            heroarr[index] = heroarr[index] ^ heroarr[totalHero-1];
-//            heroarr[totalHero-1] = heroarr[index] ^ heroarr[totalHero-1];
-//            heroarr[index] = heroarr[index] ^ heroarr[totalHero-1];
-//        }
         int num = totalHero - 1;
         for(int i=0;i<num;i++)
         {
