@@ -505,15 +505,15 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
 
         int arr[16] = {0};
         m_RoomManger->map_CardManger[rs->room_id]->FreshHeroArr(arr,rs->hero_id,false);
-
+        int pos = 0;
         for(int i=0;i<5;i++)
         {
             int k=0;
             if(sui->idarr[i] == rs->user_id)
                 continue;
-            for(int j=i*4;j<i*4+4;j++)
+            for(int j = 0;j<4;j++)
             {
-                rq.m_HeroArr[k] = arr[j];
+                rq.m_HeroArr[k] = arr[pos++];
                 k++;
             }
             int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
