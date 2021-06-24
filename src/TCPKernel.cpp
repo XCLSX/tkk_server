@@ -418,13 +418,13 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
         rs.m_lResult = room_is_full;
     rs.m_lResult = join_success;
     int j=0;
-    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rq->m_RoomID];
+    GameKernel *gk = m_RoomManger->map_uInr[rq->m_RoomID];
     for(int i=0;i<5;i++)
     {
-        if(sui->idarr[i]!=rq->m_userInfo.m_userid&&sui->idarr[i]!=0)
+        if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
         {
-            int id = sui->idarr[i];
-            rs.m_userInfoarr[j].m_userid = sui->idarr[i];
+            int id = gk->idarr[i];
+            rs.m_userInfoarr[j].m_userid = gk->idarr[i];
             rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
             strcpy(rs.m_userInfoarr[j].m_szName,map_IdtoUserInfo[id]->m_szName);
             rs.m_userInfoarr[j].status = 1;
@@ -440,18 +440,18 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
 {
     STRU_STARTGAME_RQ *rq = (STRU_STARTGAME_RQ *)szbuf;
-    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rq->Room_id];
+    GameKernel *gk = m_RoomManger->map_uInr[rq->Room_id];
     for(int i=0;i<5;i++)
     {
-        if(sui->idarr[i]==rq->user_id)
+        if(gk->idarr[i]==rq->user_id)
         {
-            sui->readyarr[i] = !sui->readyarr[i];
+            gk->readyarr[i] = !gk->readyarr[i];
             break;
         }
     }
     for(int i=0;i<5;i++)
     {
-        if(!sui->readyarr[i])
+        if(!gk->readyarr[i])
             return ;
     }
     STRU_STARTGAME_RS rs;
@@ -459,7 +459,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     //m_game->m_map[rq->Room_id] = ;
     for(int i=0;i<5;i++)
     {
-        int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
+        int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
     }
 
@@ -477,13 +477,13 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
         }
     for(int i=0;i<5;i++)
     {
-        int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
+        int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         spi.m_identity = arr[i];
-        spi.m_ZGidentity = sui->idarr[i];
+        spi.m_ZGidentity = gk->idarr[i];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
    //主公选英雄
-    SelHeroRq(sui->idarr[ZGindex],rq->Room_id,true);
+    SelHeroRq(gk->idarr[ZGindex],rq->Room_id,true);
 }
 
 void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
@@ -498,9 +498,11 @@ void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
 void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
 {
     STRU_SELHERO_RS *rs = (STRU_SELHERO_RS *)szbuf;
-    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[rs->room_id];
+    GameKernel *gk = m_RoomManger->map_uInr[rs->room_id];
     if(rs->isZG)
     {
+
+        gk->InitPlayer(rs->user_id,rs->iddentity,rs->hero_id);
         STRU_SELHERO_RQ rq;
 
         int arr[16] = {0};
@@ -509,16 +511,26 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
         for(int i=0;i<5;i++)
         {
             int k=0;
-            if(sui->idarr[i] == rs->user_id)
+            if(gk->idarr[i] == rs->user_id)
                 continue;
             for(int j = 0;j<4;j++)
             {
                 rq.m_HeroArr[k] = arr[pos++];
                 k++;
             }
-            int sockfd = map_IdtoUserInfo[sui->idarr[i]]->sockfd;
-
+            int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
+            rq.ZG_heroid = rs->hero_id;
             m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+        }
+    }
+    else
+    {
+        gk->InitPlayer(rs->user_id,rs->iddentity,rs->hero_id);
+        if(gk->map_idToplayer.size()==5)
+        {
+            //发牌
+
+
         }
     }
 }
@@ -545,19 +557,19 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 //更新房间成员信息
 void TcpKernel::UpdateRoomMemberInfo(int room_id)
 {
-    STRU_USERINROOM_ID *sui = m_RoomManger->map_uInr[room_id];
+    GameKernel *gk = m_RoomManger->map_uInr[room_id];
     STRU_ROOM_MEMBER_RS rs;
     int times = 0;
     for(int i=0;i<5;i++)
     {
-        if(sui->idarr[i]!=0)
+        if(gk->idarr[i]!=0)
         {
             times = 0;
             for(int j=0;j<5;j++)
             {
-                if(sui->idarr[j]!=0&&sui->idarr[j]!=sui->idarr[i])
+                if(gk->idarr[j]!=0&&gk->idarr[j]!=gk->idarr[i])
                 {
-                    int user_id = sui->idarr[j];
+                    int user_id = gk->idarr[j];
                     rs.m_userInfo[times].m_userid = user_id;
                     rs.m_userInfo[times].m_iconid = map_IdtoUserInfo[user_id]->icon_id;
                     strcpy(rs.m_userInfo[times].m_szName,map_IdtoUserInfo[user_id]->m_szName);
@@ -566,7 +578,7 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
                     times++;
                 }
             }
-            m_tcp->SendData(map_IdtoUserInfo[sui->idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
+            m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
         }
     }
 }

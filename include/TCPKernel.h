@@ -100,16 +100,4 @@ public:
 };
 
 
-
-
-
-
-////读取上传的视频流信息
-//void UpLoadVideoInfoRq(int,char*);
-//void UpLoadVideoStreamRq(int,char*);
-//void GetVideoRq(int,char*);
-//char* GetVideoPath(char*);
-//void QuitRq(int,char*);
-//void PraiseVideoRq(int,char*);
-//void GetAuthorInfoRq(int,char*);
 #endif

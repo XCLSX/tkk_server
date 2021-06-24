@@ -10,7 +10,7 @@ INCLUDEPATH +=./hero/
 SOURCES += \
         cardmanger.cpp \
         croommanger.cpp \
-        hero/liubei.cpp \
+        gamekernel.cpp \
         player.cpp \
         src/Mysql.cpp \
         src/TCPKernel.cpp \
@@ -22,8 +22,11 @@ SOURCES += \
 HEADERS += \
     cardmanger.h \
     croommanger.h \
+    gamekernel.h \
+    hero/Ccaocao.h \
+    hero/Cliubei.h \
+    hero/Csunquan.h \
     hero/hero.h \
-    hero/liubei.h \
     include/Mysql.h \
     include/TCPKernel.h \
     include/TCPNet.h \

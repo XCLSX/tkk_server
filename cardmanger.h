@@ -8,7 +8,7 @@ public:
     CardManger();
     bool InitCard();
     void setInfo(int,int,int,int);
-    STRU_CARD *getCard();
+    STRU_CARD *getCard();           //抽牌
     void FUN_OffCard(STRU_CARD*);
     void freshCard();
     void CardSwap(int ,int);

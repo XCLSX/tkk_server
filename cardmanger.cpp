@@ -144,10 +144,12 @@ void CardManger::setInfo(int id, int color, int num, int type)
 
 STRU_CARD *CardManger::getCard()
 {
-    return &card[current_index++];
+    STRU_CARD *m_card = &card[current_index++];
+
     last_card_num--;
     if(last_card_num == 0)
         freshCard();
+    return m_card;
 }
 
 void CardManger::FUN_OffCard(STRU_CARD *card)
@@ -193,9 +195,9 @@ void CardManger::FreshHeroArr(int *arr, int zhugongid, bool isZhuGong)
             int randomIndex = rand()%(num-i);
             if(randomIndex!=num-i)
             {
-                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
-                heroarr[num-i] = heroarr[randomIndex]^heroarr[num-i];
-                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+                int temp = heroarr[randomIndex];
+                heroarr[randomIndex] = heroarr[num - i - 1];
+                heroarr[num - i - 1] = temp;
             }
         }
         arr[0] = liubei;
@@ -207,22 +209,22 @@ void CardManger::FreshHeroArr(int *arr, int zhugongid, bool isZhuGong)
     }
     else
     {
-        for(int i=0;i<totalHero-1;i++)
+        int num = totalHero-1;
+        for(int i=0;i<num;i++)
         {
             if(i == zhugongid)
                 heroarr[i] = totalHero-1;
             else
                 heroarr[i] = i;
         }
-        int num = totalHero - 1;
         for(int i=0;i<num;i++)
         {
             int randomIndex = rand()%(num-i);
-            if(randomIndex!=num-i)
+            if(randomIndex!=(num-i))
             {
-                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
-                heroarr[num-i] = heroarr[randomIndex]^heroarr[num-i];
-                heroarr[randomIndex] = heroarr[randomIndex]^heroarr[num-i];
+                int temp = heroarr[randomIndex];
+                heroarr[randomIndex] = heroarr[num - i - 1];
+                heroarr[num - i - 1] = temp;
             }
         }
         for(int i=0;i<16;i++)
