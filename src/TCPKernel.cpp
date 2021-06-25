@@ -544,11 +544,17 @@ void TcpKernel::AllSelHero(int roomid)
 {
     GameKernel *gk = m_RoomManger->map_uInr[roomid];
        STRU_ALLSEL_HERO_RS rs;
+       for(int j = 0;j<5;j++)
+       {
+            rs.user_idarr[j] = gk->idarr[j];
+            rs.heroarr[j] = gk->map_idToplayer[rs.user_idarr[j]]->m_hero_id;
+       }
        for(int i=0;i<5;i++)
        {
-           rs.user_idarr[i] = gk->idarr[i];
-           rs.user_idarr[i] = gk->map_idToplayer[rs.user_idarr[i]]->m_hero_id;
-           m_tcp->SendData(map_IdtoUserInfo[rs.user_idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
+           int uid = gk->idarr[i];
+
+           m_tcp->SendData(map_IdtoUserInfo[uid]->sockfd,(char *)&rs,sizeof(rs));
+
        }
 }
 
