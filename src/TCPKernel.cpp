@@ -548,6 +548,7 @@ void TcpKernel::AllSelHero(int roomid)
        {
            rs.user_idarr[i] = gk->idarr[i];
            rs.user_idarr[i] = gk->map_idToplayer[rs.user_idarr[i]]->m_hero_id;
+           m_tcp->SendData(map_IdtoUserInfo[rs.user_idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
        }
 }
 
