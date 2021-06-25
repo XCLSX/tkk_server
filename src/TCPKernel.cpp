@@ -479,7 +479,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         spi.m_identity = arr[i];
-        spi.m_ZGidentity = gk->idarr[i];
+        spi.m_ZG_userid = gk->idarr[i];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
    //主公选英雄
@@ -559,6 +559,7 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
 {
     GameKernel *gk = m_RoomManger->map_uInr[room_id];
     STRU_ROOM_MEMBER_RS rs;
+
     int times = 0;
     for(int i=0;i<5;i++)
     {

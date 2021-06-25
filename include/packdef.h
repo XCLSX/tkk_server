@@ -104,6 +104,8 @@ typedef enum Net_PACK
 
     DEF_PACK_SELHERO_RQ,                         //选择英雄请求
     DEF_PACK_SELHERO_RS,
+
+    DEF_PACK_ALLSELHERO_RS,                     //全部英雄信息回复
 }Net_PACK;
 
 //注册请求结果
@@ -527,9 +529,11 @@ typedef struct STRU_JOINROOM_RS
     {
         m_nType= DEF_PACK_JOINROOM_RS;
         m_lResult = 0;
+        place = 0;
     }
     PackType m_nType;       //包类型
     int  m_lResult ;
+    int place;
     STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
@@ -735,7 +739,7 @@ typedef struct STRU_POST_IDENTITY
     }
     PackType m_nType;
     int m_identity;
-    int m_ZGidentity;
+    int m_ZG_userid;
 }STRU_POST_IDENTITY;
 
 //选择英雄请求
@@ -771,5 +775,18 @@ typedef struct STRU_SELHERO_RS
     bool isZG;
 
 }STRU_SELHERO_RS;
+
+typedef struct STRU_ALLSEL_HERO_RS
+{
+    STRU_ALLSEL_HERO_RS()
+    {
+        m_nType = DEF_PACK_ALLSELHERO_RS;
+        memset(user_idarr,0,sizeof(user_idarr));
+        memset(heroarr,-1,sizeof(heroarr));
+    }
+    PackType  m_nType;
+    int user_idarr[5];
+    int heroarr[5];
+}STRU_ALLSEL_HERO_RS;
 
 #endif
