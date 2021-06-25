@@ -6,7 +6,7 @@ CRoomManger::CRoomManger()
 
 }
 
-int CRoomManger::joinRoom(int room_id,int user_id)
+int CRoomManger::joinRoom(int room_id,int user_id,int *place)
 {
     if(!IsRoomexist(room_id))
         return 0;
@@ -18,6 +18,7 @@ int CRoomManger::joinRoom(int room_id,int user_id)
     {
         if(gk->idarr[i]==0)
         {
+            *place = i+1;
             gk->idarr[i] = user_id;
             gk->num++;
             pthread_mutex_unlock(&lock);

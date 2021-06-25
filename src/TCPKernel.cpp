@@ -412,7 +412,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
     STRU_JOINROOM_RS rs;
 
-    int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid);
+    int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid,&rs.place);
     if(relt == 0)
         rs.m_lResult = room_no_exist;
     else if(relt == 1)
@@ -424,7 +424,6 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     {
         if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
         {
-            rs.place = i+1;
             int id = gk->idarr[i];
             rs.m_userInfoarr[j].m_userid = gk->idarr[i];
             rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
