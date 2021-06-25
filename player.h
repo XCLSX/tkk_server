@@ -10,6 +10,7 @@ public:
     vector<STRU_CARD*> m_CardBox;
     int m_iddentity;
     Hero* m_hero;
+    int m_hero_id;
 };
 
 #endif // PLAYER_H

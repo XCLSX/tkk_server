@@ -11,6 +11,7 @@ public:
     int num;
     void InitPlayer(int,int,int);
     map<int,player*> map_idToplayer;
+
 };
 
 #endif // GAMEKERNEL_H

@@ -411,6 +411,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 {
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
     STRU_JOINROOM_RS rs;
+
     int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid);
     if(relt == 0)
         rs.m_lResult = room_no_exist;
@@ -423,6 +424,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     {
         if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
         {
+            rs.place = i+1;
             int id = gk->idarr[i];
             rs.m_userInfoarr[j].m_userid = gk->idarr[i];
             rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
@@ -434,6 +436,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 
     UpdateRoomMemberInfo(rq->m_RoomID);
+
 }
 
 //开始游戏
@@ -528,11 +531,24 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
         gk->InitPlayer(rs->user_id,rs->iddentity,rs->hero_id);
         if(gk->map_idToplayer.size()==5)
         {
+            //同步英雄信息
+            AllSelHero(rs->room_id);
             //发牌
 
 
         }
     }
+}
+
+void TcpKernel::AllSelHero(int roomid)
+{
+    GameKernel *gk = m_RoomManger->map_uInr[roomid];
+       STRU_ALLSEL_HERO_RS rs;
+       for(int i=0;i<5;i++)
+       {
+           rs.user_idarr[i] = gk->idarr[i];
+           rs.user_idarr[i] = gk->map_idToplayer[rs.user_idarr[i]]->m_hero_id;
+       }
 }
 
 //离开房间

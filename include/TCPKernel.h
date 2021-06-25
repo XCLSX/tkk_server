@@ -78,6 +78,8 @@ public:
     void SelHeroRq(int id,int roomid,bool isZG);
     //选择武将回复
     void SelHeroRs(int,char*,int);
+    //同步英雄信息
+    void AllSelHero(int);
     //离开房间
     void LeaveRoom(int,char *,int);
 

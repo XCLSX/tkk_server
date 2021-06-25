@@ -6,6 +6,7 @@ player::player(int iddentity,int hero_id)
 {
     m_iddentity = iddentity;
     setHero(hero_id);
+    m_hero_id = hero_id;
 }
 
 void player::setHero(int hero_id)
