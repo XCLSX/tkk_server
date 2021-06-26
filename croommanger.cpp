@@ -10,7 +10,7 @@ int CRoomManger::joinRoom(int room_id,int user_id,int *place)
 {
     if(!IsRoomexist(room_id))
         return 0;
-    GameKernel* gk = map_uInr[room_id];
+    GameKernel* gk = map_gamekl[room_id];
     pthread_mutex_lock(&lock);
     if(gk->num==5)
         return 1;
@@ -18,7 +18,7 @@ int CRoomManger::joinRoom(int room_id,int user_id,int *place)
     {
         if(gk->idarr[i]==0)
         {
-            *place = i+1;
+            *place = i;
             gk->idarr[i] = user_id;
             gk->num++;
             pthread_mutex_unlock(&lock);
@@ -30,7 +30,7 @@ int CRoomManger::joinRoom(int room_id,int user_id,int *place)
 bool CRoomManger::leaveRoom(int room_id,int user_id)
 {
     pthread_mutex_lock(&lock);
-    GameKernel* gk = map_uInr[room_id];
+    GameKernel* gk = map_gamekl[room_id];
     for(int i=0;i<5;i++)
     {
         if(gk->idarr[i] == user_id)
@@ -43,8 +43,8 @@ bool CRoomManger::leaveRoom(int room_id,int user_id)
     }
     if(gk->num==0)
     {
-        auto ite = map_uInr.find(room_id);
-        map_uInr.erase(ite);
+        auto ite = map_gamekl.find(room_id);
+        map_gamekl.erase(ite);
         pthread_mutex_unlock(&lock);
         return false;
     }
@@ -64,15 +64,15 @@ bool CRoomManger::CreateRoom(int room_id,int user_id)
 {
     GameKernel *gk = new GameKernel;
     gk->idarr[gk->num++] =user_id;
-    map_uInr[room_id] = gk;
-    CardManger *cm = new CardManger;
-    map_CardManger[room_id] = cm;
+    map_gamekl[room_id] = gk;
+    //CardManger *cm = new CardManger;
+    //map_CardManger[room_id] = cm;
     return true;
 }
 
 bool CRoomManger::IsRoomexist(int room_id)
 {
-    if(map_uInr.find(room_id)!=map_uInr.end())
+    if(map_gamekl.find(room_id)!=map_gamekl.end())
         return true;
     return false;
 }

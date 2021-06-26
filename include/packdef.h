@@ -106,6 +106,10 @@ typedef enum Net_PACK
     DEF_PACK_SELHERO_RS,
 
     DEF_PACK_ALLSELHERO_RS,                     //全部英雄信息回复
+
+    DEF_PACK_GETCARD_RQ,                        //抽卡请求
+    DEF_PACK_GETCARD_RS,
+
 }Net_PACK;
 
 //注册请求结果
@@ -789,4 +793,30 @@ typedef struct STRU_ALLSEL_HERO_RS
     int heroarr[5];
 }STRU_ALLSEL_HERO_RS;
 
+//抽卡请求
+typedef struct STRU_GETCARD_RQ
+{
+    STRU_GETCARD_RQ()
+    {
+       m_nType = DEF_PACK_GETCARD_RQ;
+       m_roomid = 0;
+       m_userid = 0;
+       num = 0;
+    }
+    PackType m_nType;
+    int m_roomid;
+    int m_userid;
+    int num;            //抽卡数量
+}STRU_GETCARD_RQ;
+
+//抽卡回复
+typedef struct STRU_GETCARD_RS
+{
+    STRU_GETCARD_RS()
+    {
+        m_nType = DEF_PACK_GETCARD_RS;
+    }
+    PackType m_nType;
+    STRU_CARD m_card[4];
+}STRU_GETCARD_RS;
 #endif

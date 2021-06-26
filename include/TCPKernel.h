@@ -80,6 +80,8 @@ public:
     void SelHeroRs(int,char*,int);
     //同步英雄信息
     void AllSelHero(int);
+    //处理抽卡
+    void GetCard(int,char*,int);
     //离开房间
     void LeaveRoom(int,char *,int);
 

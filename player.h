@@ -5,12 +5,14 @@
 class player
 {
 public:
-    player(int,int);
-    void setHero(int);
+    player();
     vector<STRU_CARD*> m_CardBox;
+    void Initplayer(int,int);
+    void setHero(int);
     int m_iddentity;
     Hero* m_hero;
     int m_hero_id;
+    int place;
 };
 
 #endif // PLAYER_H
