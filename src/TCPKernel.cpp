@@ -167,6 +167,9 @@ void TcpKernel::Login(int clientfd ,char* szbuf,int nlen)
     if(ls.size()==0)
     {
         rs.m_lResult =userid_no_exist;
+        m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
+        return ;
+
     }
     int user_id = atoi(ls.front().c_str());     ls.pop_front();
 
@@ -481,7 +484,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         spi.m_identity = arr[i];
-        spi.m_ZG_userid = gk->idarr[i];
+        spi.m_ZG_userid = gk->idarr[ZGindex];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
    //主公选英雄
