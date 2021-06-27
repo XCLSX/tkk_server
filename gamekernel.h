@@ -21,7 +21,7 @@ public:
     STRU_CARD *getCard();           //抽牌
     void FUN_OffCard(STRU_CARD*);
     void freshCard();
-    void CardSwap(int ,int);
+    void CardSwap(STRU_CARD*,int ,int);
     void FreshHeroArr(int *arr,int len,bool);  //洗武将牌
     void Freshidentity(int *arr,int len); //洗身份牌
 

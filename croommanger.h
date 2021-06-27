@@ -1,7 +1,6 @@
 #ifndef CROOMMANGER_H
 #define CROOMMANGER_H
 #include <include/packdef.h>
-#include <cardmanger.h>
 #include <gamekernel.h>
 
 

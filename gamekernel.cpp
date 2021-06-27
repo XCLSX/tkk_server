@@ -173,21 +173,26 @@ void GameKernel::freshCard()
 {
     for(int i=0;i<off_card_num;i++)
     {
-        int index = rand()%off_card_num-i;
-        if(offcard[index].id!=-1)
-          {
-            card[off_card_num-1-i].id = offcard[index].id;
-            card[off_card_num-1-i].col = offcard[index].col;
-            card[off_card_num-1-i].num = offcard[index].num;
-            card[off_card_num-1-i].type = offcard[index].type;
-            offcard[index].id = -1;
-            last_card_num ++;
+        int index = rand()%(off_card_num-i);
 
-          }
-        else
-            i--;
+        card[off_card_num-1-i].id = offcard[index].id;
+        card[off_card_num-1-i].col = offcard[index].col;
+        card[off_card_num-1-i].num = offcard[index].num;
+        card[off_card_num-1-i].type = offcard[index].type;
+        if(index != off_card_num-1-i)
+        CardSwap(offcard,index,off_card_num-1-i);
+
+        last_card_num ++;
     }
     off_card_num = 0;
+}
+
+void GameKernel::CardSwap(STRU_CARD *card_arr, int index, int endindex)
+{
+    card_arr[index].id = card_arr[endindex].id;
+    card_arr[index].col = card_arr[endindex].col;
+    card_arr[index].num = card_arr[endindex].num;
+    card_arr[index].type = card_arr[endindex].type;
 }
 
 void GameKernel::FreshHeroArr(int *arr, int zhugongid, bool isZhuGong)

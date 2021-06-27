@@ -4,7 +4,7 @@
 
 player::player()
 {
-
+    this->m_hero_id = -1;
 }
 
 

@@ -8,7 +8,6 @@ INCLUDEPATH +=./include/
 INCLUDEPATH +=./src/
 INCLUDEPATH +=./hero/
 SOURCES += \
-        cardmanger.cpp \
         croommanger.cpp \
         gamekernel.cpp \
         player.cpp \
@@ -20,7 +19,6 @@ SOURCES += \
         src/main.cpp
 
 HEADERS += \
-    cardmanger.h \
     croommanger.h \
     gamekernel.h \
     hero/Ccaocao.h \

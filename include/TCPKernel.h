@@ -6,7 +6,6 @@
 #include "TCPNet.h"
 #include "Mysql.h"
 #include <croommanger.h>
-#include<cardmanger.h>
 class TcpKernel;
 typedef void (TcpKernel::*PFUN)(int,char*,int nlen);
 
@@ -75,7 +74,7 @@ public:
     void StartGame(int,char*,int);
 
     //选择武将请求
-    void SelHeroRq(int id,int roomid,bool isZG);
+    void SelHeroRq(int id,int roomid,bool isZG,int *arr);
     //选择武将回复
     void SelHeroRs(int,char*,int);
     //同步英雄信息

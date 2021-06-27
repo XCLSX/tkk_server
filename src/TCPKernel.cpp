@@ -477,17 +477,26 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
     }
    //主公选英雄
-    SelHeroRq(gk->idarr[ZGindex],rq->Room_id,true);
+    SelHeroRq(gk->idarr[ZGindex],rq->Room_id,true,NULL);
 }
 
 //选择英雄请求
-void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
+void TcpKernel::SelHeroRq(int id,int roomid,bool isZG,int *arr)
 {
     STRU_SELHERO_RQ rq;
-    m_RoomManger->map_gamekl[roomid]->FreshHeroArr(rq.m_HeroArr,0,isZG);
-    int sockfd = map_IdtoUserInfo[id]->sockfd;
-
-    m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+    if(isZG)
+    {
+        m_RoomManger->map_gamekl[roomid]->FreshHeroArr(rq.m_HeroArr,0,isZG);
+        int sockfd = map_IdtoUserInfo[id]->sockfd;
+        m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+    }
+    else
+    {
+        int sockfd = map_IdtoUserInfo[id]->sockfd;
+        for(int i=0;i<4;i++)
+            rq.m_HeroArr[i] = arr[i];
+        m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+    }
 }
 
 //选择英雄回复
@@ -498,47 +507,40 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
     gk->map_idToplayer[rs->user_id]->SetInfo(rs->hero_id,rs->iddentity);
     if(rs->isZG)
     {
-
-        gk->InitPlayer(rs->user_id,0);
         STRU_SELHERO_RQ rq;
-
         int arr[16] = {0};
+        int *parr = arr;
         m_RoomManger->map_gamekl[rs->room_id]->FreshHeroArr(arr,rs->hero_id,false);
-        int pos = 0;
-        for(int i=0;i<5;i++)
-        {
-            int k=0;
-            if(gk->idarr[i] == rs->user_id)
-                continue;
-            for(int j = 0;j<4;j++)
-            {
-                rq.m_HeroArr[k] = arr[pos++];
-                k++;
-            }
-            int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
-            rq.ZG_heroid = rs->hero_id;
-            m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
-        }
+       for(int i=0;i<5;i++)
+       {
+           if(gk->idarr[i] == rs->user_id)
+               continue;
+           SelHeroRq(gk->idarr[i],rs->room_id,false,parr);
+           parr+=4;
+       }
     }
     else
     {
-        if(gk->map_idToplayer.size()==5)
-        {
-            //同步英雄信息
-            AllSelHero(rs->room_id);
-            //发牌
-            STRU_GETCARD_RQ cardrq;
-            cardrq.m_roomid = rs->room_id;
-            gk->currentTurn = gk->ZGplace;
-            for(int i=0;i<5;i++)
-            {
-                cardrq.m_userid = gk->idarr[gk->currentTurn++];
-                cardrq.num = 4;
-                GetCard(map_IdtoUserInfo[cardrq.m_userid]->sockfd,(char *)&cardrq,sizeof(cardrq));
-                if(gk->currentTurn==5)
-                    gk->currentTurn = 0;
-            }
-        }
+        //判断是否都选完英雄
+        for(int i=0;i<5;i++)
+            if(gk->map_idToplayer[gk->idarr[i]]->m_hero_id==-1)
+                return ;
+
+         //同步英雄信息
+         AllSelHero(rs->room_id);
+         //发牌
+         STRU_GETCARD_RQ cardrq;
+         cardrq.m_roomid = rs->room_id;
+         gk->currentTurn = gk->ZGplace;
+         for(int i=0;i<5;i++)
+         {
+             cardrq.m_userid = gk->idarr[gk->currentTurn++];
+             cardrq.num = 4;
+             GetCard(map_IdtoUserInfo[cardrq.m_userid]->sockfd,(char *)&cardrq,sizeof(cardrq));
+             if(gk->currentTurn==5)
+                 gk->currentTurn = 0;
+         }
+
     }
 }
 
