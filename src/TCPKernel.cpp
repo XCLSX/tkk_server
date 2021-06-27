@@ -423,27 +423,28 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     else
     {
          rs.m_lResult = join_success;
+
          int j=0;
          GameKernel *gk = m_RoomManger->map_gamekl[rq->m_RoomID];
+         gk->num++;
          gk->InitPlayer(rq->m_userInfo.m_userid,rs.place);
-         //获取房间其他成员信息
-         for(int i=0;i<5;i++)
-         {
-             if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
-             {
-                 int id = gk->idarr[i];
-                 rs.m_userInfoarr[j].m_userid = gk->idarr[i];
-                 rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
-                 strcpy(rs.m_userInfoarr[j].m_szName,map_IdtoUserInfo[id]->m_szName);
-                 rs.m_userInfoarr[j].status = 1;
-                 strcpy(rs.m_userInfoarr[j].m_szFelling,map_IdtoUserInfo[id]->m_szFelling);
-             }
-         }
-    }
-    m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
-    if(relt == 2)
-    UpdateRoomMemberInfo(rq->m_RoomID);
 
+//         for(int i=0;i<5;i++)
+//         {
+//             if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
+//             {
+//                // int id = gk->idarr[i];
+////                 rs.m_userInfoarr[j].m_userid = gk->idarr[i];
+////                 rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
+////                 strcpy(rs.m_userInfoarr[j].m_szName,map_IdtoUserInfo[id]->m_szName);
+////                 rs.m_userInfoarr[j].status = 1;
+////                 strcpy(rs.m_userInfoarr[j].m_szFelling,map_IdtoUserInfo[id]->m_szFelling);
+////                 rs.m_userInfoarr->m_place = i;
+//             }
+//         }
+         m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+         UpdateRoomMemberInfo(rq->m_RoomID);
+    }
 }
 
 //开始游戏
@@ -498,6 +499,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     SelHeroRq(gk->idarr[ZGindex],rq->Room_id,true);
 }
 
+//选择英雄请求
 void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
 {
     STRU_SELHERO_RQ rq;
@@ -507,6 +509,7 @@ void TcpKernel::SelHeroRq(int id,int roomid,bool isZG)
     m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
 }
 
+//选择英雄回复
 void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
 {
     STRU_SELHERO_RS *rs = (STRU_SELHERO_RS *)szbuf;
@@ -558,6 +561,7 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
     }
 }
 
+//同步英雄信息
 void TcpKernel::AllSelHero(int roomid)
 {
     GameKernel *gk = m_RoomManger->map_gamekl[roomid];
@@ -566,6 +570,7 @@ void TcpKernel::AllSelHero(int roomid)
        {
             rs.user_idarr[j] = gk->idarr[j];
             rs.heroarr[j] = gk->map_idToplayer[rs.user_idarr[j]]->m_hero_id;
+
        }
        for(int i=0;i<5;i++)
        {
@@ -576,6 +581,7 @@ void TcpKernel::AllSelHero(int roomid)
        }
 }
 
+//抽卡回复
 void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
 {
     STRU_GETCARD_RQ *rq = (STRU_GETCARD_RQ *)szbuf;
@@ -633,6 +639,7 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
                     strcpy(rs.m_userInfo[times].m_szName,map_IdtoUserInfo[user_id]->m_szName);
                     strcpy(rs.m_userInfo[times].m_szFelling,map_IdtoUserInfo[user_id]->m_szFelling);
                     rs.m_userInfo[times].status = 1;
+                    rs.m_userInfo->m_place = j;
                     times++;
                 }
             }

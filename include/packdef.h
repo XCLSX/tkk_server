@@ -190,12 +190,14 @@ typedef int PackType;
                 memset(m_szName,0,MAX_SIZE);
                 memset(m_szFelling,0,MAX_SIZE);
                 status = 0;
+                m_place = -1;
             }
             int m_userid;
             int m_iconid;
             char m_szName[MAX_SIZE];
             char m_szFelling[MAX_SIZE];
             int status;
+            int m_place;
         }STRU_USER_INFO;
 
 
@@ -538,7 +540,7 @@ typedef struct STRU_JOINROOM_RS
     PackType m_nType;       //包类型
     int  m_lResult ;
     int place;
-    STRU_USER_INFO m_userInfoarr[4];   //房间用户id
+    //STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
 
