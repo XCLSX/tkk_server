@@ -369,7 +369,6 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
         m_RoomManger->CreateRoom(rs.m_RoomId,rq->m_userid);
-
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
@@ -490,6 +489,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
+       // gk->map_idToplayer[i]->m_iddentity = arr[i];
         spi.m_identity = arr[i];
         spi.m_ZG_userid = gk->idarr[ZGindex];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));
@@ -511,6 +511,7 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
 {
     STRU_SELHERO_RS *rs = (STRU_SELHERO_RS *)szbuf;
     GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
+    gk->map_idToplayer[rs->user_id]->SetInfo(rs->hero_id,rs->iddentity);
     if(rs->isZG)
     {
 
@@ -537,7 +538,6 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
     }
     else
     {
-        gk->map_idToplayer[rs->user_id]->Initplayer(rs->hero_id,rs->iddentity);
         if(gk->map_idToplayer.size()==5)
         {
             //同步英雄信息
@@ -583,7 +583,11 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
     STRU_GETCARD_RS rs;
     for(int i=0;i<rq->num;i++)
     {
-        rs.m_card[i] = *gk->getCard();
+        STRU_CARD *tempcard = gk->getCard();
+        rs.m_card[i].id = tempcard->id;
+        rs.m_card[i].col = tempcard->col;
+        rs.m_card[i].num = tempcard->num;
+        rs.m_card[i].type = tempcard->type;
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 }

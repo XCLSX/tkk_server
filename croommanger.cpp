@@ -64,9 +64,9 @@ bool CRoomManger::CreateRoom(int room_id,int user_id)
 {
     GameKernel *gk = new GameKernel;
     gk->idarr[gk->num++] =user_id;
+    gk->InitPlayer(user_id,0);
     map_gamekl[room_id] = gk;
-    //CardManger *cm = new CardManger;
-    //map_CardManger[room_id] = cm;
+
     return true;
 }
 

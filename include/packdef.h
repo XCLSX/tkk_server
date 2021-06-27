@@ -819,4 +819,27 @@ typedef struct STRU_GETCARD_RS
     PackType m_nType;
     STRU_CARD m_card[4];
 }STRU_GETCARD_RS;
+
+//回合开始
+typedef struct STRU_TURN_BEGIN
+{
+    STRU_TURN_BEGIN()
+    {
+
+    }
+    PackType m_nType;
+}STRU_TURN_BEGIN;
+
+//回合结束
+typedef struct STRU_TURN_END
+{
+    STRU_TURN_END()
+    {
+
+    }
+    PackType m_nType;
+    int m_roomid;
+    int m_userid;
+}STRU_TURN_END;
+
 #endif

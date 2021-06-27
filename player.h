@@ -7,7 +7,7 @@ class player
 public:
     player();
     vector<STRU_CARD*> m_CardBox;
-    void Initplayer(int,int);
+    void SetInfo(int hero_id,int iddentity);
     void setHero(int);
     int m_iddentity;
     Hero* m_hero;
