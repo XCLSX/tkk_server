@@ -423,25 +423,8 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     else
     {
          rs.m_lResult = join_success;
-
-         int j=0;
          GameKernel *gk = m_RoomManger->map_gamekl[rq->m_RoomID];
-         gk->num++;
          gk->InitPlayer(rq->m_userInfo.m_userid,rs.place);
-
-//         for(int i=0;i<5;i++)
-//         {
-//             if(gk->idarr[i]!=rq->m_userInfo.m_userid&&gk->idarr[i]!=0)
-//             {
-//                // int id = gk->idarr[i];
-////                 rs.m_userInfoarr[j].m_userid = gk->idarr[i];
-////                 rs.m_userInfoarr[j].m_iconid = map_IdtoUserInfo[id]->icon_id;
-////                 strcpy(rs.m_userInfoarr[j].m_szName,map_IdtoUserInfo[id]->m_szName);
-////                 rs.m_userInfoarr[j].status = 1;
-////                 strcpy(rs.m_userInfoarr[j].m_szFelling,map_IdtoUserInfo[id]->m_szFelling);
-////                 rs.m_userInfoarr->m_place = i;
-//             }
-//         }
          m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
          UpdateRoomMemberInfo(rq->m_RoomID);
     }
@@ -477,7 +460,6 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     //发放身份
     int arr[5] = {0};
     m_RoomManger->map_gamekl[rq->Room_id]->Freshidentity(arr,5);
-    //m_game->Selidentity(arr,5);
     STRU_POST_IDENTITY spi;
     int ZGindex = 0;
     for(int i=0;i<5;i++)
@@ -490,7 +472,6 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
-       // gk->map_idToplayer[i]->m_iddentity = arr[i];
         spi.m_identity = arr[i];
         spi.m_ZG_userid = gk->idarr[ZGindex];
         m_tcp->SendData(sockfd,(char*)&spi,sizeof(spi));

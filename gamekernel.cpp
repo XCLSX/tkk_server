@@ -5,7 +5,7 @@ GameKernel::GameKernel()
     memset(idarr,0,sizeof(idarr));
     memset(readyarr,false,sizeof(readyarr));
     num = 0;
-
+    totalHero = 17;
     //cardInit
     srand(time(NULL));
     memset(card,0,sizeof(card));
@@ -13,7 +13,8 @@ GameKernel::GameKernel()
     current_index = 0;
     last_card_num = 0;
     off_card_num = 108;
-    totalHero = 17;
+    this->InitCard();
+
     heroarr = new int[totalHero];
 }
 
@@ -134,6 +135,7 @@ bool GameKernel::InitCard()
     setInfo(RENWANGDUN,Club3,2,FANGJU);
     setInfo(SHANDIAN,Hearts2,12,YANSHIJINNANG);
     setInfo(GUANSHIFU,Diamond4,12,WUQI);
+    freshCard();
 
 }
 
