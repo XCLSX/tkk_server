@@ -25,6 +25,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_STARTGAME_RQ,&TcpKernel::StartGame},
     {DEF_PACK_SELHERO_RS,&TcpKernel::SelHeroRs},
     {DEF_PACK_GETCARD_RQ,&TcpKernel::GetCard},
+    {DEF_PACK_POSTCARD_RQ,&TcpKernel::PostCard},
     {0,0}
 };
 
@@ -465,7 +466,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     for(int i=0;i<5;i++)
         if(arr[i] == zhugong)
         {
-            ZGindex = i;
+            spi.m_ZG_userid = gk->idarr[i];
             gk->ZGplace = i;
             break;
         }
@@ -579,6 +580,27 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
         rs.m_card[i].type = tempcard->type;
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+}
+
+void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
+{
+    STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)szbuf;
+    GameKernel* gk = m_RoomManger->map_gamekl[rq->m_roomid];
+    int relt;
+    //处理出牌后的数据
+    gk->DealCard(szbuf,&relt);
+    //返回结果
+    STRU_POSTCARD_RS rs;
+    rs.m_lResult = relt;
+    m_tcp->SendData(clientfd,(char*)&rs,sizeof(rs));
+    //转发同步信息
+    for(int i=0;i<5;i++)
+    {
+        if(gk->idarr[i] == rq->m_userid)
+            continue;
+        m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,szbuf,nlen);
+    }
+
 }
 
 //离开房间

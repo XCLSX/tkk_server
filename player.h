@@ -11,6 +11,9 @@ public:
     void setHero(int);
     int m_iddentity;
     Hero* m_hero;
+    int hp;
+    int full_hp;
+    void Heal();
     int m_hero_id;
     int place;
 };

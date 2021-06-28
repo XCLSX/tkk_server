@@ -100,15 +100,25 @@ typedef enum Net_PACK
     DEF_PACK_OFFLINRE_RQ,                       //下线请求
     DEF_PACK_OFFLINRE_RS,
 
-    DEF_PACK_POST_IDENTITY,                      //发送身份
+    DEF_PACK_POST_IDENTITY,                     //发送身份
 
-    DEF_PACK_SELHERO_RQ,                         //选择英雄请求
+    DEF_PACK_SELHERO_RQ,                        //选择英雄请求
     DEF_PACK_SELHERO_RS,
 
     DEF_PACK_ALLSELHERO_RS,                     //全部英雄信息回复
 
+    DEF_PACK_TURN_BEGIN,                        //回合开始
+
     DEF_PACK_GETCARD_RQ,                        //抽卡请求
     DEF_PACK_GETCARD_RS,
+
+    DEF_PACK_POSTCARD_RQ,                       //出牌请求
+    DEF_PACK_COMMIT_STATUS,                     //同步状态
+    DEF_PACK_POSTCARD_RS,
+
+    DEF_PACK_OFFCARD_RQ,                        //弃牌请求
+
+    DEF_PACK_TURN_END,                          //回合结束
 
 }Net_PACK;
 
@@ -632,6 +642,8 @@ typedef struct STRU_CHECK_OFFLINEMSG_RQ
         m_nType = DEF_PACK_CHECKOFFLINE_RQ;
     }
     PackType m_nType;
+
+
     STRU_USER_INFO m_userInfo;
 }STRU_CHECK_OFFLINEMSG_RQ;
 
@@ -782,6 +794,7 @@ typedef struct STRU_SELHERO_RS
 
 }STRU_SELHERO_RS;
 
+//同步英雄选择信息
 typedef struct STRU_ALLSEL_HERO_RS
 {
     STRU_ALLSEL_HERO_RS()
@@ -794,6 +807,18 @@ typedef struct STRU_ALLSEL_HERO_RS
     int user_idarr[5];
     int heroarr[5];
 }STRU_ALLSEL_HERO_RS;
+
+
+
+//回合开始
+typedef struct STRU_TURN_BEGIN
+{
+    STRU_TURN_BEGIN()
+    {
+
+    }
+    PackType m_nType;
+}STRU_TURN_BEGIN;
 
 //抽卡请求
 typedef struct STRU_GETCARD_RQ
@@ -822,15 +847,63 @@ typedef struct STRU_GETCARD_RS
     STRU_CARD m_card[4];
 }STRU_GETCARD_RS;
 
-//回合开始
-typedef struct STRU_TURN_BEGIN
+//出牌请求
+typedef struct STRU_POSTCARD_RQ
 {
-    STRU_TURN_BEGIN()
+    STRU_POSTCARD_RQ()
     {
-
+        m_nType = DEF_PACK_POSTCARD_RQ;
+        m_roomid = 0;
+        m_userid = 0;
+        m_touser1id = 0;
+        m_touser2id = 0;
     }
     PackType m_nType;
-}STRU_TURN_BEGIN;
+    STRU_CARD m_card;
+    int m_roomid;
+    int m_userid;
+    int m_touser1id;
+    int m_touser2id;
+}STRU_POSTCARD_RQ;
+
+#define POST_CARD_FAIL          0
+#define POST_CARD_SUCCESS       1
+#define WAIT_POST_CARD          2
+#define SUCCESS_ALREAYD_KILL    3
+//出牌回复
+typedef struct STRU_POSTCARD_RS
+{
+    STRU_POSTCARD_RS()
+    {
+       m_nType = DEF_PACK_POSTCARD_RS;
+       m_lResult = 0;
+    }
+    PackType m_nType;
+    int m_lResult;
+
+}STRU_POSTCARD_RS;
+
+//同步状态
+typedef struct STRU_COMMIT_STATUS
+{
+    STRU_COMMIT_STATUS()
+    {
+        m_nType = DEF_PACK_COMMIT_STATUS;
+    }
+    PackType m_nType;
+    int user_id;
+    STRU_CARD m_card;
+}STRU_COMMIT_STATUS;
+
+//弃牌请求
+typedef struct STRU_OFFCARD_RQ
+{
+    STRU_OFFCARD_RQ()
+    {
+        m_nType = DEF_PACK_OFFCARD_RQ;
+    }
+    PackType  m_nType;
+}STRU_OFFCARD_RQ;
 
 //回合结束
 typedef struct STRU_TURN_END

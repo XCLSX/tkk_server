@@ -24,7 +24,7 @@ public:
     void CardSwap(STRU_CARD*,int ,int);
     void FreshHeroArr(int *arr,int len,bool);  //洗武将牌
     void Freshidentity(int *arr,int len); //洗身份牌
-
+    void DealCard(char *buf,int *relt);
 private:
     int pos;
     int current_index;
@@ -34,6 +34,9 @@ private:
     STRU_CARD offcard[108]; //弃牌堆
     int *heroarr;           //英雄牌堆
     int totalHero;
+
+
+
 
 };
 

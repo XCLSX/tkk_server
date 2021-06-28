@@ -268,3 +268,22 @@ void GameKernel::Freshidentity(int *arr, int len)
         }
     }
 }
+
+void GameKernel::DealCard(char *buf,int *relt)
+{
+    STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)buf;
+    switch (rq->m_card.id) {
+    case SHA:
+    {
+    }
+        break;
+    case SHAN:
+    {}break;
+    case TAO:
+    {
+        map_idToplayer[rq->m_touser1id]->Heal();
+    }break;
+    default:
+        break;
+    }
+}
