@@ -69,8 +69,7 @@ typedef enum Net_PACK
     DEF_PACK_SEARCH_ROOM_RQ,                    //查找房间请求
     DEF_PACK_SEARCH_ROOM_RS,
 
-    DEF_PACK_ROOM_MEMBER_RQ,                    //请求房间成员
-    DEF_PACK_ROOM_MEMBER_RS,
+    DEF_PACK_ROOM_MEMBER_RS,                    //获取成员信息
 
     DEF_PACK_ASKROOM_RQ,                        //刷新房间列表请求
     DEF_PACK_ASKROOM_RS,
@@ -553,21 +552,6 @@ typedef struct STRU_JOINROOM_RS
     //STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
-
-//房间成员请求
-typedef struct STRU_ROOM_MEMBER_RQ
-{
-    STRU_ROOM_MEMBER_RQ()
-    {
-        m_nType= DEF_PACK_ROOM_MEMBER_RQ;
-        m_userid = 0;
-        m_RoomID = 0;
-    }
-    PackType m_nType;   //包类型
-    int m_userid;       //自己用户id
-    int m_RoomID;
-
-}STRU_ROOM_MEMBER_RQ;
 
 //房间成员回复
 typedef struct STRU_ROOM_MEMBER_RS

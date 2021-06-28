@@ -649,7 +649,9 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
                     times++;
                 }
             }
-            m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
+            int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
+            rs.m_nType = DEF_PACK_ROOM_MEMBER_RS;
+            m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
             memset((char *)&rs,0,sizeof(rs));
         }
     }
