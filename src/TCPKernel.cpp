@@ -466,7 +466,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     for(int i=0;i<5;i++)
         if(arr[i] == zhugong)
         {
-            spi.m_ZG_userid = gk->idarr[i];
+            ZGindex = i;
             gk->ZGplace = i;
             break;
         }
