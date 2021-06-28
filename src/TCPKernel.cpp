@@ -467,6 +467,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
         if(arr[i] == zhugong)
         {
             ZGindex = i;
+            spi.m_ZG_userid = gk->idarr[i];
             gk->ZGplace = i;
             break;
         }
@@ -636,7 +637,7 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
             times = 0;
             for(int j=0;j<5;j++)
             {
-                if(gk->idarr[j]!=0&&gk->idarr[j]!=gk->idarr[i])
+                if(gk->idarr[j]!=0&&i!=j)
                 {
                     int user_id = gk->idarr[j];
                     rs.m_userInfo[times].m_userid = user_id;
@@ -644,11 +645,12 @@ void TcpKernel::UpdateRoomMemberInfo(int room_id)
                     strcpy(rs.m_userInfo[times].m_szName,map_IdtoUserInfo[user_id]->m_szName);
                     strcpy(rs.m_userInfo[times].m_szFelling,map_IdtoUserInfo[user_id]->m_szFelling);
                     rs.m_userInfo[times].status = 1;
-                    rs.m_userInfo->m_place = j;
+                    rs.m_userInfo[times].m_place = j;
                     times++;
                 }
             }
             m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,(char *)&rs,sizeof(rs));
+            memset((char *)&rs,0,sizeof(rs));
         }
     }
 }
