@@ -28,6 +28,7 @@ void player::setHero(int hero_id)
         m_hero = new Cliubei;
         break;
     default:
+        m_hero = new Cliubei;
         break;
     }
 }
