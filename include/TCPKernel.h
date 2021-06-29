@@ -74,7 +74,7 @@ public:
     void StartGame(int,char*,int);
 
     //选择武将请求
-    void SelHeroRq(int id,int roomid,bool isZG,int *arr);
+    void SelHeroRq(int id,int roomid,bool isZG,int *arr,int ZG_heroid = 0);
     //选择武将回复
     void SelHeroRs(int,char*,int);
     //同步英雄信息

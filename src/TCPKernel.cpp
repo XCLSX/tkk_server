@@ -483,7 +483,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
 }
 
 //选择英雄请求
-void TcpKernel::SelHeroRq(int id,int roomid,bool isZG,int *arr)
+void TcpKernel::SelHeroRq(int id,int roomid,bool isZG,int *arr,int ZG_heroid)
 {
     STRU_SELHERO_RQ rq;
     if(isZG)
@@ -497,6 +497,7 @@ void TcpKernel::SelHeroRq(int id,int roomid,bool isZG,int *arr)
         int sockfd = map_IdtoUserInfo[id]->sockfd;
         for(int i=0;i<4;i++)
             rq.m_HeroArr[i] = arr[i];
+        rq.ZG_heroid = ZG_heroid;
         m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
     }
 }
@@ -517,7 +518,7 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
        {
            if(gk->idarr[i] == rs->user_id)
                continue;
-           SelHeroRq(gk->idarr[i],rs->room_id,false,parr);
+           SelHeroRq(gk->idarr[i],rs->room_id,false,parr,rs->hero_id);
            parr+=4;
        }
     }
