@@ -16,6 +16,11 @@ public:
     void Heal();
     int m_hero_id;
     int place;
+    int wuqi;
+    int fangju;
+    int jgma;
+    int fyma;
+    int range;
 };
 
 #endif // PLAYER_H

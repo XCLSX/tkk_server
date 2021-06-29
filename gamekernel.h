@@ -3,16 +3,19 @@
 #include <packdef.h>
 #include <time.h>
 #include <player.h>
+#include <TCPNet.h>
 class GameKernel
 {
 public:
     GameKernel();
     int idarr[5];
     bool readyarr[5];
+    map<int,int> map_sockfd;
     int num;
     void InitPlayer(int,int);
     int ZGplace;
     int currentTurn;
+    TcpNet* m_tcp;
     map<int,player*> map_idToplayer;
 public:
     //CardManger();
@@ -24,7 +27,10 @@ public:
     void CardSwap(STRU_CARD*,int ,int);
     void FreshHeroArr(int *arr,int len,bool);  //洗武将牌
     void Freshidentity(int *arr,int len); //洗身份牌
-    void DealCard(char *buf,int *relt);
+    void DealCard(char *buf);
+    void ResposeCard(char *buf);
+    bool CheckCard(STRU_CARD *card,int user_id);
+    bool IscardEuqal(STRU_CARD*,STRU_CARD*);
 private:
     int pos;
     int current_index;

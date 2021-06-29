@@ -84,8 +84,8 @@ public:
 
     //出牌
     void PostCard(int,char*,int);
-
-
+    //响应卡牌
+    void ResposeCard(int,char*,int);
 
 
     //离开房间

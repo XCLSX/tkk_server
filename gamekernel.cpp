@@ -268,22 +268,146 @@ void GameKernel::Freshidentity(int *arr, int len)
         }
     }
 }
-
-void GameKernel::DealCard(char *buf,int *relt)
+//#define POST_CARD_FAIL          0
+//#define POST_CARD_SUCCESS       1
+//#define WAIT_POST_CARD          2
+//#define SUCCESS_ALREAYD_KILL    3
+void GameKernel::DealCard(char *buf)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)buf;
+    //删除卡牌
+    auto ite = map_idToplayer[rq->m_userid]->m_CardBox.begin();
+            while(ite!=map_idToplayer[rq->m_userid]->m_CardBox.end())
+            {
+                if(IscardEuqal(*ite,&rq->m_card))
+                {
+                    map_idToplayer[rq->m_userid]->m_CardBox.erase(ite);
+                    break;
+                }
+                ++ite;
+            }
+    STRU_POSTCARD_RS rs;
     switch (rq->m_card.id) {
     case SHA:
     {
+        rs.m_lResult = WAIT_POST_CARD;
+        STRU_RESPOSE_CARD_RQ rerq;
+        rerq.check_card_id = SHA;
+        rerq.respose_card_id = SHAN;
+
     }
         break;
     case SHAN:
-    {}break;
+    {
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
     case TAO:
     {
+        rs.m_lResult = POST_CARD_SUCCESS;
         map_idToplayer[rq->m_touser1id]->Heal();
     }break;
+    case GUOHECHAIQIAO:
+    {
+
+    }break;
+    case SHUNSHOUQIANYANG:
+    {
+
+    }break;
+    case JUEDOU:
+    {
+
+    }break;
+    case JIEDAOSHAREN:
+    {
+
+    }break;
+    case WUZHONGSHENGYOU:
+    {
+
+    }break;
+    case WUXIEKEJI:
+    {
+
+    }break;
+    case WANJIANQIFA:
+    {
+
+    }break;
+    case NANMANRUQIN:
+    {
+
+    }break;
+    case TAOYUANJIEYI:
+    {
+
+    }break;
+    case WUGUFENGDENG:
+    {
+
+    }break;
+    case SHANDIAN:
+    {
+
+    }break;
+    case LEBUSISHU:
+    {
+
+    }break;
+
     default:
         break;
     }
 }
+
+void GameKernel::ResposeCard(char *buf)
+{
+    STRU_RESPOSE_CARD_RS *rs = (STRU_RESPOSE_CARD_RS *)buf;
+
+    switch (rs->check_card_id) {
+    case SHA:
+    {
+        if(rs->m_lResult == respose_success)
+        {
+            STRU_POSTCARD_RQ rq;
+            rq.m_roomid = rs->room_id;
+            rq.m_userid = rs->user_id;
+            rq.m_card.id = rs->m_card.id;
+            rq.m_card.col = rs->m_card.col;
+            rq.m_card.num = rs->m_card.num;
+            rq.m_card.type = rs->m_card.type;
+
+            for(int i=0;i<5;i++)
+            {
+                m_tcp->SendData(map_sockfd[idarr[i]],(char *)&rq,sizeof(rq));
+            }
+        }
+        else
+        {
+
+        }
+
+    }
+        break;
+    default:
+        break;
+    }
+}
+
+bool GameKernel::CheckCard(STRU_CARD *card, int user_id)
+{
+    for(auto ite:map_idToplayer[user_id]->m_CardBox)
+    {
+      if(IscardEuqal(ite,card))
+          return true;
+    }
+    return false;
+}
+
+bool GameKernel::IscardEuqal(STRU_CARD *card1, STRU_CARD *card2)
+{
+    if(card1->id == card2->id&&card1->col == card2->col&&card1->num==card2->num&&card1->type == card2->type)
+        return true;
+    return false;
+}
+

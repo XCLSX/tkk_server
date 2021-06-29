@@ -26,6 +26,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_SELHERO_RS,&TcpKernel::SelHeroRs},
     {DEF_PACK_GETCARD_RQ,&TcpKernel::GetCard},
     {DEF_PACK_POSTCARD_RQ,&TcpKernel::PostCard},
+    {DEF_PACK_RESPOSE_CARD_RS,&TcpKernel::ResposeCard},
     {0,0}
 };
 
@@ -369,7 +370,7 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     {
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
-        m_RoomManger->CreateRoom(rs.m_RoomId,rq->m_userid);
+        m_RoomManger->CreateRoom(rs.m_RoomId,rq->m_userid,m_tcp);
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }
@@ -416,7 +417,7 @@ void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
     STRU_JOINROOM_RS rs;
 
-    int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid,&rs.place);
+    int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid,&rs.place,map_IdtoUserInfo[rq->m_userInfo.m_userid]->sockfd);
     if(relt == 0)
         rs.m_lResult = room_no_exist;
     else if(relt == 1)
@@ -572,10 +573,12 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
 {
     STRU_GETCARD_RQ *rq = (STRU_GETCARD_RQ *)szbuf;
     GameKernel *gk = m_RoomManger->map_gamekl[rq->m_roomid];
+
     STRU_GETCARD_RS rs;
     for(int i=0;i<rq->num;i++)
     {
         STRU_CARD *tempcard = gk->getCard();
+        gk->map_idToplayer[rq->m_userid]->m_CardBox.push_back(tempcard);
         rs.m_card[i].id = tempcard->id;
         rs.m_card[i].col = tempcard->col;
         rs.m_card[i].num = tempcard->num;
@@ -583,18 +586,20 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
     }
     m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
 }
-
+//出卡处理
 void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)szbuf;
     GameKernel* gk = m_RoomManger->map_gamekl[rq->m_roomid];
-    int relt;
-    //处理出牌后的数据
-    gk->DealCard(szbuf,&relt);
-    //返回结果
-    STRU_POSTCARD_RS rs;
-    rs.m_lResult = relt;
-    m_tcp->SendData(clientfd,(char*)&rs,sizeof(rs));
+    //验证卡牌是否合法
+    if(!gk->CheckCard(&rq->m_card,rq->m_userid))
+    {
+        //反外挂
+        STRU_POSTCARD_RS rs;
+        rs.m_lResult = POST_CARD_FAIL;
+        m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+        return ;
+    }
     //转发同步信息
     for(int i=0;i<5;i++)
     {
@@ -602,7 +607,14 @@ void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
             continue;
         m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,szbuf,nlen);
     }
+    gk->DealCard(szbuf);
+}
 
+void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
+{
+    STRU_RESPOSE_CARD_RS *rs= (STRU_RESPOSE_CARD_RS*) szbuf;
+    GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
+    gk->ResposeCard(szbuf);
 }
 
 //离开房间

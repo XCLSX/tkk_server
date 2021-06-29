@@ -2,15 +2,15 @@
 #define CROOMMANGER_H
 #include <include/packdef.h>
 #include <gamekernel.h>
-
+#include <TCPNet.h>
 
 class CRoomManger
 {
 public:
     CRoomManger();
-    bool CreateRoom(int,int);
+    bool CreateRoom(int,int,TcpNet*);
     bool IsRoomexist(int );
-    int joinRoom(int,int,int *);
+    int joinRoom(int,int,int *,int);
     bool leaveRoom(int,int);        //false 房间所有人都退出  true 房间还存在其他人
 public:
     pthread_mutex_t lock;

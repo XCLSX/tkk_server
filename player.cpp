@@ -5,6 +5,11 @@
 player::player()
 {
     this->m_hero_id = -1;
+    wuqi = 0;
+    fangju = 0;
+    jgma = 0;
+    fyma = 0;
+    range = 1;
 }
 
 
