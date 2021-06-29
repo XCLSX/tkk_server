@@ -802,7 +802,7 @@ typedef struct STRU_TURN_BEGIN
 {
     STRU_TURN_BEGIN()
     {
-
+        m_nType = DEF_PACK_TURN_BEGIN;
     }
     PackType m_nType;
 }STRU_TURN_BEGIN;

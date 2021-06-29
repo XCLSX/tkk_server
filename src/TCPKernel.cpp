@@ -544,6 +544,10 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
              if(gk->currentTurn==5)
                  gk->currentTurn = 0;
          }
+         //主公回合开始
+         STRU_TURN_BEGIN tb;
+         int sockfd = gk->map_sockfd[gk->idarr[gk->currentTurn]];
+         m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
 
     }
 }
