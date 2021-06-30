@@ -621,6 +621,22 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
     gk->ResposeCard(szbuf);
 }
 
+//改变回合
+void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
+{
+    STRU_TURN_END *te = (STRU_TURN_END*)szbuf;
+    GameKernel *gk = m_RoomManger->map_gamekl[te->m_roomid];
+    for(int i=0;i<5;i++)
+    {
+        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
+    }
+    STRU_TURN_BEGIN tb;
+    int turn;
+
+    m_tcp->SendData(gk->map_sockfd[gk->idarr[++gk->currentTurn]],(char *)&tb,sizeof(tb));
+
+}
+
 //离开房间
 void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 {

@@ -9,13 +9,24 @@ public:
     vector<STRU_CARD*> m_CardBox;
     void SetInfo(int hero_id,int iddentity);
     void setHero(int);
-    int m_iddentity;
+    void Heal();
+    int DesHp();
+    void die();
+    bool IsAlive();
+
+    void setwq(int);
+    void setfj(int);
+    void setjgm(int);
+    void setfym(int);
     Hero* m_hero;
+    int place;
+    int m_hero_id;
+
+private:
+    int m_iddentity;
     int hp;
     int full_hp;
-    void Heal();
-    int m_hero_id;
-    int place;
+    bool alive;
     int wuqi;
     int fangju;
     int jgma;

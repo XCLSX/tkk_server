@@ -86,7 +86,8 @@ public:
     void PostCard(int,char*,int);
     //响应卡牌
     void ResposeCard(int,char*,int);
-
+    //切换回合
+    void ChangeTurn(int,char*,int);
 
     //离开房间
     void LeaveRoom(int,char *,int);
