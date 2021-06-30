@@ -39,6 +39,16 @@ void player::setHero(int hero_id)
     }
 }
 
+int player::getHp()
+{
+    return this->hp;
+}
+
+int player::getRange()
+{
+    return this->range;
+}
+
 void player::die()
 {
     alive = false;

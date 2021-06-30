@@ -9,6 +9,8 @@ public:
     vector<STRU_CARD*> m_CardBox;
     void SetInfo(int hero_id,int iddentity);
     void setHero(int);
+    int getHp();
+    int getRange();
     void Heal();
     int DesHp();
     void die();

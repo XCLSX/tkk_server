@@ -781,18 +781,29 @@ typedef struct STRU_SELHERO_RS
 
 }STRU_SELHERO_RS;
 
+typedef struct STRU_PLAYER
+{
+    STRU_PLAYER()
+    {
+        user_id = 0;
+        hero_id = -1;
+        hp = 0;
+        range = 1;
+    }
+    int user_id;
+    int hero_id;
+    int hp;
+    int range;      //攻击距离默认为1
+}STRU_PLAYER;
 //同步英雄选择信息
 typedef struct STRU_ALLSEL_HERO_RS
 {
     STRU_ALLSEL_HERO_RS()
     {
         m_nType = DEF_PACK_ALLSELHERO_RS;
-        memset(user_idarr,0,sizeof(user_idarr));
-        memset(heroarr,-1,sizeof(heroarr));
     }
     PackType  m_nType;
-    int user_idarr[5];
-    int heroarr[5];
+    STRU_PLAYER m_playerarr[5];
 }STRU_ALLSEL_HERO_RS;
 
 

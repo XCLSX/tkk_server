@@ -559,9 +559,12 @@ void TcpKernel::AllSelHero(int roomid)
        STRU_ALLSEL_HERO_RS rs;
        for(int j = 0;j<5;j++)
        {
-            rs.user_idarr[j] = gk->idarr[j];
-            rs.heroarr[j] = gk->map_idToplayer[rs.user_idarr[j]]->m_hero_id;
-
+            int user_id = gk->idarr[j];
+            player *temp = gk->map_idToplayer[user_id];
+            rs.m_playerarr[j].user_id = user_id;
+            rs.m_playerarr[j].hero_id = temp->m_hero_id;
+            rs.m_playerarr[j].hp = temp->getHp();
+            rs.m_playerarr[j].range = temp->getRange();
        }
        for(int i=0;i<5;i++)
        {
