@@ -29,6 +29,7 @@ void player::SetInfo(int hero_id, int iddentity)
 
 void player::setHero(int hero_id)
 {
+    range = 1;
     switch (hero_id) {
     case liubei:
         m_hero = new Cliubei;
