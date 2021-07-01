@@ -89,6 +89,9 @@ public:
     //切换回合
     void ChangeTurn(int,char*,int);
 
+
+    //更新血量
+    void updateHp(int,GameKernel*);
     //离开房间
     void LeaveRoom(int,char *,int);
 

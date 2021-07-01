@@ -84,11 +84,12 @@ void player::setfym(int fym)
     fyma = fym;
 }
 
-void player::Heal()
+bool player::Heal()
 {
     if(hp == full_hp)
-        return ;
+        return false;
     hp++;
+    return true;
 }
 
 int player::DesHp()

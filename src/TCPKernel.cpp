@@ -614,14 +614,40 @@ void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
             continue;
         m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,szbuf,nlen);
     }
-    gk->DealCard(szbuf);
+    gk->DealCard(clientfd,szbuf);
 }
 
 void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
 {
-    STRU_RESPOSE_CARD_RS *rs= (STRU_RESPOSE_CARD_RS*) szbuf;
-    GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
-    gk->ResposeCard(szbuf);
+    STRU_POSTCARD_RS_S *rs = (STRU_POSTCARD_RS_S*) szbuf;
+    GameKernel *gk  = m_RoomManger->map_gamekl[rs->room_id];
+
+
+    player *pl = gk->map_idToplayer[rs->user_id];
+    if(rs->m_lResult == post_failed)
+    {
+        switch (rs->y_card.id) {
+        case SHA:
+                {
+                   pl->DesHp();
+                   updateHp(-1,gk);
+                }
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        //转发出牌
+        STRU_POSTCARD_RQ rq;
+        rq.m_card.id = rs->m_card.id;
+        rq.m_card.col = rs->m_card.col;
+        rq.m_card.num = rs->m_card.num;
+        rq.m_card.type = rs->m_card.type;
+        rq.m_userid = rs->user_id;
+
+    }
 }
 
 //改变回合
@@ -638,6 +664,18 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
 
     m_tcp->SendData(gk->map_sockfd[gk->idarr[++gk->currentTurn]],(char *)&tb,sizeof(tb));
 
+}
+//更新血量
+void TcpKernel::updateHp(int hpchange, GameKernel *gamek)
+{
+    GameKernel *gk = gamek;
+    STRU_COMMIT_STATUS scs;
+    scs.hp_change = hpchange;
+    for(int i=0;i<5;i++)
+    {
+        int sockfd = gk->map_sockfd[gk->idarr[i]];
+        m_tcp->SendData(sockfd,(char *)&scs,sizeof(scs));
+    }
 }
 
 //离开房间

@@ -27,7 +27,7 @@ public:
     void CardSwap(STRU_CARD*,int ,int);
     void FreshHeroArr(int *arr,int len,bool);  //洗武将牌
     void Freshidentity(int *arr,int len); //洗身份牌
-    void DealCard(char *buf);
+    void DealCard(int sockfd,char *buf);
     void ResposeCard(char *buf);
     bool CheckCard(STRU_CARD *card,int user_id);
     bool IscardEuqal(STRU_CARD*,STRU_CARD*);

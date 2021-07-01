@@ -272,7 +272,7 @@ void GameKernel::Freshidentity(int *arr, int len)
 //#define POST_CARD_SUCCESS       1
 //#define WAIT_POST_CARD          2
 //#define SUCCESS_ALREAYD_KILL    3
-void GameKernel::DealCard(char *buf)
+void GameKernel::DealCard(int sockfd,char *buf)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)buf;
     //删除卡牌
@@ -290,21 +290,24 @@ void GameKernel::DealCard(char *buf)
     switch (rq->m_card.id) {
     case SHA:
     {
-        rs.m_lResult = WAIT_POST_CARD;
-        STRU_RESPOSE_CARD_RQ rerq;
-        rerq.check_card_id = SHA;
-        rerq.respose_card_id = SHAN;
-
+         rs.m_lResult = WAIT_POST_CARD;
+         m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
     }
         break;
-    case SHAN:
-    {
-        rs.m_lResult = POST_CARD_SUCCESS;
-    }break;
     case TAO:
     {
         rs.m_lResult = POST_CARD_SUCCESS;
-        map_idToplayer[rq->m_touser1id]->Heal();
+        STRU_COMMIT_STATUS scs;
+        if(map_idToplayer[rq->m_touser1id]->Heal())
+        {
+            scs.hp_change = 1;
+            for(int i=0;i<5;i++)
+            {
+                m_tcp->SendData(map_sockfd[this->idarr[i]],(char *)&scs,sizeof(scs));
+            }
+        }
+        m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
+
     }break;
     case GUOHECHAIQIAO:
     {

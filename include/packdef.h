@@ -114,6 +114,7 @@ typedef enum Net_PACK
     DEF_PACK_POSTCARD_RQ,                       //出牌请求
     DEF_PACK_COMMIT_STATUS,                     //同步状态
     DEF_PACK_POSTCARD_RS,
+    DEF_PACK_POSTCARD_RS_S,
 
     DEF_PACK_RESPOSE_CARD_RQ,                   //响应卡牌请求
     DEF_PACK_RESPOSE_CARD_RS,
@@ -882,6 +883,30 @@ typedef struct STRU_POSTCARD_RS
     int m_lResult;
 
 }STRU_POSTCARD_RS;
+
+#define post_failed  0
+#define post_success 1
+typedef struct STRU_POSTCARD_RS_S
+{
+    STRU_POSTCARD_RS_S()
+    {
+        m_nType = DEF_PACK_POSTCARD_RS_S;
+        m_lResult = 0;
+        room_id = 0;
+        user_id = 0;
+        y_user_id = 0;
+    }
+    PackType m_nType;
+    int m_lResult;
+    int room_id;
+    int user_id;
+    STRU_CARD m_card;
+    //对你出牌的人的
+    STRU_CARD y_card;
+    int y_user_id;
+
+
+}STRU_POSTCARD_RS_S;
 //服务器请求玩家出牌请求 如请求出闪
 typedef struct STRU_RESPOSE_CARD_RQ
 {
@@ -916,15 +941,20 @@ typedef struct STRU_RESPOSE_CARD_RS
     int m_lResult;
     STRU_CARD m_card;
 }STRU_RESPOSE_CARD_RS;
+
 //同步状态
 typedef struct STRU_COMMIT_STATUS
 {
     STRU_COMMIT_STATUS()
     {
         m_nType = DEF_PACK_COMMIT_STATUS;
+        hp_change = 0;
+        card_change = 0;
     }
     PackType m_nType;
     int user_id;
+    int hp_change;
+    int card_change;
     STRU_CARD m_card;
 }STRU_COMMIT_STATUS;
 
