@@ -460,8 +460,9 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     }
 
     //发放身份
-    int arr[5] = {0};
-    m_RoomManger->map_gamekl[rq->Room_id]->Freshidentity(arr,5);
+    //int arr[5] = {0};
+    int arr[5] = {1,2,3,3,4};
+    //m_RoomManger->map_gamekl[rq->Room_id]->Freshidentity(arr,5);
     STRU_POST_IDENTITY spi;
     int ZGindex = 0;
     for(int i=0;i<5;i++)
@@ -472,6 +473,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
             gk->ZGplace = i;
             break;
         }
+
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
@@ -549,7 +551,7 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
          tb.user_id = gk->idarr[gk->currentTurn];
          for(int i=0;i<5;i++)
          {
-             int sockfd = gk->map_sockfd[gk->idarr[i]];
+             int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
              m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
          }
 
@@ -662,6 +664,7 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
 {
     STRU_TURN_END *te = (STRU_TURN_END*)szbuf;
     GameKernel *gk = m_RoomManger->map_gamekl[te->m_roomid];
+
     for(int i=0;i<5;i++)
     {
         m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
