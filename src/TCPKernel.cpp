@@ -26,7 +26,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_SELHERO_RS,&TcpKernel::SelHeroRs},
     {DEF_PACK_GETCARD_RQ,&TcpKernel::GetCard},
     {DEF_PACK_POSTCARD_RQ,&TcpKernel::PostCard},
-    {DEF_PACK_RESPOSE_CARD_RS,&TcpKernel::ResposeCard},
+    {DEF_PACK_POSTCARD_RS_S,&TcpKernel::ResposeCard},
     {0,0}
 };
 
@@ -546,8 +546,13 @@ void TcpKernel::SelHeroRs(int clientfd, char *szbuf, int nlen)
          }
          //主公回合开始
          STRU_TURN_BEGIN tb;
-         int sockfd = gk->map_sockfd[gk->idarr[gk->currentTurn]];
-         m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
+         tb.user_id = gk->idarr[gk->currentTurn];
+         for(int i=0;i<5;i++)
+         {
+             int sockfd = gk->map_sockfd[gk->idarr[i]];
+             m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
+         }
+
 
     }
 }
@@ -586,6 +591,8 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
     {
         STRU_CARD *tempcard = gk->getCard();
         gk->map_idToplayer[rq->m_userid]->m_CardBox.push_back(tempcard);
+        if(tempcard->id == WUXIEKEJI)
+            gk->wxkj_num++;
         rs.m_card[i].id = tempcard->id;
         rs.m_card[i].col = tempcard->col;
         rs.m_card[i].num = tempcard->num;

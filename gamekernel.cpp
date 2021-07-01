@@ -23,6 +23,7 @@ void GameKernel::InitPlayer(int user_id, int place)
     player * pl = new player();
     pl->place = place;
     map_idToplayer[user_id] = pl;
+    wxkj_num = 0;
 }
 
 bool GameKernel::InitCard()
@@ -327,6 +328,8 @@ void GameKernel::DealCard(int sockfd,char *buf)
     }break;
     case WUZHONGSHENGYOU:
     {
+        STRU_GETCARD_RS rs;
+
 
     }break;
     case WUXIEKEJI:
@@ -363,39 +366,39 @@ void GameKernel::DealCard(int sockfd,char *buf)
     }
 }
 
-void GameKernel::ResposeCard(char *buf)
-{
-    STRU_RESPOSE_CARD_RS *rs = (STRU_RESPOSE_CARD_RS *)buf;
+//void GameKernel::ResposeCard(char *buf)
+//{
+//    STRU_POSTCARD_RS_S *rs = (STRU_POSTCARD_RS_S *)buf;
 
-    switch (rs->check_card_id) {
-    case SHA:
-    {
-        if(rs->m_lResult == respose_success)
-        {
-            STRU_POSTCARD_RQ rq;
-            rq.m_roomid = rs->room_id;
-            rq.m_userid = rs->user_id;
-            rq.m_card.id = rs->m_card.id;
-            rq.m_card.col = rs->m_card.col;
-            rq.m_card.num = rs->m_card.num;
-            rq.m_card.type = rs->m_card.type;
+//    switch (rs->m_card.id) {
+//    case SHA:
+//    {
+//        if(rs->m_lResult == respose_success)
+//        {
+//            STRU_POSTCARD_RQ rq;
+//            rq.m_roomid = rs->room_id;
+//            rq.m_userid = rs->user_id;
+//            rq.m_card.id = rs->m_card.id;
+//            rq.m_card.col = rs->m_card.col;
+//            rq.m_card.num = rs->m_card.num;
+//            rq.m_card.type = rs->m_card.type;
 
-            for(int i=0;i<5;i++)
-            {
-                m_tcp->SendData(map_sockfd[idarr[i]],(char *)&rq,sizeof(rq));
-            }
-        }
-        else
-        {
+//            for(int i=0;i<5;i++)
+//            {
+//                m_tcp->SendData(map_sockfd[idarr[i]],(char *)&rq,sizeof(rq));
+//            }
+//        }
+//        else
+//        {
 
-        }
+//        }
 
-    }
-        break;
-    default:
-        break;
-    }
-}
+//    }
+//        break;
+//    default:
+//        break;
+//    }
+//}
 
 bool GameKernel::CheckCard(STRU_CARD *card, int user_id)
 {

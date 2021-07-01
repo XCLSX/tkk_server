@@ -116,9 +116,6 @@ typedef enum Net_PACK
     DEF_PACK_POSTCARD_RS,
     DEF_PACK_POSTCARD_RS_S,
 
-    DEF_PACK_RESPOSE_CARD_RQ,                   //响应卡牌请求
-    DEF_PACK_RESPOSE_CARD_RS,
-
     DEF_PACK_OFFCARD_RQ,                        //弃牌请求
 
     DEF_PACK_TURN_END,                          //回合结束
@@ -815,8 +812,10 @@ typedef struct STRU_TURN_BEGIN
     STRU_TURN_BEGIN()
     {
         m_nType = DEF_PACK_TURN_BEGIN;
+        user_id = 0;
     }
     PackType m_nType;
+    int user_id;
 }STRU_TURN_BEGIN;
 
 //抽卡请求
@@ -907,40 +906,8 @@ typedef struct STRU_POSTCARD_RS_S
 
 
 }STRU_POSTCARD_RS_S;
-//服务器请求玩家出牌请求 如请求出闪
-typedef struct STRU_RESPOSE_CARD_RQ
-{
-    STRU_RESPOSE_CARD_RQ()
-    {
-        m_nType = DEF_PACK_REGISTER_RQ;
-        check_card_id = 0;
-        respose_card_id = 0;
-    }
-    PackType m_nType;
-    int check_card_id;
-    int respose_card_id;
-}STRU_RESPOSE_CARD_RQ;
-//服务器请求玩家出牌回复
-#define respose_failed   0
-#define respose_success  1
 
-typedef struct STRU_RESPOSE_CARD_RS
-{
-    STRU_RESPOSE_CARD_RS()
-    {
-        m_nType = DEF_PACK_REGISTER_RS;
-        m_lResult = 0;
-        check_card_id = 0;
-        room_id = 0;
-        user_id = 0;
-    }
-    PackType m_nType;
-    int room_id;
-    int user_id;
-    int check_card_id;
-    int m_lResult;
-    STRU_CARD m_card;
-}STRU_RESPOSE_CARD_RS;
+
 
 //同步状态
 typedef struct STRU_COMMIT_STATUS

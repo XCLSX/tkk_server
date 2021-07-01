@@ -18,7 +18,6 @@ public:
     TcpNet* m_tcp;
     map<int,player*> map_idToplayer;
 public:
-    //CardManger();
     bool InitCard();
     void setInfo(int,int,int,int);
     STRU_CARD *getCard();           //抽牌
@@ -31,6 +30,7 @@ public:
     void ResposeCard(char *buf);
     bool CheckCard(STRU_CARD *card,int user_id);
     bool IscardEuqal(STRU_CARD*,STRU_CARD*);
+    int wxkj_num;
 private:
     int pos;
     int current_index;
