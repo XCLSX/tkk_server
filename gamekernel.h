@@ -17,6 +17,7 @@ public:
     int currentTurn;
     TcpNet* m_tcp;
     map<int,player*> map_idToplayer;
+    bool gamestart;
 public:
     bool InitCard();
     void setInfo(int,int,int,int);

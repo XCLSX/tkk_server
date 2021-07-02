@@ -30,35 +30,34 @@ int CRoomManger::joinRoom(int room_id,int user_id,int *place,int sockfd)
 
 bool CRoomManger::leaveRoom(int room_id,int user_id)
 {
-    pthread_mutex_lock(&lock);
     GameKernel* gk = map_gamekl[room_id];
     for(int i=0;i<5;i++)
     {
         if(gk->idarr[i] == user_id)
         {
             gk->idarr[i] = 0;
-            auto ite = gk->map_sockfd.find(user_id);
-            gk->map_sockfd.erase(ite);
-            gk->num--;
             gk->readyarr[i] = false;
-            break;
+            pthread_mutex_lock(&lock);
+            auto ite = gk->map_sockfd.find(user_id);
+            if(ite!= gk->map_sockfd.end())
+                gk->map_sockfd.erase(ite);
+            gk->num--;
+            if(gk->num == 0)
+            {
+                auto ite = map_gamekl.find(room_id);
+                if(ite!=map_gamekl.end())
+                {
+                    map_gamekl.erase(ite);
+                    delete gk;
+                    gk = NULL;
+                }
+                return false;//房内无人
+            }
+            pthread_mutex_unlock(&lock);
         }
     }
-    if(gk->num==0)
-    {
-        auto ite = map_gamekl.find(room_id);
-        map_gamekl.erase(ite);
-        pthread_mutex_unlock(&lock);
-        delete gk;
-        gk = NULL;
-        return false;
-    }
-    else
-    {
-        pthread_mutex_unlock(&lock);
-        return true;
-    }
 
+    return true;//房间内还有剩余人
 }
 
 

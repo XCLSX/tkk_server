@@ -2,6 +2,7 @@
 
 GameKernel::GameKernel()
 {
+    gamestart = false;
     memset(idarr,0,sizeof(idarr));
     memset(readyarr,false,sizeof(readyarr));
     num = 0;

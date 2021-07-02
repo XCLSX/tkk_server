@@ -452,7 +452,7 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     }
     STRU_STARTGAME_RS rs;
     rs.m_lResult = game_start_success;
-
+    gk->gamestart = true;
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
@@ -460,9 +460,9 @@ void TcpKernel::StartGame(int clientfd, char *szbuf, int nlen)
     }
 
     //发放身份
-    //int arr[5] = {0};
-    int arr[5] = {1,2,3,3,4};
-    //m_RoomManger->map_gamekl[rq->Room_id]->Freshidentity(arr,5);
+    int arr[5] = {0};
+    //int arr[5] = {1,2,3,3,4};
+    m_RoomManger->map_gamekl[rq->Room_id]->Freshidentity(arr,5);
     STRU_POST_IDENTITY spi;
     int ZGindex = 0;
     for(int i=0;i<5;i++)
@@ -625,7 +625,7 @@ void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
     }
     gk->DealCard(clientfd,szbuf);
 }
-
+//回复卡处理
 void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
 {
     STRU_POSTCARD_RS_S *rs = (STRU_POSTCARD_RS_S*) szbuf;
@@ -637,17 +637,27 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
     {
         switch (rs->y_card.id) {
         case SHA:
-                {
-                   pl->DesHp();
-                   updateHp(-1,gk);
-                }
-            break;
+        {
+           pl->DesHp();
+           updateHp(-1,gk);
+        }
+        break;
+        case NANMANRUQIN:
+        {
+            pl->DesHp();
+            updateHp(-1,gk);
+        }break;
+        case WANJIANQIFA:
+        {
+
+        }break;
         default:
             break;
         }
     }
     else
     {
+
         //转发出牌
         STRU_POSTCARD_RQ rq;
         rq.m_card.id = rs->m_card.id;
@@ -655,6 +665,15 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
         rq.m_card.num = rs->m_card.num;
         rq.m_card.type = rs->m_card.type;
         rq.m_userid = rs->user_id;
+        rq.m_userid = rs->user_id;
+        for(int i=0;i<5;i++)
+        {
+            if(gk->idarr[i] == rq.m_userid)
+                continue;
+            int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
+            m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+
+        }
 
     }
 }
@@ -694,6 +713,7 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
     STRU_LEAVEROOM_RQ* rq = (STRU_LEAVEROOM_RQ*)szbuf;
     if(!m_RoomManger->leaveRoom(rq->m_RoomId,rq->m_userId))
     {
+
         char szsql[_DEF_SQLIEN] = {0};
         sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_RoomId);
         if(!m_sql->UpdataMysql(szsql))
@@ -703,7 +723,9 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
         }
         return ;
     }
-    UpdateRoomMemberInfo(rq->m_RoomId);
+    GameKernel *gk = m_RoomManger->map_gamekl[rq->m_RoomId];
+    //if(!gk->gamestart)
+    //UpdateRoomMemberInfo(rq->m_RoomId);
 
 }
 
