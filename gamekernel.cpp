@@ -27,6 +27,21 @@ void GameKernel::InitPlayer(int user_id, int place)
     wxkj_num = 0;
 }
 
+void GameKernel::nextTurn()
+{
+    while(1)
+    {
+        currentTurn++;
+        if(currentTurn==5)
+            currentTurn = 0;
+        if(map_idToplayer[idarr[currentTurn]]->IsAlive())
+        {
+            break;
+        }
+
+    }
+}
+
 bool GameKernel::InitCard()
 {
     setInfo(SHANDIAN,Spade1,1,YANSHIJINNANG);

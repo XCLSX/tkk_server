@@ -344,7 +344,7 @@ void TcpKernel::GetFriList(int clientfd ,char* szbuf,int nlen)
 //创建房间
 void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 {
-    printf("CreateRoom\n");
+    printf("sockfd:%d\t创建房间\n",clientfd);
     STRU_CREATEROOM_RQ *rq = (STRU_CREATEROOM_RQ*)szbuf;
     STRU_CREATEROOM_RS rs;
     char szsql[_DEF_SQLIEN] = {0};
@@ -378,7 +378,7 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
 //刷新房间
 void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 {
-    printf("AskRoom\n");
+    printf("sockfd:%d\t刷新房间\n",clientfd);
 
     STRU_ASKROOM_RQ *rq = (STRU_ASKROOM_RQ*) szbuf;
     STRU_ASKROOM_RS rs;
@@ -414,8 +414,10 @@ void TcpKernel::AskRoom(int clientfd ,char* szbuf,int nlen)
 //加入房间
 void TcpKernel::JoinRoom(int clientfd, char *szbuf, int nlen)
 {
+
     STRU_JOINROOM_RQ *rq = (STRU_JOINROOM_RQ*)szbuf;
     STRU_JOINROOM_RS rs;
+    printf("sockfd:%d\t加入%d号房间\n",clientfd,rq->m_RoomID);
 
     int relt = m_RoomManger->joinRoom(rq->m_RoomID,rq->m_userInfo.m_userid,&rs.place,map_IdtoUserInfo[rq->m_userInfo.m_userid]->sockfd);
     if(relt == 0)
@@ -674,6 +676,38 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
             m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
 
         }
+        switch (rs->y_card.id) {
+        case SHA:
+        {
+            STRU_POSTCARD_RS srs;
+            srs.m_lResult = POST_CARD_CONTINUE;
+            m_tcp->SendData(map_IdtoUserInfo[rq.m_userid]->sockfd,(char *)&srs,sizeof(srs));
+        }break;
+        case NANMANRUQIN:
+        {
+            gk->nextTurn();
+
+            STRU_POSTCARD_RQ srq;
+            srq.m_userid = srq.m_userid = rq.m_userid;
+            srq.m_card.id = rq.m_card.id;
+            srq.m_card.col = rq.m_card.col;
+            srq.m_card.num = rq.m_card.num;
+            srq.m_card.type = rq.m_card.type;
+            srq.m_touser1id == gk->idarr[gk->currentTurn];
+            for(int i=0;i<5;i++)
+            {
+                m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,(char *)&srq,sizeof(srq));
+            }
+            if(gk->idarr[gk->currentTurn]==srq.m_userid)
+            {
+                STRU_POSTCARD_RS srs;
+                srs.m_lResult = POST_CARD_CONTINUE;
+                m_tcp->SendData(map_IdtoUserInfo[rq.m_userid]->sockfd,(char *)&srs,sizeof(srs));
+            }
+
+        }break;
+
+        }
 
     }
 }
@@ -710,10 +744,11 @@ void TcpKernel::updateHp(int hpchange, GameKernel *gamek)
 //离开房间
 void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
 {
+    printf("sockfd:%d\t离开房间\n",clientfd);
     STRU_LEAVEROOM_RQ* rq = (STRU_LEAVEROOM_RQ*)szbuf;
     if(!m_RoomManger->leaveRoom(rq->m_RoomId,rq->m_userId))
     {
-
+        printf("销毁%d号房间\n",rq->m_RoomId);
         char szsql[_DEF_SQLIEN] = {0};
         sprintf(szsql,"delete from t_room where room_id = %d;",rq->m_RoomId);
         if(!m_sql->UpdataMysql(szsql))
@@ -725,8 +760,7 @@ void TcpKernel::LeaveRoom(int clientfd, char *szbuf, int nlen)
     }
     GameKernel *gk = m_RoomManger->map_gamekl[rq->m_RoomId];
     //if(!gk->gamestart)
-    //UpdateRoomMemberInfo(rq->m_RoomId);
-
+    UpdateRoomMemberInfo(rq->m_RoomId);
 }
 
 //更新房间成员信息

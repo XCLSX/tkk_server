@@ -870,6 +870,7 @@ typedef struct STRU_POSTCARD_RQ
 #define POST_CARD_SUCCESS       1
 #define WAIT_POST_CARD          2
 #define SUCCESS_ALREAYD_KILL    3
+#define POST_CARD_CONTINUE      4
 //出牌回复
 typedef struct STRU_POSTCARD_RS
 {
