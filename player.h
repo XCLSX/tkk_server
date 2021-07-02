@@ -11,8 +11,7 @@ public:
     void setHero(int);
     int getHp();
     int getRange();
-    bool Heal();
-    int DesHp();
+    int changeHp(int);
     void die();
     bool IsAlive();
 

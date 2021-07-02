@@ -91,7 +91,7 @@ public:
 
 
     //更新血量
-    void updateHp(int,GameKernel*);
+    void updateHp(int,int,GameKernel*);
     //离开房间
     void LeaveRoom(int,char *,int);
 

@@ -916,8 +916,8 @@ typedef struct STRU_COMMIT_STATUS
     STRU_COMMIT_STATUS()
     {
         m_nType = DEF_PACK_COMMIT_STATUS;
-        hp_change = 0;
-        card_change = 0;
+        hp_change = -1;
+        card_change = -1;
     }
     PackType m_nType;
     int user_id;
@@ -934,6 +934,7 @@ typedef struct STRU_OFFCARD_RQ
         m_nType = DEF_PACK_OFFCARD_RQ;
     }
     PackType  m_nType;
+    STRU_CARD m_offcard[108];
 }STRU_OFFCARD_RQ;
 
 //回合结束
@@ -944,8 +945,7 @@ typedef struct STRU_TURN_END
 
     }
     PackType m_nType;
-    int m_roomid;
-    int m_userid;
+
 }STRU_TURN_END;
 
 #endif

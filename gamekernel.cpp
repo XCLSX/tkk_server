@@ -315,14 +315,12 @@ void GameKernel::DealCard(int sockfd,char *buf)
     {
         rs.m_lResult = POST_CARD_SUCCESS;
         STRU_COMMIT_STATUS scs;
-        if(map_idToplayer[rq->m_touser1id]->Heal())
+        scs.hp_change =  map_idToplayer[rq->m_userid]->changeHp(1);
+        for(int i=0;i<5;i++)
         {
-            scs.hp_change = 1;
-            for(int i=0;i<5;i++)
-            {
-                m_tcp->SendData(map_sockfd[this->idarr[i]],(char *)&scs,sizeof(scs));
-            }
+            m_tcp->SendData(map_sockfd[this->idarr[i]],(char *)&scs,sizeof(scs));
         }
+
         m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
 
     }break;

@@ -50,6 +50,12 @@ int player::getRange()
     return this->range;
 }
 
+int player::changeHp(int hp_change)
+{
+    hp+=hp_change;
+    return hp;
+}
+
 void player::die()
 {
     alive = false;
@@ -84,19 +90,3 @@ void player::setfym(int fym)
     fyma = fym;
 }
 
-bool player::Heal()
-{
-    if(hp == full_hp)
-        return false;
-    hp++;
-    return true;
-}
-
-int player::DesHp()
-{
-    hp--;
-    if(hp==0)
-        return 1;//濒死
-    else
-        return 0;
-}

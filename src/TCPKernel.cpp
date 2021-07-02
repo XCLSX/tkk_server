@@ -640,14 +640,13 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
         switch (rs->y_card.id) {
         case SHA:
         {
-           pl->DesHp();
-           updateHp(-1,gk);
+
+           updateHp(rs->user_id,-1,gk);
         }
         break;
         case NANMANRUQIN:
         {
-            pl->DesHp();
-            updateHp(-1,gk);
+            updateHp(rs->user_id,-1,gk);
         }break;
         case WANJIANQIFA:
         {
@@ -715,25 +714,27 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
 //改变回合
 void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
 {
-    STRU_TURN_END *te = (STRU_TURN_END*)szbuf;
-    GameKernel *gk = m_RoomManger->map_gamekl[te->m_roomid];
+//    STRU_TURN_END *te = (STRU_TURN_END*)szbuf;
+//    GameKernel *gk = m_RoomManger->map_gamekl[te->m_roomid];
 
-    for(int i=0;i<5;i++)
-    {
-        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
-    }
-    STRU_TURN_BEGIN tb;
-    int turn;
+//    for(int i=0;i<5;i++)
+//    {
+//        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
+//    }
+//    STRU_TURN_BEGIN tb;
+//    int turn;
 
-    m_tcp->SendData(gk->map_sockfd[gk->idarr[++gk->currentTurn]],(char *)&tb,sizeof(tb));
+//    m_tcp->SendData(gk->map_sockfd[gk->idarr[++gk->currentTurn]],(char *)&tb,sizeof(tb));
 
 }
 //更新血量
-void TcpKernel::updateHp(int hpchange, GameKernel *gamek)
+void TcpKernel::updateHp(int user_id,int hpchange, GameKernel *gamek)
 {
     GameKernel *gk = gamek;
     STRU_COMMIT_STATUS scs;
-    scs.hp_change = hpchange;
+    scs.user_id = user_id;
+
+    scs.hp_change = gk->map_idToplayer[user_id]->changeHp(hpchange);
     for(int i=0;i<5;i++)
     {
         int sockfd = gk->map_sockfd[gk->idarr[i]];
