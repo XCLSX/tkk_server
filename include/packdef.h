@@ -932,8 +932,12 @@ typedef struct STRU_OFFCARD_RQ
     STRU_OFFCARD_RQ()
     {
         m_nType = DEF_PACK_OFFCARD_RQ;
+        m_roomid = 0;
+        m_user_id = 0;
     }
     PackType  m_nType;
+    int m_roomid;
+    int m_user_id;
     STRU_CARD m_offcard[108];
 }STRU_OFFCARD_RQ;
 
