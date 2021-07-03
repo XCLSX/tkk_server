@@ -371,7 +371,7 @@ void TcpKernel::CreateRoom(int clientfd, char *szbuf, int nlen)
     {
         rs.m_lResult = create_success;
         rs.m_RoomId = atoi(ls.front().c_str());
-        m_RoomManger->CreateRoom(rs.m_RoomId,rq->m_userid,m_tcp);
+        m_RoomManger->CreateRoom(clientfd,rs.m_RoomId,rq->m_userid,m_tcp);
     }
     m_tcp->SendData( clientfd , (char*)&rs , sizeof(rs) );
 }

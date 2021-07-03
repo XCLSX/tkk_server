@@ -64,11 +64,12 @@ bool CRoomManger::leaveRoom(int room_id,int user_id)
 
 
 
-bool CRoomManger::CreateRoom(int room_id,int user_id,TcpNet* m_tcp)
+bool CRoomManger::CreateRoom(int clientfd,int room_id,int user_id,TcpNet* m_tcp)
 {
     GameKernel *gk = new GameKernel;
     gk->m_tcp = m_tcp;
     gk->idarr[gk->num++] =user_id;
+    gk->map_sockfd[user_id] = clientfd;
     gk->InitPlayer(user_id,0);
     map_gamekl[room_id] = gk;
 

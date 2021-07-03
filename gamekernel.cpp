@@ -444,7 +444,8 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             UpdateStatus(rs->user_id,-1);
             STRU_POSTCARD_RS srs;
             srs.m_lResult = POST_CARD_CONTINUE;
-            m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
+            int sofd = map_sockfd[rs->y_user_id];
+            m_tcp->SendData(sofd,(char *)&srs,sizeof(srs));
         }
         break;
         case NANMANRUQIN:
