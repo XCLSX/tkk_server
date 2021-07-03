@@ -27,6 +27,7 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_GETCARD_RQ,&TcpKernel::GetCard},
     {DEF_PACK_POSTCARD_RQ,&TcpKernel::PostCard},
     {DEF_PACK_POSTCARD_RS_S,&TcpKernel::ResposeCard},
+    {DEF_PACK_OFFCARD_RQ,&TcpKernel::ChangeTurn},
     {0,0}
 };
 
@@ -811,6 +812,7 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
                     ++ite;
                 }
         gk->FUN_OffCard(&rq->m_offcard[i]);
+        i++;
     }
     for(int i=0;i<5;i++)
     {
