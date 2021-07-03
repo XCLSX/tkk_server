@@ -812,22 +812,20 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
                 }
         gk->FUN_OffCard(&rq->m_offcard[i]);
     }
-    STRU_COMMIT_STATUS scs;
-    scs.card_change = pl->m_CardBox.size();
     for(int i=0;i<5;i++)
     {
-        /*if(gk->idarr[i] == rq->m_user_id)
-            continue;*/
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
-        m_tcp->SendData(sockfd,(char *)&scs,sizeof(scs));
+        if(sockfd == clientfd)
+            continue;
+        m_tcp->SendData(sockfd,szbuf,nlen);
     }
     gk->nextTurn();
     STRU_TURN_BEGIN tb;
     tb.user_id = gk->idarr[gk->currentTurn];
     for(int i=0;i<5;i++)
     {
-        /*if(gk->idarr[i] == rq->m_user_id)
-            continue;*/
+        if(gk->idarr[i] == rq->m_user_id)
+            continue;
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
     }
