@@ -856,6 +856,8 @@ typedef struct STRU_POSTCARD_RQ
         m_touser1id = 0;
         m_touser2id = 0;
         last_cardnum = 0;
+        isShow = true;
+
     }
     PackType m_nType;
     STRU_CARD m_card;
@@ -864,6 +866,8 @@ typedef struct STRU_POSTCARD_RQ
     int m_touser1id;
     int m_touser2id;
     int last_cardnum;
+    bool isShow;
+
 }STRU_POSTCARD_RQ;
 
 #define POST_CARD_FAIL          0
@@ -871,6 +875,9 @@ typedef struct STRU_POSTCARD_RQ
 #define WAIT_POST_CARD          2
 #define SUCCESS_ALREAYD_KILL    3
 #define POST_CARD_CONTINUE      4
+#define GHCQ_SUCCESS            5
+#define SSQY_SUCCESS            6
+
 //出牌回复
 typedef struct STRU_POSTCARD_RS
 {
@@ -878,9 +885,11 @@ typedef struct STRU_POSTCARD_RS
     {
        m_nType = DEF_PACK_POSTCARD_RS;
        m_lResult = 0;
+       y_userid = 0;
     }
     PackType m_nType;
     int m_lResult;
+    int y_userid;   //对方userId
 
 }STRU_POSTCARD_RS;
 
@@ -895,6 +904,7 @@ typedef struct STRU_POSTCARD_RS_S
         room_id = 0;
         user_id = 0;
         y_user_id = 0;
+
     }
     PackType m_nType;
     int m_lResult;
@@ -904,6 +914,7 @@ typedef struct STRU_POSTCARD_RS_S
     //对你出牌的人的
     STRU_CARD y_card;
     int y_user_id;
+
 
 
 }STRU_POSTCARD_RS_S;

@@ -23,16 +23,21 @@ public:
     bool InitCard();
     void setInfo(int,int,int,int);
     STRU_CARD *getCard();           //抽牌
-    void FUN_OffCard(STRU_CARD*);
+    void FUN_OffCard(STRU_CARD*);   //弃牌
     void freshCard();
     void CardSwap(STRU_CARD*,int ,int);
     void FreshHeroArr(int *arr,int len,bool);  //洗武将牌
     void Freshidentity(int *arr,int len); //洗身份牌
     void DealCard(int sockfd,char *buf);
-    void ResposeCard(char *buf);
+    void ResposeCard(int sockfd,char *buf);
     bool CheckCard(STRU_CARD *card,int user_id);
     bool IscardEuqal(STRU_CARD*,STRU_CARD*);
+    void UpdateStatus(int user_id,int hp_change = 0,int card_change = 0);
     int wxkj_num;
+    STRU_CARD current_jnp;
+    bool isUsed;
+    int tarPos;
+    int give_up_wxkj_num;//放弃用无懈可击的人数
 private:
     int pos;
     int current_index;
