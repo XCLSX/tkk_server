@@ -595,12 +595,18 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             if(wxkj_num == 5)
             {
                 STRU_GHCQ_RQ gh_rq;
+                gh_rq.m_userid = rs->y_user_id;
+                gh_rq.y_userid = rs->user_id;
                 player *ghpl = map_idToplayer[rs->user_id];
                 for(int i=0;i<ghpl->m_CardBox.size();i++)
                 {
                     gh_rq.m_card[i] = *ghpl->m_CardBox[i];
                 }
-                //gh_rq.wq = ghpl->
+                gh_rq.wq = *ghpl->getwq();
+                gh_rq.fj = *ghpl->getfj();
+                gh_rq.jgm = *ghpl->getjgm();
+                gh_rq.fym = *ghpl->getfym();
+                m_tcp->SendData(map_sockfd[gh_rq.m_userid],(char *)&gh_rq,sizeof(gh_rq));
             }
         }
         default:

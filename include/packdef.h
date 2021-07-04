@@ -900,14 +900,24 @@ typedef struct STRU_SSQY_RQ
     STRU_CARD jgm;
     STRU_CARD fym;
 }STRU_SSQY_RQ;
+#define shoupai 1
+#define wqpai   2
+#define fjpai   3
+#define jgmpai  4
+#define fympai  5
 //顺手牵羊回复
 typedef  struct STRU_SSQY_RS
 {
     STRU_SSQY_RS()
     {
         m_nType = DEF_PACK_SSQY_RS;
+        n_lResult = 0;
+        m_userid = 0;
+        y_userid = 0;
+
     }
     PackType m_nType;
+    int n_lResult;
     int m_userid;
     int y_userid;
     int room_id;
@@ -932,6 +942,7 @@ typedef struct STRU_GHCQ_RQ
     STRU_CARD jgm;
     STRU_CARD fym;
 }STRU_GHCQ_RQ;
+
 //过河拆桥回复
 typedef struct STRU_GHCQ_RS
 {
@@ -940,8 +951,10 @@ typedef struct STRU_GHCQ_RS
         m_nType = DEF_PACK_GHCQ_RS;
         m_userid = 0;
         y_userid = 0;
+        n_lResult = 0;
     }
     PackType m_nType;
+    int n_lResult;
     int m_userid;   //自己id
     int y_userid;   //目标id
     int room_id;

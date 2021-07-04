@@ -84,3 +84,23 @@ void player::setfym(STRU_CARD * fym)
     fyma = *fym;
 }
 
+STRU_CARD *player::getwq()
+{
+    return  &wuqi;
+}
+
+STRU_CARD *player::getfj()
+{
+    return &fangju;
+}
+
+STRU_CARD *player::getjgm()
+{
+    return &jgma;
+}
+
+STRU_CARD *player::getfym()
+{
+    return &fyma;
+}
+
