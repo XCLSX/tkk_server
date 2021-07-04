@@ -35,6 +35,7 @@ public:
     void UpdateStatus(int user_id,int hp_change = 0,int card_change = 0);
     int wxkj_num;
     STRU_CARD current_jnp;
+    int currenet_id;
     bool isUsed;
     int tarPos;
     int give_up_wxkj_num;//放弃用无懈可击的人数

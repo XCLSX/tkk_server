@@ -302,7 +302,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
         current_jnp = rq->m_card;
         isUsed = true;
         wxkj_num = 0;
-
+        currenet_id = rq->m_userid;
     //加入弃牌堆
     FUN_OffCard(&rq->m_card);
     //删除卡牌
@@ -566,7 +566,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                pthread_mutex_lock(&wxkj_lock);
                wxkj_num++;
                pthread_mutex_unlock(&wxkj_lock);
-               if(wxkj_num == 5)
+               if(wxkj_num == 4)
                    if(isUsed)
                    {
                        switch (current_jnp.id) {
@@ -575,7 +575,17 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                             STRU_POSTCARD_RS sprs;
                             //sprs.y_userid =
                        }
-                           break;
+                       break;
+                       case WUZHONGSHENGYOU:
+                       {
+                           STRU_GETCARD_RS card_rs;
+                           card_rs.m_card[0] = *getCard();
+                           card_rs.m_card[1] = *getCard();
+                           m_tcp->SendData(map_sockfd[currenet_id],(char *)&card_rs,sizeof(card_rs));
+                           STRU_POSTCARD_RS post_rs;
+                           post_rs.m_lResult = POST_CARD_CONTINUE;
+                           m_tcp->SendData(map_sockfd[currenet_id],(char *)&post_rs,sizeof(post_rs));
+                       }break;
                        default:
                            break;
                        }
@@ -660,69 +670,76 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
 
         for(int i=0;i<5;i++)
         {
-            if(idarr[i] == rq.m_userid&&rq.m_card.id!=WUXIEKEJI)
+            if(idarr[i] == rq.m_userid)
                 continue;
             int sockfd = map_sockfd[idarr[i]];
             m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
 
         }
         switch (rs->y_card.id) {
-        case SHA:
-        {
-            STRU_POSTCARD_RS srs;
-            srs.m_lResult = POST_CARD_CONTINUE;
-            m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
-        }break;
-        case NANMANRUQIN:
-        {
-            if(rs->m_card.id == SHA)
+            case SHA:
             {
-               nextTurn();
-               //轮转完一圈
-               if(idarr[currentTurn]==rs->y_user_id)
-               {
-                   STRU_POSTCARD_RS srs;
-                   srs.m_lResult = POST_CARD_CONTINUE;
-                   m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
-                   return ;
-               }
-               STRU_POSTCARD_RQ rq1;
-               rq1.isShow = false;
-               rq1.m_card = current_jnp;
-               rq1.m_touser1id = idarr[currentTurn];
-               for(int i=0;i<5;i++)
-               {
-                   int sockfd = map_sockfd[idarr[i]];
-                   m_tcp->SendData(sockfd,(char *)&rq1,sizeof(rq1));
-               }
-            }
-            else if(rs->m_card.id == WUXIEKEJI)
+                STRU_POSTCARD_RS srs;
+                srs.m_lResult = POST_CARD_CONTINUE;
+                m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
+            }break;
+            case NANMANRUQIN:
             {
+                if(rs->m_card.id == SHA)
+                {
+                   nextTurn();
+                   //轮转完一圈
+                   if(idarr[currentTurn]==rs->y_user_id)
+                   {
+                       STRU_POSTCARD_RS srs;
+                       srs.m_lResult = POST_CARD_CONTINUE;
+                       m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
+                       return ;
+                   }
+                   STRU_POSTCARD_RQ rq1;
+                   rq1.isShow = false;
+                   rq1.m_card = current_jnp;
+                   rq1.m_touser1id = idarr[currentTurn];
+                   for(int i=0;i<5;i++)
+                   {
+                       int sockfd = map_sockfd[idarr[i]];
+                       m_tcp->SendData(sockfd,(char *)&rq1,sizeof(rq1));
+                   }
+                }
+                else if(rs->m_card.id == WUXIEKEJI)
+                {
 
-            }
+                }
 
 
 
-        }break;
-        case GUOHECHAIQIAO:
-        {
-            current_jnp = rs->y_card;
-            isUsed = !isUsed;
+            }break;
+            case GUOHECHAIQIAO:
+            {
+                current_jnp = rs->y_card;
+                isUsed = !isUsed;
 
-        }break;
-        case SHUNSHOUQIANYANG:
-        {
-            current_jnp = rs->y_card;
-            isUsed = !isUsed;
+            }break;
+            case SHUNSHOUQIANYANG:
+            {
+                current_jnp = rs->y_card;
+                isUsed = !isUsed;
 
-        }break;
-        case WUXIEKEJI:
-        {
-            pthread_mutex_lock(&wxkj_lock);
-            isUsed = !isUsed;
-            wxkj_num = 0;
-            pthread_mutex_unlock(&wxkj_lock);
-        }break;
+            }break;
+            case WUXIEKEJI:
+            {
+                pthread_mutex_lock(&wxkj_lock);
+                isUsed = !isUsed;
+                wxkj_num = 0;
+                pthread_mutex_unlock(&wxkj_lock);
+            }break;
+            case WUZHONGSHENGYOU:
+            {
+                pthread_mutex_lock(&wxkj_lock);
+                isUsed = !isUsed;
+                wxkj_num = 0;
+                pthread_mutex_unlock(&wxkj_lock);
+            }break;
 
         }
 
