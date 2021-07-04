@@ -86,6 +86,10 @@ public:
     void PostCard(int,char*,int);
     //响应卡牌
     void ResposeCard(int,char*,int);
+    //顺手牵羊回复
+    void SSQY_Rs(int,char*,int);
+    //过河拆桥回复
+    void GHCQ_Rs(int,char*,int);
     //切换回合
     void ChangeTurn(int,char*,int);
 

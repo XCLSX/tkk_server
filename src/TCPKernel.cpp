@@ -28,6 +28,8 @@ static const ProtocolMap m_ProtocolMapEntries[] =
     {DEF_PACK_POSTCARD_RQ,&TcpKernel::PostCard},
     {DEF_PACK_POSTCARD_RS_S,&TcpKernel::ResposeCard},
     {DEF_PACK_OFFCARD_RQ,&TcpKernel::ChangeTurn},
+    {DEF_PACK_SSQY_RS,&TcpKernel::SSQY_Rs},
+    {DEF_PACK_GHCQ_RS,&TcpKernel::GHCQ_Rs},
     {0,0}
 };
 
@@ -786,7 +788,64 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
 
 //        }
 
-//    }
+    //    }
+}
+
+void TcpKernel::SSQY_Rs(int, char *, int)
+{
+
+}
+
+void TcpKernel::GHCQ_Rs(int clientfd, char *szbuf, int nlen)
+{
+    STRU_GHCQ_RS *rs = (STRU_GHCQ_RS*)szbuf;
+    GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
+    for(int i=0;i<5;i++)
+    {
+        if(gk->idarr[i] == rs->m_userid)
+            continue;
+        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
+    }
+    player *pl = gk->map_idToplayer[rs->m_userid];
+    switch (rs->n_lResult) {
+        case shoupai:
+        {
+            auto ite = pl->m_CardBox.begin();
+            while(ite!=pl->m_CardBox.end())
+            {
+                if(gk->IscardEuqal(*ite,&rs->m_card))
+                {
+                    pl->m_CardBox.erase(ite);
+
+                    return;
+                }
+                ++ite;
+            }
+        }
+            break;
+        case wqpai:
+        {
+            pl->setwq(0);
+        }
+        break;
+        case fjpai:
+        {
+            pl->setfj(0);
+        }
+        break;
+        case jgmpai:
+        {
+            pl->setjgm(0);
+        }
+        break;
+        case fympai:
+        {
+            pl->setfym(0);
+        }
+        break;
+        default:
+            break;
+    }
 }
 
 //改变回合
@@ -827,8 +886,7 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
     tb.user_id = gk->idarr[gk->currentTurn];
     for(int i=0;i<5;i++)
     {
-//        if(gk->idarr[i] == rq->m_user_id)
-//            continue;
+
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
     }

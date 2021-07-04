@@ -65,27 +65,39 @@ bool player::IsAlive()
 
 void player::setwq(STRU_CARD *wq)
 {
+    if(wq == NULL)
+        wuqi.id = 0;
+    else
     wuqi = *wq;
 }
 
 void player::setfj(STRU_CARD * fj)
 {
+    if(fj == NULL)
+        fangju.id = 0;
+    else
     fangju = *fj;
 }
 
 void player::setjgm(STRU_CARD * jgm)
 {
-
+    if(jgm == NULL)
+        jgma.id = 0;
+    else
     jgma = *jgm;
 }
 
 void player::setfym(STRU_CARD * fym)
 {
+    if(fym == NULL)
+        fyma.id = 0;
+    else
     fyma = *fym;
 }
 
 STRU_CARD *player::getwq()
 {
+
     return  &wuqi;
 }
 
