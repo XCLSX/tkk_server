@@ -543,7 +543,6 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         rq.m_card.num = rs->m_card.num;
         rq.m_card.type = rs->m_card.type;
         rq.m_userid = rs->user_id;
-        rq.m_userid = rs->user_id;
         for(int i=0;i<5;i++)
         {
             if(idarr[i] == rq.m_userid)
@@ -557,7 +556,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         {
             STRU_POSTCARD_RS srs;
             srs.m_lResult = POST_CARD_CONTINUE;
-            m_tcp->SendData(map_sockfd[rq.m_userid],(char *)&srs,sizeof(srs));
+            m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
         }break;
         case NANMANRUQIN:
         {

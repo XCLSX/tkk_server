@@ -814,6 +814,7 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
         gk->FUN_OffCard(&rq->m_offcard[i]);
         i++;
     }
+    //转发弃牌
     for(int i=0;i<5;i++)
     {
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
