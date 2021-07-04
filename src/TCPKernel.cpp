@@ -791,9 +791,59 @@ void TcpKernel::ResposeCard(int clientfd, char *szbuf, int nlen)
     //    }
 }
 
-void TcpKernel::SSQY_Rs(int, char *, int)
+void TcpKernel::SSQY_Rs(int clientfd, char *szbuf, int nlen)
 {
+    STRU_SSQY_RS *rs = (STRU_SSQY_RS*)szbuf;
+    GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
+    for(int i=0;i<5;i++)
+    {
+        if(gk->idarr[i] == rs->m_userid)
+            continue;
+        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
+    }
+    player *pl = gk->map_idToplayer[rs->m_userid];
+    switch (rs->n_lResult) {
+        case shoupai:
+        {
+            auto ite = pl->m_CardBox.begin();
+            while(ite!=pl->m_CardBox.end())
+            {
+                if(gk->IscardEuqal(*ite,&rs->m_card))
+                {
+                    pl->m_CardBox.erase(ite);
 
+                    return;
+                }
+                ++ite;
+            }
+        }
+            break;
+        case wqpai:
+        {
+            pl->setwq(0);
+        }
+        break;
+        case fjpai:
+        {
+            pl->setfj(0);
+        }
+        break;
+        case jgmpai:
+        {
+            pl->setjgm(0);
+        }
+        break;
+        case fympai:
+        {
+            pl->setfym(0);
+        }
+        break;
+        default:
+            break;
+    }
+    STRU_GETCARD_RS card_rs;
+    card_rs.m_card[0] = rs->m_card;
+    m_tcp->SendData(map_IdtoUserInfo[rs->m_userid]->sockfd,(char *)&card_rs,sizeof(card_rs));
 }
 
 void TcpKernel::GHCQ_Rs(int clientfd, char *szbuf, int nlen)
