@@ -39,6 +39,7 @@ public:
     int tarPos;
     int give_up_wxkj_num;//放弃用无懈可击的人数
 private:
+    pthread_mutex_t wxkj_lock;
     int pos;
     int current_index;
     int last_card_num;

@@ -17,6 +17,8 @@ GameKernel::GameKernel()
     off_card_num = 108;
     this->InitCard();
 
+    pthread_mutex_init(&wxkj_lock,NULL);
+
     heroarr = new int[totalHero];
 }
 
@@ -316,33 +318,24 @@ void GameKernel::DealCard(int sockfd,char *buf)
                 ++ite;
             }
     STRU_POSTCARD_RS rs;
+    rs.y_userid = rq->m_userid;
     switch (rq->m_card.id) {
     case SHA:
     {
          rs.m_lResult = WAIT_POST_CARD;
-         m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
     }
         break;
     case TAO:
     {
         rs.m_lResult = POST_CARD_SUCCESS;
         UpdateStatus(rs.y_userid,1);
-        m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
-
     }break;
     case GUOHECHAIQIAO:
     {
-        if(this->wxkj_num>0)
-        {
-            rs.m_lResult = WAIT_POST_CARD;
+        wxkj_num = 0;
+        //rs.m_lResult = GHCQ_SUCCESS;
+        rs.y_userid = rq->m_touser1id;
 
-
-        }
-        else
-        {
-            rs.m_lResult = GHCQ_SUCCESS;
-            rs.y_userid = rq->m_touser1id;
-        }
 
     }break;
     case SHUNSHOUQIANYANG:
@@ -353,7 +346,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
         }
         else
         {
-            rs.m_lResult = SSQY_SUCCESS;
+            //rs.m_lResult = SSQY_SUCCESS;
             rs.y_userid = rq->m_touser1id;
         }
     }break;
@@ -376,10 +369,6 @@ void GameKernel::DealCard(int sockfd,char *buf)
     {
         STRU_GETCARD_RS rs;
 
-
-    }break;
-    case WUXIEKEJI:
-    {
 
     }break;
     case WANJIANQIFA:
@@ -426,10 +415,92 @@ void GameKernel::DealCard(int sockfd,char *buf)
     {
 
     }break;
-
+    case HANBINGJIAN:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }
+    case CIXIONGSHUANGGUJIAN:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case QINGLONGYANYUEDAO:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case QINGGANGJIAN:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case ZHANGBASHEMAO:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case QILINGONG:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case ZHUGELIANNU:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case GUANSHIFU:
+    {
+        map_idToplayer[rq->m_userid]->setwq(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case BAGUAZHEN:
+    {
+        map_idToplayer[rq->m_userid]->setfj(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case RENWANGDUN:
+    {
+        map_idToplayer[rq->m_userid]->setfj(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case CHITU:
+    {
+        map_idToplayer[rq->m_userid]->setjgm(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case DAYUAN:
+    {
+        map_idToplayer[rq->m_userid]->setjgm(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case DILU:
+    {
+        map_idToplayer[rq->m_userid]->setfym(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case JUEYING:
+    {
+        map_idToplayer[rq->m_userid]->setfym(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case ZHUAHUANGFEIDIAN:
+    {
+        map_idToplayer[rq->m_userid]->setfym(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
+    case ZIXIN:
+    {
+        map_idToplayer[rq->m_userid]->setfym(&rq->m_card);
+        rs.m_lResult = POST_CARD_SUCCESS;
+    }break;
     default:
+        return ;
         break;
     }
+    m_tcp->SendData(sockfd,(char *)&rs,sizeof(rs));
+
 }
 
 void GameKernel::ResposeCard(int sockfd, char *buf)
@@ -497,38 +568,41 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         }break;
         case WUXIEKEJI:
         {
-            nextTurn();
-            //全部都响应了无懈可击
-            if(currentTurn == tarPos)
-            {
-                if(isUsed)
-                {
-                    //仍然有效
-                }
-                else
-                {
-                    //无效
-                    switch (this->current_jnp.id) {
-                    case NANMANRUQIN:
-                    {
-
-                    }
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                STRU_POSTCARD_RQ rq1;
-                rq1.isShow = false;
-                rq1.m_card.id = WUXIEKEJI;
-                rq1.m_touser1id = idarr[tarPos];
-
-            }
+           pthread_mutex_lock(&wxkj_lock);
+           wxkj_num++;
+           pthread_mutex_unlock(&wxkj_lock);
+           if(wxkj_num == 5)
+               if(isUsed)
+               {
+                   switch (current_jnp.id) {
+                   case GUOHECHAIQIAO:
+                   {
+                        STRU_POSTCARD_RS sprs;
+                        //sprs.y_userid =
+                   }
+                       break;
+                   default:
+                       break;
+                   }
+               }
 
         }break;
+        case GUOHECHAIQIAO:
+        {
+            pthread_mutex_lock(&wxkj_lock);
+            wxkj_num++;
+            pthread_mutex_unlock(&wxkj_lock);
+            if(wxkj_num == 5)
+            {
+                STRU_GHCQ_RQ gh_rq;
+                player *ghpl = map_idToplayer[rs->user_id];
+                for(int i=0;i<ghpl->m_CardBox.size();i++)
+                {
+                    gh_rq.m_card[i] = *ghpl->m_CardBox[i];
+                }
+                //gh_rq.wq = ghpl->
+            }
+        }
         default:
             break;
         }
@@ -543,9 +617,10 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         rq.m_card.num = rs->m_card.num;
         rq.m_card.type = rs->m_card.type;
         rq.m_userid = rs->user_id;
+
         for(int i=0;i<5;i++)
         {
-            if(idarr[i] == rq.m_userid)
+            if(idarr[i] == rq.m_userid&&rq.m_card.id!=WUXIEKEJI)
                 continue;
             int sockfd = map_sockfd[idarr[i]];
             m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
@@ -588,6 +663,19 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
 
 
 
+        }break;
+        case GUOHECHAIQIAO:
+        {
+            current_jnp = rs->y_card;
+            isUsed = !isUsed;
+
+        }break;
+        case WUXIEKEJI:
+        {
+            pthread_mutex_lock(&wxkj_lock);
+            isUsed = !isUsed;
+            wxkj_num = 0;
+            pthread_mutex_unlock(&wxkj_lock);
         }break;
 
         }

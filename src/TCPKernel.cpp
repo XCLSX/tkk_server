@@ -827,8 +827,8 @@ void TcpKernel::ChangeTurn(int clientfd, char *szbuf, int nlen)
     tb.user_id = gk->idarr[gk->currentTurn];
     for(int i=0;i<5;i++)
     {
-        if(gk->idarr[i] == rq->m_user_id)
-            continue;
+//        if(gk->idarr[i] == rq->m_user_id)
+//            continue;
         int sockfd = map_IdtoUserInfo[gk->idarr[i]]->sockfd;
         m_tcp->SendData(sockfd,(char *)&tb,sizeof(tb));
     }

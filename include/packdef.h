@@ -116,6 +116,12 @@ typedef enum Net_PACK
     DEF_PACK_POSTCARD_RS,
     DEF_PACK_POSTCARD_RS_S,
 
+    DEF_PACK_SSQY_RQ,                           //顺手牵羊请求
+    DEF_PACK_SSQY_RS,
+
+    DEF_PACK_GHCQ_RQ,                           //过河拆桥回复
+    DEF_PACK_GHCQ_RS,
+
     DEF_PACK_OFFCARD_RQ,                        //弃牌请求
 
     DEF_PACK_TURN_END,                          //回合结束
@@ -875,9 +881,72 @@ typedef struct STRU_POSTCARD_RQ
 #define WAIT_POST_CARD          2
 #define SUCCESS_ALREAYD_KILL    3
 #define POST_CARD_CONTINUE      4
-#define GHCQ_SUCCESS            5
-#define SSQY_SUCCESS            6
 
+//顺手牵羊请求
+typedef struct STRU_SSQY_RQ
+{
+    STRU_SSQY_RQ()
+    {
+        m_nType = DEF_PACK_SSQY_RQ;
+        m_userid = 0;
+        y_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+    int y_userid;
+    STRU_CARD m_card[10];
+    STRU_CARD wq;
+    STRU_CARD fj;
+    STRU_CARD jgm;
+    STRU_CARD fym;
+}STRU_SSQY_RQ;
+//顺手牵羊回复
+typedef  struct STRU_SSQY_RS
+{
+    STRU_SSQY_RS()
+    {
+        m_nType = DEF_PACK_SSQY_RS;
+    }
+    PackType m_nType;
+    int m_userid;
+    int y_userid;
+    int room_id;
+    STRU_CARD m_card;
+
+}STRU_SSQY_RS;
+//过河拆桥请求
+typedef struct STRU_GHCQ_RQ
+{
+    STRU_GHCQ_RQ()
+    {
+        m_nType = DEF_PACK_GHCQ_RQ;
+        m_userid = 0;
+        y_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+    int y_userid;
+    STRU_CARD m_card[10];
+    STRU_CARD wq;
+    STRU_CARD fj;
+    STRU_CARD jgm;
+    STRU_CARD fym;
+}STRU_GHCQ_RQ;
+//过河拆桥回复
+typedef struct STRU_GHCQ_RS
+{
+    STRU_GHCQ_RS()
+    {
+        m_nType = DEF_PACK_GHCQ_RS;
+        m_userid = 0;
+        y_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;   //自己id
+    int y_userid;   //目标id
+    int room_id;
+    STRU_CARD m_card;
+}STRU_GHCQ_RS;
 //出牌回复
 typedef struct STRU_POSTCARD_RS
 {
@@ -892,6 +961,8 @@ typedef struct STRU_POSTCARD_RS
     int y_userid;   //对方userId
 
 }STRU_POSTCARD_RS;
+
+
 
 #define post_failed  0
 #define post_success 1
@@ -949,7 +1020,7 @@ typedef struct STRU_OFFCARD_RQ
     PackType  m_nType;
     int m_roomid;
     int m_user_id;
-    STRU_CARD m_offcard[108];
+    STRU_CARD m_offcard[10];
 }STRU_OFFCARD_RQ;
 
 //回合结束

@@ -6,10 +6,7 @@ player::player()
 {
     this->m_hero_id = -1;
     alive = true;
-    wuqi = 0;
-    fangju = 0;
-    jgma = 0;
-    fyma = 0;
+
     range = 1;
 }
 
@@ -66,27 +63,24 @@ bool player::IsAlive()
     return alive;
 }
 
-void player::setwq(int wq)
+void player::setwq(STRU_CARD *wq)
 {
-    wuqi = wq;
+    wuqi = *wq;
 }
 
-void player::setfj(int fj)
+void player::setfj(STRU_CARD * fj)
 {
-    fangju = fj;
+    fangju = *fj;
 }
 
-void player::setjgm(int jgm)
+void player::setjgm(STRU_CARD * jgm)
 {
-    if(jgma == 0&&jgm!=0)
-    {
-        range++;
-    }
-    jgma = jgm;
+
+    jgma = *jgm;
 }
 
-void player::setfym(int fym)
+void player::setfym(STRU_CARD * fym)
 {
-    fyma = fym;
+    fyma = *fym;
 }
 
