@@ -126,6 +126,8 @@ typedef enum Net_PACK
 
     DEF_PACK_TURN_END,                          //回合结束
 
+    DEF_PACK_HILIGHT_RQ,                        //高亮
+
 }Net_PACK;
 
 //注册请求结果
@@ -1046,5 +1048,15 @@ typedef struct STRU_TURN_END
     PackType m_nType;
 
 }STRU_TURN_END;
+typedef struct STRU_HILIGHT_RQ
+{
+    STRU_HILIGHT_RQ()
+    {
+        m_nType = DEF_PACK_HILIGHT_RQ;
+        m_userid = 0;
+    }
+    PackType m_nType;
+    int m_userid;
+}STRU_HILIGHT_RQ;
 
 #endif

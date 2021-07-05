@@ -28,8 +28,50 @@ void player::setHero(int hero_id)
 {
     range = 1;
     switch (hero_id) {
+    case caocao:
+        m_hero = new Ccaocao;
+        break;
+    case diaochan:
+        m_hero = new Cdiaochan;
+        break;
+    case guanyu:
+        m_hero = new Cguanyu;
+        break;
+    case guojia:
+        m_hero = new Cguojia;
+        break;
+    case huangyueying:
+        m_hero = new Chuangyueying;
+        break;
+    case huatuo:
+        m_hero = new Chuatuo;
+        break;
     case liubei:
         m_hero = new Cliubei;
+        break;
+    case lvbu:
+        m_hero = new Clvbu;
+        break;
+    case machao:
+        m_hero = new Cmachao;
+        break;
+    case simayi:
+        m_hero = new Csimayi;
+        break;
+    case sunquan:
+        m_hero = new Csunquan;
+        break;
+    case xiahoudun:
+        m_hero = new Cxiahoudun;
+        break;
+    case xuchu:
+        m_hero = new Cxuchu;
+        break;
+    case zhangfei:
+        m_hero = new Czhangfei;
+        break;
+    case zhangliao:
+        m_hero =new Czhangliao;
         break;
     default:
         m_hero = new Cliubei;

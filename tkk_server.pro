@@ -22,8 +22,22 @@ HEADERS += \
     croommanger.h \
     gamekernel.h \
     hero/Ccaocao.h \
+    hero/Cdiaochan.h \
+    hero/Cguanyu.h \
+    hero/Cguojia.h \
+    hero/Chuangyueying.h \
+    hero/Chuatuo.h \
     hero/Cliubei.h \
+    hero/Clvbu.h \
+    hero/Cmachao.h \
+    hero/Csimayi.h \
     hero/Csunquan.h \
+    hero/Cxiahoudun.h \
+    hero/Cxuchu.h \
+    hero/Czhangfei.h \
+    hero/Czhangliao.h \
+    hero/Czhaoyun.h \
+    hero/Czhugeliang.h \
     hero/hero.h \
     include/Mysql.h \
     include/TCPKernel.h \

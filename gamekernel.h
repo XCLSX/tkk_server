@@ -32,6 +32,7 @@ public:
     void ResposeCard(int sockfd,char *buf);
     bool CheckCard(STRU_CARD *card,int user_id);
     bool IscardEuqal(STRU_CARD*,STRU_CARD*);
+    void Hilight(int );
     void UpdateStatus(int user_id,int hp_change = 0,int card_change = 0);
     int wxkj_num;
     STRU_CARD current_jnp;

@@ -9,7 +9,7 @@ public:
     {
         hp = 4;
         country = wu;
-        sex = nan;
+        sex = 1;
     }
     void fun1(STRU_CARD *cardarr, int clen, int *userIdarr, int len) override
     {

@@ -1,13 +1,12 @@
-#ifndef CCAOCAO_H
-#define CCAOCAO_H
+#ifndef CGUOJIA_H
+#define CGUOJIA_H
 #include <hero.h>
-
-class Ccaocao :public Hero
+class Cguojia :public Hero
 {
 public:
-    Ccaocao()
+    Cguojia()
     {
-        hp = 4;
+        hp = 3;
         country = wei;
         sex = 1;
     }
@@ -20,4 +19,4 @@ public:
 
     }
 };
-#endif // CCAOCAO_H
+#endif // CGUOJIA_H

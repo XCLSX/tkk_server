@@ -1,14 +1,13 @@
-#ifndef CCAOCAO_H
-#define CCAOCAO_H
+#ifndef CZHUGELIANG_H
+#define CZHUGELIANG_H
 #include <hero.h>
-
-class Ccaocao :public Hero
+class Czhugeliang :public Hero
 {
 public:
-    Ccaocao()
+    Czhugeliang()
     {
-        hp = 4;
-        country = wei;
+        hp = 3;
+        country = shu;
         sex = 1;
     }
     void fun1(STRU_CARD *cardarr, int clen, int *userIdarr, int len) override
@@ -20,4 +19,4 @@ public:
 
     }
 };
-#endif // CCAOCAO_H
+#endif // CZHUGELIANG_H

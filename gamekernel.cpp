@@ -298,7 +298,7 @@ void GameKernel::Freshidentity(int *arr, int len)
 void GameKernel::DealCard(int sockfd,char *buf)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)buf;
-
+        Hilight(rq->m_touser1id);
         current_jnp = rq->m_card;
         isUsed = true;
         wxkj_num = 0;
@@ -374,6 +374,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
 
         nextTurn();
         tarPos = currentTurn;
+        Hilight(idarr[currentTurn]);
         STRU_POSTCARD_RQ rq1;
         rq1.isShow = false;
         rq1.m_card = rq->m_card;
@@ -523,11 +524,15 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                    STRU_POSTCARD_RS rs1;
                    rs1.m_lResult = POST_CARD_CONTINUE;
                    rs1.y_userid = rs->y_user_id;
+
+                   m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&rs1,sizeof(rs1));
+                   return ;
                }
                STRU_POSTCARD_RQ rq1;
                rq1.isShow = false;
                rq1.m_card = rs->y_card;
                rq1.m_touser1id = idarr[currentTurn];
+               m_tcp->SendData(map_sockfd[idarr[currentTurn]],(char *)&rq1,sizeof(rq1));
 
             }break;
             case WANJIANQIFA:
@@ -668,6 +673,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         rq.m_card.type = rs->m_card.type;
         rq.m_userid = rs->user_id;
 
+
         for(int i=0;i<5;i++)
         {
             if(idarr[i] == rq.m_userid)
@@ -698,16 +704,20 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                    }
                    STRU_POSTCARD_RQ rq1;
                    rq1.isShow = false;
-                   rq1.m_card = current_jnp;
+                   rq1.m_card = rs->y_card;
                    rq1.m_touser1id = idarr[currentTurn];
                    for(int i=0;i<5;i++)
                    {
                        int sockfd = map_sockfd[idarr[i]];
                        m_tcp->SendData(sockfd,(char *)&rq1,sizeof(rq1));
                    }
+                   return ;
                 }
                 else if(rs->m_card.id == WUXIEKEJI)
                 {
+                    current_jnp = rs->y_card;
+                    currenet_id = idarr[currentTurn];
+                    wxkj_num = 0;
 
                 }
 
@@ -761,6 +771,19 @@ bool GameKernel::IscardEuqal(STRU_CARD *card1, STRU_CARD *card2)
     if(card1->id == card2->id&&card1->col == card2->col&&card1->num==card2->num&&card1->type == card2->type)
         return true;
     return false;
+}
+
+void GameKernel::Hilight(int userid)
+{
+    if(userid == 0)
+        return ;
+    STRU_HILIGHT_RQ rq;
+    rq.m_userid = userid;
+    for(int i=0;i<5;i++)
+    {
+        int sockfd = map_sockfd[idarr[i]];
+        m_tcp->SendData(sockfd,(char *)&rq,sizeof(rq));
+    }
 }
 
 void GameKernel::UpdateStatus(int user_id, int hp_change, int card_change)

@@ -1,7 +1,22 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <hero.h>
 #include <Cliubei.h>
+#include <Chuatuo.h>
+#include <Ccaocao.h>
+#include <Cdiaochan.h>
+#include <Cguanyu.h>
+#include <Cguojia.h>
+#include <Chuangyueying.h>
+#include <Clvbu.h>
+#include <Cmachao.h>
+#include <Csimayi.h>
+#include <Csunquan.h>
+#include <Cxiahoudun.h>
+#include <Cxuchu.h>
+#include <Czhangfei.h>
+#include <Czhangliao.h>
+#include <Czhaoyun.h>
+#include <Czhugeliang.h>
 class player
 {
 public:
