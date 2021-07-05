@@ -298,7 +298,7 @@ void GameKernel::Freshidentity(int *arr, int len)
 void GameKernel::DealCard(int sockfd,char *buf)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)buf;
-        Hilight(rq->m_touser1id);
+        //Hilight(rq->m_touser1id);
         current_jnp = rq->m_card;
         isUsed = true;
         wxkj_num = 0;
@@ -374,7 +374,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
 
         nextTurn();
         tarPos = currentTurn;
-        Hilight(idarr[currentTurn]);
+        //Hilight(idarr[currentTurn]);
         STRU_POSTCARD_RQ rq1;
         rq1.isShow = false;
         rq1.m_card = rq->m_card;
@@ -618,6 +618,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                     gh_rq.fym = *ghpl->getfym();
                     m_tcp->SendData(map_sockfd[gh_rq.m_userid],(char *)&gh_rq,sizeof(gh_rq));
                 }
+                return ;
             }break;
             case SHUNSHOUQIANYANG:
             {

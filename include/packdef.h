@@ -868,13 +868,14 @@ typedef struct STRU_POSTCARD_RQ
 
     }
     PackType m_nType;
-    STRU_CARD m_card;
     int m_roomid;
     int m_userid;
     int m_touser1id;
     int m_touser2id;
     int last_cardnum;
     bool isShow;
+    STRU_CARD m_card;
+
 
 }STRU_POSTCARD_RQ;
 

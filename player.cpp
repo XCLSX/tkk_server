@@ -73,6 +73,9 @@ void player::setHero(int hero_id)
     case zhangliao:
         m_hero =new Czhangliao;
         break;
+    case zhugeliang:
+        m_hero = new Czhugeliang;
+        break;
     default:
         m_hero = new Cliubei;
         break;

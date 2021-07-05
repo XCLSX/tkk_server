@@ -622,6 +622,7 @@ void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
         return ;
     }
     //转发同步信息
+
     for(int i=0;i<5;i++)
     {
         if(gk->idarr[i] == rq->m_userid)
@@ -697,12 +698,18 @@ void TcpKernel::SSQY_Rs(int clientfd, char *szbuf, int nlen)
 void TcpKernel::GHCQ_Rs(int clientfd, char *szbuf, int nlen)
 {
     STRU_GHCQ_RS *rs = (STRU_GHCQ_RS*)szbuf;
+    STRU_GHCQ_RS gh_rs;
+    gh_rs.m_card = rs->m_card;
+    gh_rs.m_userid = rs->m_userid;
+    gh_rs.n_lResult = rs->n_lResult;
+    gh_rs.room_id = rs->room_id;
+    gh_rs.y_userid = rs->y_userid;
     GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
     for(int i=0;i<5;i++)
     {
-        if(gk->idarr[i] == rs->m_userid)
+        if(map_IdtoUserInfo[gk->idarr[i]]->sockfd == clientfd)
             continue;
-        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],szbuf,nlen);
+        m_tcp->SendData(gk->map_sockfd[gk->idarr[i]],(char *)&gh_rs,sizeof(gh_rs));
     }
     player *pl = gk->map_idToplayer[rs->m_userid];
     switch (rs->n_lResult) {
