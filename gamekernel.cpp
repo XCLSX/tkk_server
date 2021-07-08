@@ -521,7 +521,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                 }
                 else
                 {
-
+                    HealRq(rs->user_id);
                 }
             }
             break;
