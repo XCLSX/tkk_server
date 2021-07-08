@@ -625,13 +625,14 @@ void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
 //    }
 //    //转发同步信息
 
+    gk->DealCard(clientfd,szbuf);
     for(int i=0;i<5;i++)
     {
         if(gk->idarr[i] == rq->m_userid)
             continue;
         m_tcp->SendData(map_IdtoUserInfo[gk->idarr[i]]->sockfd,szbuf,nlen);
     }
-    gk->DealCard(clientfd,szbuf);
+
 
 }
 //回复卡处理   被动出牌
