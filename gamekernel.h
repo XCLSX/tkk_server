@@ -10,11 +10,14 @@ public:
     GameKernel();
     int idarr[5];
     bool readyarr[5];
+    set<int> wxkj_arr;
     map<int,int> map_sockfd;
     int num;
     void InitPlayer(int,int);
     int ZGplace;
     int currentTurn;
+    int temp_turn;
+    int die_userid;
     TcpNet* m_tcp;
     map<int,player*> map_idToplayer;
     bool gamestart;
@@ -40,6 +43,9 @@ public:
     bool isUsed;
     int tarPos;
     int give_up_wxkj_num;//放弃用无懈可击的人数
+    void HealRq(int user_id);
+    void HealRs(char *);
+    void SetCurrentTurn(int);
 private:
     pthread_mutex_t wxkj_lock;
     int pos;

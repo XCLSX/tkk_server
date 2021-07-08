@@ -611,17 +611,19 @@ void TcpKernel::GetCard(int clientfd, char *szbuf, int nlen)
 void TcpKernel::PostCard(int clientfd, char *szbuf, int nlen)
 {
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ*)szbuf;
+    //STRU_POSTCARD_RQ rq1;
+
     GameKernel* gk = m_RoomManger->map_gamekl[rq->m_roomid];
     //验证卡牌是否合法
-    if(!gk->CheckCard(&rq->m_card,rq->m_userid))
-    {
-        //反外挂
-        STRU_POSTCARD_RS rs;
-        rs.m_lResult = POST_CARD_FAIL;
-        m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
-        return ;
-    }
-    //转发同步信息
+//    if(!gk->CheckCard(&rq->m_card,rq->m_userid))
+//    {
+//        //反外挂
+//        STRU_POSTCARD_RS rs;
+//        rs.m_lResult = POST_CARD_FAIL;
+//        m_tcp->SendData(clientfd,(char *)&rs,sizeof(rs));
+//        return ;
+//    }
+//    //转发同步信息
 
     for(int i=0;i<5;i++)
     {
@@ -810,6 +812,13 @@ void TcpKernel::updateHp(int user_id,int hpchange, GameKernel *gamek)
         int sockfd = gk->map_sockfd[gk->idarr[i]];
         m_tcp->SendData(sockfd,(char *)&scs,sizeof(scs));
     }
+}
+
+void TcpKernel::HealRs(int clientfd, char *szbuf, int nlen)
+{
+    STRU_SELHERO_RS * rs = (STRU_SELHERO_RS*)szbuf;
+    GameKernel *gk = m_RoomManger->map_gamekl[rs->room_id];
+    gk->HealRs(szbuf);
 }
 
 //离开房间

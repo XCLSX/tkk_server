@@ -301,7 +301,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
         //Hilight(rq->m_touser1id);
         current_jnp = rq->m_card;
         isUsed = true;
-        wxkj_num = 0;
+        wxkj_arr.clear();
         currenet_id = rq->m_userid;
     //加入弃牌堆
     FUN_OffCard(&rq->m_card);
@@ -322,6 +322,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
     case SHA:
     {
          rs.m_lResult = WAIT_POST_CARD;
+         Hilight(rq->m_touser1id);
     }
         break;
     case TAO:
@@ -331,6 +332,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
     }break;
     case GUOHECHAIQIAO:
     {
+        Hilight(rq->m_touser1id);
         wxkj_num = 0;
         rs.m_lResult = WAIT_POST_CARD;
         rs.y_userid = rq->m_touser1id;
@@ -339,7 +341,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
     }break;
     case SHUNSHOUQIANYANG:
     {
-
+            Hilight(rq->m_touser1id);
             rs.m_lResult = WAIT_POST_CARD;
             rs.y_userid = rq->m_touser1id;
 
@@ -509,10 +511,18 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             case SHA:
             {
                 UpdateStatus(rs->user_id,-1);
-                STRU_POSTCARD_RS srs;
-                srs.m_lResult = POST_CARD_CONTINUE;
-                int sofd = map_sockfd[rs->y_user_id];
-                m_tcp->SendData(sofd,(char *)&srs,sizeof(srs));
+                if(map_idToplayer[rs->user_id]->IsAlive())
+                {
+                    Hilight(rs->y_user_id);
+                    STRU_POSTCARD_RS srs;
+                    srs.m_lResult = POST_CARD_CONTINUE;
+                    int sofd = map_sockfd[rs->y_user_id];
+                    m_tcp->SendData(sofd,(char *)&srs,sizeof(srs));
+                }
+                else
+                {
+
+                }
             }
             break;
             case NANMANRUQIN:
@@ -569,11 +579,12 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             case WUXIEKEJI:
             {
                pthread_mutex_lock(&wxkj_lock);
-               wxkj_num++;
+               wxkj_arr.insert(sockfd);
                pthread_mutex_unlock(&wxkj_lock);
-               if(wxkj_num == 4)
+               if(wxkj_arr.size() == 4)
                    if(isUsed)
                    {
+                       Hilight(rs->y_user_id);
                        switch (current_jnp.id) {
                        case GUOHECHAIQIAO:
                        {
@@ -600,10 +611,11 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             case GUOHECHAIQIAO:
             {
                 pthread_mutex_lock(&wxkj_lock);
-                wxkj_num++;
+                wxkj_arr.insert(sockfd);
                 pthread_mutex_unlock(&wxkj_lock);
-                if(wxkj_num == 4)
+                if(wxkj_arr.size() == 4)
                 {
+                    Hilight(rs->y_user_id);
                     STRU_GHCQ_RQ gh_rq;
                     gh_rq.m_userid = rs->y_user_id;
                     gh_rq.y_userid = rs->user_id;
@@ -617,16 +629,23 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                     gh_rq.jgm = *ghpl->getjgm();
                     gh_rq.fym = *ghpl->getfym();
                     m_tcp->SendData(map_sockfd[gh_rq.m_userid],(char *)&gh_rq,sizeof(gh_rq));
+                    STRU_POSTCARD_RS rs1;
+                    rs1.m_lResult = POST_CARD_CONTINUE;
+                    rs1.y_userid = rs->y_user_id;
+
+                    m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&rs1,sizeof(rs1));
+                    return ;
                 }
                 return ;
             }break;
             case SHUNSHOUQIANYANG:
             {
                 pthread_mutex_lock(&wxkj_lock);
-                wxkj_num++;
+                wxkj_arr.insert(sockfd);
                 pthread_mutex_unlock(&wxkj_lock);
-                if(wxkj_num == 4)
+                if(wxkj_arr.size() == 4)
                 {
+                    Hilight(rs->y_user_id);
                     STRU_SSQY_RQ ss_rq;
                     ss_rq.m_userid = rs->y_user_id;
                     ss_rq.y_userid = rs->user_id;
@@ -640,14 +659,20 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                     ss_rq.jgm = *ghpl->getjgm();
                     ss_rq.fym = *ghpl->getfym();
                     m_tcp->SendData(map_sockfd[ss_rq.m_userid],(char *)&ss_rq,sizeof(ss_rq));
+                    STRU_POSTCARD_RS rs1;
+                    rs1.m_lResult = POST_CARD_CONTINUE;
+                    rs1.y_userid = rs->y_user_id;
+
+                    m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&rs1,sizeof(rs1));
+                    return ;
                 }
             }break;
             case WUZHONGSHENGYOU:
             {
                 pthread_mutex_lock(&wxkj_lock);
-                wxkj_num++;
+                wxkj_arr.insert(sockfd);
                 pthread_mutex_unlock(&wxkj_lock);
-                if(wxkj_num == 4)
+                if(wxkj_arr.size() == 4)
                 {
                     STRU_GETCARD_RS card_rs;
                     card_rs.m_card[0] = *getCard();
@@ -686,6 +711,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
         switch (rs->y_card.id) {
             case SHA:
             {
+                Hilight(rs->y_user_id);
                 STRU_POSTCARD_RS srs;
                 srs.m_lResult = POST_CARD_CONTINUE;
                 m_tcp->SendData(map_sockfd[rs->y_user_id],(char *)&srs,sizeof(srs));
@@ -748,7 +774,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
             {
                 pthread_mutex_lock(&wxkj_lock);
                 isUsed = !isUsed;
-                wxkj_num = 0;
+                wxkj_arr.clear();
                 pthread_mutex_unlock(&wxkj_lock);
             }break;
 
@@ -797,6 +823,46 @@ void GameKernel::UpdateStatus(int user_id, int hp_change, int card_change)
     {
         int sockfd = map_sockfd[idarr[i]];
         m_tcp->SendData(sockfd,(char *)&scs,sizeof(scs));
+    }
+}
+
+void GameKernel::HealRq(int user_id)
+{
+    STRU_HEAL_PLAYER_RQ rq;
+    rq.die_userid = user_id;
+    SetCurrentTurn(user_id);
+    die_userid = user_id;
+    Hilight(idarr[currentTurn]);
+    m_tcp->SendData(map_sockfd[idarr[currentTurn]],(char *)&rq,sizeof(rq));
+
+}
+
+void GameKernel::HealRs(char* szbuf)
+{
+    STRU_HEAL_PLAYER_RS *rs = (STRU_HEAL_PLAYER_RS *)szbuf;
+    if(rs->n_lResult)
+    {
+        UpdateStatus(die_userid,1,0);
+    }
+    else
+    {
+        nextTurn();
+        if(idarr[currentTurn] == die_userid)
+        {
+            //拯救失败
+        }
+        Hilight(idarr[currentTurn]);
+    }
+}
+
+void GameKernel::SetCurrentTurn(int userid)
+{
+    temp_turn = currentTurn;
+    while(1)
+    {
+        if(idarr[currentTurn] == userid)
+            break;
+        nextTurn();
     }
 }
 

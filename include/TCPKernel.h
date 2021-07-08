@@ -96,6 +96,9 @@ public:
 
     //更新血量
     void updateHp(int,int,GameKernel*);
+
+    //拯救濒死
+    void HealRs(int,char *,int);
     //离开房间
     void LeaveRoom(int,char *,int);
 

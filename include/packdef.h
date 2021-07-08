@@ -17,6 +17,7 @@
 
 
 #include<iostream>
+#include <set>
 #include <vector>
 #include<map>
 #include<list>
@@ -127,6 +128,9 @@ typedef enum Net_PACK
     DEF_PACK_TURN_END,                          //回合结束
 
     DEF_PACK_HILIGHT_RQ,                        //高亮
+
+    DEF_PACK_HEALPLAYER_RQ,                     //治疗请求
+    DEF_PACK_HEALPLAYER_RS,
 
 }Net_PACK;
 
@@ -1060,4 +1064,29 @@ typedef struct STRU_HILIGHT_RQ
     int m_userid;
 }STRU_HILIGHT_RQ;
 
+typedef struct STRU_HEAL_PLAYER_RQ
+{
+    STRU_HEAL_PLAYER_RQ()
+    {
+        m_nType = DEF_PACK_SELHERO_RQ;
+    }
+    PackType m_nType;
+    int die_userid;
+}STRU_HEAL_PLAYER_RQ;
+typedef struct STRU_HEAL_PLAYER_RS
+{
+    STRU_HEAL_PLAYER_RS()
+    {
+        m_nType = DEF_PACK_SELHERO_RS;
+        n_lResult = false;
+        roomid = 0;
+        user_id = 0;
+        die_userid = 0;
+    }
+    PackType m_nType;
+    bool n_lResult;         //治疗还是不治疗
+    int roomid;
+    int user_id;
+    int die_userid;
+}STRU_HEAL_PLAYER_RS;
 #endif
