@@ -95,6 +95,10 @@ int player::getRange()
 int player::changeHp(int hp_change)
 {
     hp+=hp_change;
+    if(hp == 0)
+        alive = !alive;
+    else
+        alive = true;
     return hp;
 }
 
@@ -137,7 +141,12 @@ void player::setfym(STRU_CARD * fym)
     if(fym == NULL)
         fyma.id = 0;
     else
-    fyma = *fym;
+        fyma = *fym;
+}
+
+int player::GetIddentity()
+{
+    return m_iddentity;
 }
 
 STRU_CARD *player::getwq()

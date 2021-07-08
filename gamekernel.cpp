@@ -375,7 +375,7 @@ void GameKernel::DealCard(int sockfd,char *buf)
     {
 
         nextTurn();
-        tarPos = currentTurn;
+        //tarPos = currentTurn;
         //Hilight(idarr[currentTurn]);
         STRU_POSTCARD_RQ rq1;
         rq1.isShow = false;
@@ -521,7 +521,7 @@ void GameKernel::ResposeCard(int sockfd, char *buf)
                 }
                 else
                 {
-                    HealRq(rs->user_id);
+                    HealRq(rs->user_id,rs->y_user_id);
                 }
             }
             break;
@@ -826,12 +826,13 @@ void GameKernel::UpdateStatus(int user_id, int hp_change, int card_change)
     }
 }
 
-void GameKernel::HealRq(int user_id)
+void GameKernel::HealRq(int user_id,int o_userid)
 {
     STRU_HEAL_PLAYER_RQ rq;
     rq.die_userid = user_id;
     SetCurrentTurn(user_id);
     die_userid = user_id;
+    cause_dieuserid = o_userid;
     Hilight(idarr[currentTurn]);
     m_tcp->SendData(map_sockfd[idarr[currentTurn]],(char *)&rq,sizeof(rq));
 
@@ -843,6 +844,11 @@ void GameKernel::HealRs(char* szbuf)
     if(rs->n_lResult)
     {
         UpdateStatus(die_userid,1,0);
+        Hilight(idarr[temp_turn]);
+        currentTurn = temp_turn;
+        STRU_POSTCARD_RS prs;
+        prs.m_lResult = POST_CARD_CONTINUE;
+        m_tcp->SendData(map_sockfd[idarr[temp_turn]],(char *)&prs,sizeof(prs));
     }
     else
     {
@@ -850,9 +856,40 @@ void GameKernel::HealRs(char* szbuf)
         if(idarr[currentTurn] == die_userid)
         {
             //拯救失败
+            STRU_PLAYER_DIE pd;
+            pd.iddentity = map_idToplayer[rs->die_userid]->GetIddentity();
+            pd.die_userid = rs->die_userid;
+            for(int i=0;i<5;i++)
+            {
+                int sockfd = map_sockfd[idarr[i]];
+                if(sockfd == pd.die_userid)
+                    continue;
+                m_tcp->SendData(sockfd,(char *)&pd,sizeof(pd));
+                if(pd.iddentity == fanzei)
+                {
+                    STRU_GETCARD_RS grs;
+                    for(int i=0;i<3;i++)
+                    grs.m_card[i] = *getCard();
+                    m_tcp->SendData(map_sockfd[cause_dieuserid],(char *)&grs,sizeof(grs));
+                }
+            }
+            STRU_POSTCARD_RS prs;
+            prs.m_lResult = POST_CARD_CONTINUE;
+            m_tcp->SendData(map_sockfd[idarr[currentTurn]],(char *)&prs,sizeof(prs));
+
         }
-        Hilight(idarr[currentTurn]);
+        else
+        {
+            STRU_HEAL_PLAYER_RQ prq;
+            prq.die_userid = rs->die_userid;
+            Hilight(idarr[currentTurn]);
+            m_tcp->SendData(map_sockfd[idarr[currentTurn]],(char *)&prq,sizeof(prq));
+            Hilight(idarr[temp_turn]);
+            currentTurn = temp_turn;
+
+        }
     }
+
 }
 
 void GameKernel::SetCurrentTurn(int userid)

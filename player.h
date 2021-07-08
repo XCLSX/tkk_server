@@ -34,6 +34,7 @@ public:
     void setfj(STRU_CARD *);
     void setjgm(STRU_CARD *);
     void setfym(STRU_CARD *);
+    int GetIddentity();
     STRU_CARD *getwq();
     STRU_CARD *getfj();
     STRU_CARD *getjgm();

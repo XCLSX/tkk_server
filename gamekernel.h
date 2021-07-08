@@ -18,6 +18,7 @@ public:
     int currentTurn;
     int temp_turn;
     int die_userid;
+    int cause_dieuserid;
     TcpNet* m_tcp;
     map<int,player*> map_idToplayer;
     bool gamestart;
@@ -41,9 +42,9 @@ public:
     STRU_CARD current_jnp;
     int currenet_id;
     bool isUsed;
-    int tarPos;
+    //int tarPos;
     int give_up_wxkj_num;//放弃用无懈可击的人数
-    void HealRq(int user_id);
+    void HealRq(int user_id,int o_userid);
     void HealRs(char *);
     void SetCurrentTurn(int);
 private:
